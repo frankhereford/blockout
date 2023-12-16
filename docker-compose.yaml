@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: blockout
+      POSTGRES_PASSWORD: blockout
+      POSTGRES_DB: blockout
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - blockout-database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  blockout-database:
