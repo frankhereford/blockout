@@ -18,5 +18,18 @@
         "titleBar.inactiveBackground": "#58c0fe99",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#58c0fe"
+    "peacock.color": "#58c0fe",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "blockout-local",
+            "group": "blockout",
+            "database": "blockout",
+            "username": "blockout",
+            "password": ""
+        }
+    ]
 }
