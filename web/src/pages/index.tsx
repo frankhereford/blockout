@@ -15,7 +15,7 @@ export default function Home() {
         <div className="scene">
           <Canvas shadows>
             <primitive object={new GridHelper(10, 10)} />
-            <Scene />
+            <Scene width={5} height={7} depth={5} />
           </Canvas>
         </div>
       </main>
