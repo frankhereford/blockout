@@ -1,35 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import { api } from "~/utils/api";
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./components/Scene";
 import { GridHelper } from 'three';
 import { Text, Plane } from '@react-three/drei';
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { OrbitControls } from "@react-three/drei";
-
-function SpotLight() {
-  const spotLightRef = useRef();
-
-  useFrame(() => {
-    if (spotLightRef.current) {
-      spotLightRef.current.target.position.set(2.5, 0, 2.5); // replace x, y, z with the coordinates you want to target
-      spotLightRef.current.target.updateMatrixWorld(); // necessary to apply the changes
-    }
-  });
-
-  return (
-    <spotLight ref={spotLightRef} position={[2.5, 8, 2.5]} angle={1} penumbra={1} intensity={500} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
-  );
-}
-
+import { Lighting } from "./components/Lighting";
 
 export default function Home() {
-
-  
   return (
     <>
       <Head>
@@ -40,14 +17,12 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
           <Canvas shadows>
-
             <OrbitControls />
             {/*<primitive object={new GridHelper(10, 10)} />*/}
             <Text position={[5, 0, 0]} fontSize={1} color="red">X</Text>
             <Text position={[0, 5, 0]} fontSize={1} color="green">Y</Text>
             <Text position={[0, 0, 5]} fontSize={1} color="blue">Z</Text>
-            <ambientLight intensity={.3} />
-            <SpotLight />
+            <Lighting />
             <Scene />
             <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -1, 2.5]} receiveShadow>
               <meshStandardMaterial attach="material" color="green" />
@@ -58,52 +33,3 @@ export default function Home() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-function AuthShowcase() {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.post.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
-  );
-}
-
-
-  //const hello = api.post.hello.useQuery({ text: "from tRPC" });
-        
-  /*
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div>
-        </div>
-  */
-
