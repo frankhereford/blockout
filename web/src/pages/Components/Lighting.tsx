@@ -32,7 +32,7 @@ interface LightingProps {
 export function Lighting({width, height, depth}: LightingProps) {
     return (
         <>
-            <ambientLight intensity={.3} />
+            <ambientLight intensity={.4} />
             <SpotLight width={width} height={height} depth={depth} />
         </>
     );
