@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { PieceContext } from '../contexts/PieceContext';
+
 import { Vector3 } from 'three';
 import { ElPiece } from './pieces/elPiece';
 import { TeePiece } from './pieces/teePiece';
