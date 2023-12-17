@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { OrbitControls  } from "@react-three/drei";
 import Grid from "./Grid";
 
 export const Scene = () => {
@@ -25,13 +24,11 @@ export const Scene = () => {
         // Circular motion on the x-z plane
         camera.position.x = centerX + (radius * Math.cos(clock.elapsedTime));
         camera.position.z = centerZ + (radius * Math.sin(clock.elapsedTime));
-        let seconds = Math.floor(clock.elapsedTime * 10);
-        let height = 5 - (seconds % 5);
-        console.log(height)
-        setCubePosition(height - .5); // Update cube position using state setter function
-
         camera.lookAt(2.5, 0, 2.5); // Keep the camera looking at the center
 
+        const seconds = Math.floor(clock.elapsedTime * 10);
+        const height = 5 - (seconds % 5);
+        setCubePosition(height - .5); // Update cube position using state setter function
     });
 
     return (
