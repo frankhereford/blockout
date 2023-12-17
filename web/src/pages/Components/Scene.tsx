@@ -1,5 +1,4 @@
 import Well from "./Well";
-import { Cube } from './Cube';
 import { Camera } from './Camera';
 import { Lighting } from "./Lighting";
 import { AxesLabels } from "./AxesLabels";
@@ -22,7 +21,7 @@ export const Scene = ({width, height, depth}: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece pieceType={'el'} fallInterval={1} />
+            <Piece pieceType={'solo'} fallInterval={1} />
         </>
     );
 };
