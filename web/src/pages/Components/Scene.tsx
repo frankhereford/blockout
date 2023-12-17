@@ -3,7 +3,6 @@ import { Camera } from './Camera';
 import { Lighting } from "./Lighting";
 import { AxesLabels } from "./AxesLabels";
 import { GroundPlane } from "./GroundPlane";
-//import { Vector3 } from 'three';
 import { Piece } from './Piece';
 
 
