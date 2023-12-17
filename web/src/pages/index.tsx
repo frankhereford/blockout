@@ -1,13 +1,9 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-
 import { api } from "~/utils/api";
-
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./Components/Scene";
-
 import { GridHelper } from 'three';
-
 import { Text } from '@react-three/drei';
 
 
