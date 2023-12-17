@@ -8,9 +8,10 @@ interface CameraProps {
     depth: number;
 }
 
-export const Camera = ({width, height, depth}: CameraProps) => {
+export const Camera = ({ width, height, depth }: CameraProps) => {
     const { camera } = useThree();
     const [isManualOrbiting, setIsManualOrbiting] = useState(false);
+    const [autoRotate, setAutoRotate] = useState(true); // New state variable
     const [cameraHeight, setCameraHeight] = useState(height);
     const [cameraOrbitRadius, setCameraOrbitRadius] = useState(1);
     const [angle, setAngle] = useState(0);
@@ -18,22 +19,37 @@ export const Camera = ({width, height, depth}: CameraProps) => {
     const [orbitSpeed, setOrbitSpeed] = useState(targetOrbitSpeed);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
-        camera.position.y = 1.8 * height; // Set initial height of the camera
-        setCameraHeight(camera.position.y);
-    }, [camera, height]);
 
     const calculateOrbitRadius = () => {
         const dx = width / 2 - camera.position.x;
         const dz = depth / 2 - camera.position.z;
-        const distance = Math.sqrt(dx*dx + dz*dz);
+        const distance = Math.sqrt(dx * dx + dz * dz);
         setCameraOrbitRadius(distance);
     };
+
+    useEffect(() => {
+        camera.position.y = 1.8 * height; // Set initial height of the camera
+        setCameraHeight(camera.position.y);
+
+        // New event listener for 'p' key
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'p') {
+                setAutoRotate(prev => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Clean up event listener
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [camera, height]);
 
     useFrame(() => {
         camera.lookAt(width / 2, 0, depth / 2);
 
-        if (!isManualOrbiting) {
+        if (!isManualOrbiting && autoRotate) { // Check autoRotate state
             const radian = angle * (Math.PI / 180);
             camera.position.x = width / 2 + cameraOrbitRadius * Math.cos(radian);
             camera.position.z = depth / 2 + cameraOrbitRadius * Math.sin(radian);
@@ -58,6 +74,7 @@ export const Camera = ({width, height, depth}: CameraProps) => {
             setOrbitSpeed(0);
         }
     }, [isManualOrbiting]);
+
 
     return (
         <>
