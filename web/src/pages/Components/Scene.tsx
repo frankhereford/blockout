@@ -20,7 +20,7 @@ export const Scene = () => {
         const clock = clockRef.current;
         clock.elapsedTime += 0.001; // Adjust this value to control the speed of the orbit
 
-        const radius = 3;
+        const radius = 2;
         const centerX = 2.5;
         const centerZ = 2.5;
 
