@@ -1,8 +1,14 @@
 import { Plane } from '@react-three/drei';
 
-export function GroundPlane() {
+interface GroundPlaneProps {
+    width: number;
+    depth: number;
+    scaleFactor?: number;
+}
+
+export function GroundPlane({width, depth, scaleFactor = 10}: GroundPlaneProps) {
     return (
-        <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -1, 2.5]} receiveShadow>
+        <Plane args={[width * scaleFactor, depth * scaleFactor]} rotation={[-Math.PI / 2, 0, 0]} position={[width / 2, -1, depth / 2]} receiveShadow>
             <meshStandardMaterial attach="material" color="green" />
         </Plane>
     );

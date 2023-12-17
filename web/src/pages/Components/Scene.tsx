@@ -19,7 +19,7 @@ export const Scene = ({width, height, depth}: SceneProps) => {
             <Well width={width} height={height} depth={depth} />
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
-            <GroundPlane width={width} height={height} depth={depth} />
+            <GroundPlane width={width} depth={depth} scaleFactor={20} />
         </>
     );
 };
