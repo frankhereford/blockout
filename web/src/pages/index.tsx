@@ -1,22 +1,46 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
+//import Link from "next/link";
 
 import { api } from "~/utils/api";
+//import * as THREE from 'three';
+
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh } from 'three';
+import { useRef, useEffect } from 'react'
+
 
 export default function Home() {
-  //const hello = api.post.hello.useQuery({ text: "from tRPC" });
-        
-  /*
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div>
-        </div>
-  */
+  
+  const rendererElement = useRef(null);
+
+  useEffect(() => {
+    const width = 400;
+    const height = 400;
+    if (rendererElement.current) {
+      const scene: THREE.Scene = new Scene();
+      const camera: THREE.PerspectiveCamera = new PerspectiveCamera(75, width / height, 0.1, 1000);
+      const renderer: THREE.WebGLRenderer = new WebGLRenderer();
+      renderer.setSize(width, height);
+      rendererElement.current.appendChild(renderer.domElement);
+      const geometry = new BoxGeometry(1, 1, 1);
+      const material = new MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new Mesh(geometry, material);
+      scene.add(cube);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }
+  }, []);
+
 
   return (
     <>
@@ -26,7 +50,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
-
+        <div id='renderer' ref={rendererElement}>
+        </div>
       </main>
     </>
   );
@@ -55,3 +80,18 @@ function AuthShowcase() {
     </div>
   );
 }
+
+
+  //const hello = api.post.hello.useQuery({ text: "from tRPC" });
+        
+  /*
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-2xl text-white">
+              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+            </p>
+            <AuthShowcase />
+          </div>
+        </div>
+  */
+
