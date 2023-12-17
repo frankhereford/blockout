@@ -1,14 +1,20 @@
 import { Vector3 } from 'three';
 import { ElPiece } from './pieces/elPiece';
+import { TeePiece } from './pieces/teePiece';
 import { useState, useEffect } from 'react';
+import { FunctionComponent } from 'react';
 
-export const Piece = () => {
+interface PieceProps {
+    pieceType: 'elPiece' | 'teePiece';
+}
+
+export const Piece = ({ pieceType }: PieceProps) => {
     const [offset, setOffset] = useState(new Vector3(2, 0, 2));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            switch(event.key) {
+            switch (event.key) {
                 case 'ArrowUp':
                     setOffset(prevOffset => new Vector3(prevOffset.x, prevOffset.y, prevOffset.z + 1));
                     break;
@@ -18,6 +24,7 @@ export const Piece = () => {
                 case 'ArrowLeft':
                     setOffset(prevOffset => new Vector3(prevOffset.x - 1, prevOffset.y, prevOffset.z));
                     break;
+                case 'ArrowRight':
                 case 'ArrowRight':
                     setOffset(prevOffset => new Vector3(prevOffset.x + 1, prevOffset.y, prevOffset.z));
                     break;
@@ -46,7 +53,21 @@ export const Piece = () => {
         };
     }, []);
 
+
+    let PieceType: FunctionComponent<{ offset: Vector3, rotation: Vector3 }>;
+
+    switch (pieceType) {
+        case 'elPiece':
+            PieceType = ElPiece;
+            break;
+        case 'teePiece':
+            PieceType = TeePiece;
+            break;
+        default:
+            throw new Error(`Invalid pieceType: ${String(pieceType)}`);
+    }
+
     return (
-        <ElPiece offset={offset} rotation={rotation} />
+        <PieceType offset={offset} rotation={rotation} />
     );
 };
