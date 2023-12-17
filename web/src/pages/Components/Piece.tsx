@@ -1,18 +1,9 @@
 import { Vector3 } from 'three';
-import { Cube } from './Cube';
+import { ElPiece } from './pieces/elPiece';
 
 export const Piece = () => {
-    const cubes = [
-        new Vector3(0, 0, 0),
-        new Vector3(1, 0, 0),
-        new Vector3(2, 0, 0),
-    ];
-
+    const offset = new Vector3(2, 0, 2);
     return (
-        <>
-            {cubes.map((location, index) => (
-                <Cube key={index} location={location} />
-            ))}
-        </>
+        <ElPiece offset={offset} />
     );
 };
