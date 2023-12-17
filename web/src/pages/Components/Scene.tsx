@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import Grid from "./Grid";
-import { set } from 'zod';
+import Well from "./Well";
 
 export const Scene = () => {
 
@@ -45,7 +44,7 @@ export const Scene = () => {
                 <boxGeometry args={[1, 1, 1]} />
                 <meshNormalMaterial />
             </mesh>
-            <Grid />
+            <Well width={5} height={5} depth={5} />
         </>
     );
 };

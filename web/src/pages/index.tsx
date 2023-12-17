@@ -4,10 +4,10 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import { Canvas } from '@react-three/fiber'
-import { Scene } from "./Components/Scene";
+import { Scene } from "./components/Scene";
 import { GridHelper } from 'three';
 import { Text, Plane } from '@react-three/drei';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { OrbitControls } from "@react-three/drei";
 
