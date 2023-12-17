@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export const Piece = () => {
     const [offset, setOffset] = useState(new Vector3(2, 0, 2));
+    const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,6 +27,15 @@ export const Piece = () => {
                 case 'PageDown':
                     setOffset(prevOffset => new Vector3(prevOffset.x, prevOffset.y - 1, prevOffset.z));
                     break;
+                case 'q':
+                    setRotation(prevRotation => new Vector3(prevRotation.x + Math.PI / 2, prevRotation.y, prevRotation.z));
+                    break;
+                case 'w':
+                    setRotation(prevRotation => new Vector3(prevRotation.x, prevRotation.y + Math.PI / 2, prevRotation.z));
+                    break;
+                case 'e':
+                    setRotation(prevRotation => new Vector3(prevRotation.x, prevRotation.y, prevRotation.z + Math.PI / 2));
+                    break;
             }
         };
 
@@ -37,6 +47,6 @@ export const Piece = () => {
     }, []);
 
     return (
-        <ElPiece offset={offset} rotation={new Vector3(Math.PI / 2, 0, Math.PI / 2)} />
+        <ElPiece offset={offset} rotation={rotation} />
     );
 };
