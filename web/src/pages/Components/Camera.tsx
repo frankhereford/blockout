@@ -14,7 +14,8 @@ export const Camera = ({width, height, depth}: CameraProps) => {
     const [cameraHeight, setCameraHeight] = useState(height);
     const [cameraOrbitRadius, setCameraOrbitRadius] = useState(1);
     const [angle, setAngle] = useState(0);
-    const [orbitSpeed, setOrbitSpeed] = useState(0.1); // Adjust this value to change the speed of orbiting
+    const targetOrbitSpeed = 0.1; // Adjust this value to change the speed of orbiting
+    const [orbitSpeed, setOrbitSpeed] = useState(targetOrbitSpeed);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -39,6 +40,24 @@ export const Camera = ({width, height, depth}: CameraProps) => {
             setAngle(prevAngle => (prevAngle + orbitSpeed) % 360);
         }
     });
+
+    useEffect(() => {
+        if (!isManualOrbiting) {
+            let currentSpeed = 0;
+            const intervalId = setInterval(() => {
+                currentSpeed += 0.01; // Adjust this value to change the speed of easing
+                if (currentSpeed > targetOrbitSpeed) {
+                    currentSpeed = targetOrbitSpeed;
+                    clearInterval(intervalId);
+                }
+                setOrbitSpeed(currentSpeed);
+            }, 100); // Adjust this value to change the frequency of easing
+
+            return () => clearInterval(intervalId);
+        } else {
+            setOrbitSpeed(0);
+        }
+    }, [isManualOrbiting]);
 
     return (
         <>
