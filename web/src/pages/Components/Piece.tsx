@@ -1,11 +1,12 @@
 import { Vector3 } from 'three';
 import { ElPiece } from './pieces/elPiece';
 import { TeePiece } from './pieces/teePiece';
+import { BlockPiece } from './pieces/blockPiece';
 import { useState, useEffect } from 'react';
 import type { FunctionComponent } from 'react';
 
 interface PieceProps {
-    pieceType: 'elPiece' | 'teePiece';
+    pieceType: 'el' | 'tee' | 'block';
 }
 
 export const Piece = ({ pieceType }: PieceProps) => {
@@ -57,11 +58,14 @@ export const Piece = ({ pieceType }: PieceProps) => {
     let PieceType: FunctionComponent<{ offset: Vector3, rotation: Vector3 }>;
 
     switch (pieceType) {
-        case 'elPiece':
+        case 'el':
             PieceType = ElPiece;
             break;
-        case 'teePiece':
+        case 'tee':
             PieceType = TeePiece;
+            break;
+        case 'block':
+            PieceType = BlockPiece;
             break;
         default:
             throw new Error(`Invalid pieceType: ${String(pieceType)}`);
