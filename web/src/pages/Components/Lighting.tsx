@@ -9,12 +9,12 @@ interface SpotLightProps {
 }
 
 function SpotLight({width, height, depth}: SpotLightProps) {
-    const spotLightRef = useRef<ThreeSpotLight>(null); // Assign SpotLight type to spotLightRef
+    const spotLightRef = useRef<ThreeSpotLight>(null);
 
     useFrame(() => {
         if (spotLightRef.current) {
-            spotLightRef.current.target.position.set(width / 2, 0, depth / 2); // Replace x, y, z with the coordinates you want to target
-            spotLightRef.current.target.updateMatrixWorld(); // Necessary to apply the changes
+            spotLightRef.current.target.position.set(width / 2, 0, depth / 2);
+            spotLightRef.current.target.updateMatrixWorld();
         }
     });
 
