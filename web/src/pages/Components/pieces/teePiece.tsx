@@ -28,7 +28,7 @@ export const TeePiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new
     // Update the context with the cubes' positions after translation and rotation
     useEffect(() => {
         setCubes(cubes.map(cube => cube.add(offset)));
-    }, [cubes, offset, setCubes]);
+    }, [offset, rotation]);
 
     return (
         <>

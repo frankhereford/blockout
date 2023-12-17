@@ -25,6 +25,9 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     }
     const { cubes } = context;
 
+    useEffect(() => {
+        console.log(cubes);
+    }, [cubes]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
