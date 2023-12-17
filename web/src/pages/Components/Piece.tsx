@@ -17,10 +17,10 @@ export const Piece = ({ pieceType }: PieceProps) => {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             switch (event.key) {
-                case 'ArrowUp':
+                case 'ArrowDown':
                     setOffset(prevOffset => new Vector3(prevOffset.x, prevOffset.y, prevOffset.z + 1));
                     break;
-                case 'ArrowDown':
+                case 'ArrowUp':
                     setOffset(prevOffset => new Vector3(prevOffset.x, prevOffset.y, prevOffset.z - 1));
                     break;
                 case 'ArrowLeft':
