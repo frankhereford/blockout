@@ -26,7 +26,6 @@ export const Piece = ({ pieceType }: PieceProps) => {
                     setOffset(prevOffset => new Vector3(prevOffset.x - 1, prevOffset.y, prevOffset.z));
                     break;
                 case 'ArrowRight':
-                case 'ArrowRight':
                     setOffset(prevOffset => new Vector3(prevOffset.x + 1, prevOffset.y, prevOffset.z));
                     break;
                 case 'PageUp':
