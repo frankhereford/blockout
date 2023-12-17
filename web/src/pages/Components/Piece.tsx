@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 import { ElPiece } from './pieces/elPiece';
 import { TeePiece } from './pieces/teePiece';
 import { useState, useEffect } from 'react';
-import { FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
 
 interface PieceProps {
     pieceType: 'elPiece' | 'teePiece';
