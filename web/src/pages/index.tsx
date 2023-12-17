@@ -2,9 +2,7 @@ import Head from "next/head";
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./components/Scene";
 import { GridHelper } from 'three';
-import { Text, Plane } from '@react-three/drei';
 import { OrbitControls } from "@react-three/drei";
-import { Lighting } from "./components/Lighting";
 
 export default function Home() {
   return (
@@ -18,15 +16,8 @@ export default function Home() {
         <div className="scene">
           <Canvas shadows>
             <OrbitControls />
-            {/*<primitive object={new GridHelper(10, 10)} />*/}
-            <Text position={[5, 0, 0]} fontSize={1} color="red">X</Text>
-            <Text position={[0, 5, 0]} fontSize={1} color="green">Y</Text>
-            <Text position={[0, 0, 5]} fontSize={1} color="blue">Z</Text>
-            <Lighting />
+            <primitive object={new GridHelper(10, 10)} />
             <Scene />
-            <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -1, 2.5]} receiveShadow>
-              <meshStandardMaterial attach="material" color="green" />
-            </Plane>
           </Canvas>
         </div>
       </main>
