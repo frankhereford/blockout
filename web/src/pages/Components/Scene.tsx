@@ -18,7 +18,6 @@ export const Scene = ({width, height, depth}: SceneProps) => {
     return (
         <>
             <Camera width={width} height={height} depth={depth} />
-            {/* <Cube location={new Vector3(1, 0, 0)} /> */}
             <Well width={width} height={height} depth={depth} />
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
