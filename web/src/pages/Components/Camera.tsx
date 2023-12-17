@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
+import { OrbitControls } from "@react-three/drei";
+
 
 export const Camera = () => {
     const { camera } = useThree();
@@ -24,5 +26,10 @@ export const Camera = () => {
         camera.lookAt(2.5, 0, 2.5); // Keep the camera looking at the center
     });
 
-    return null;
+    //return null;
+    return (
+        <>
+            <OrbitControls />
+        </>
+    )
 };
