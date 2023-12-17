@@ -1,11 +1,17 @@
 import { Text } from '@react-three/drei';
 
-export function AxesLabels() {
+interface AxesLabelsProps {
+    width: number;
+    height: number;
+    depth: number;
+}
+
+export function AxesLabels({width, height, depth}: AxesLabelsProps) {
     return (
         <>
-            <Text position={[5, 0, 0]} fontSize={1} color="red">X</Text>
-            <Text position={[0, 5, 0]} fontSize={1} color="green">Y</Text>
-            <Text position={[0, 0, 5]} fontSize={1} color="blue">Z</Text>
+            <Text position={[width, 0, 0]} fontSize={1} color="red">X</Text>
+            <Text position={[0, height, 0]} fontSize={1} color="green">Y</Text>
+            <Text position={[0, 0, depth]} fontSize={1} color="blue">Z</Text>
         </>
     );
 }
