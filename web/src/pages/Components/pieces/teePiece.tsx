@@ -1,5 +1,7 @@
 import { Vector3, Euler } from 'three';
 import { Cube } from '../Cube';
+import { useContext } from 'react';
+import { PieceContext } from '../../contexts/PieceContext';
 
 interface TeePieceProps {
     offset: Vector3;
@@ -8,12 +10,17 @@ interface TeePieceProps {
 }
 
 export const TeePiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(1, 1, 0) }: TeePieceProps) => {
+    const { setCubes } = useContext(PieceContext);
+
     const cubes = [
         new Vector3(0, 1, 0),
         new Vector3(1, 1, 0),
         new Vector3(2, 1, 0),
         new Vector3(1, 0, 0),
     ].map(cube => cube.clone().sub(origin).applyEuler(new Euler(rotation.x, rotation.y, rotation.z)).add(origin));
+
+    // Populate the context with the cubes
+    setCubes(cubes);
 
     return (
         <>
