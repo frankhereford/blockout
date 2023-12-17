@@ -1,23 +1,14 @@
-import { useState, useEffect } from 'react';
+import { Vector3 } from 'three';
 
 interface CubeProps {
-    height: number;
+    location: Vector3;
 }
 
-export const Cube = ({height}: CubeProps) => {
-    const [cubePosition, setCubePosition] = useState(height - .5);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCubePosition((prev) => Math.abs((prev - 1 + height) % height)); // Update cube position using state setter function
-        }, 1000);
-
-        // Cleanup on component unmount
-        return () => clearInterval(interval);
-    }, [height]);
+export const Cube = ({location}: CubeProps) => {
+    const offsetLocation = new Vector3(location.x + 0.5, location.y + 0.5, location.z + 0.5);
 
     return (
-        <mesh position={[0.5, cubePosition, 0.5]} castShadow>
+        <mesh position={offsetLocation} castShadow>
             <boxGeometry args={[1, 1, 1]} />
             <meshNormalMaterial />
         </mesh>
