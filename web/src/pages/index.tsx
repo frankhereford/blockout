@@ -14,7 +14,7 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
           <Canvas shadows>
-            <primitive object={new GridHelper(10, 10)} />
+            {/* <primitive object={new GridHelper(10, 10)} /> */}
             <Scene width={5} height={7} depth={5} />
           </Canvas>
         </div>
