@@ -1,20 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-//import Link from "next/link";
 
 import { api } from "~/utils/api";
-//import * as THREE from 'three';
-
-
-//import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh } from 'three';
-import { useRef, useEffect } from 'react'
-
+//import { useRef, useEffect } from 'react'
 
 import { Canvas } from '@react-three/fiber'
-import { Grid } from "./Components/Grid";
+import { Scene } from "./Components/Scene";
 
 export default function Home() {
   
@@ -32,9 +23,10 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
           <Canvas>
-            <Grid>
+            <ambientLight intensity={1} />
+            <Scene>
 
-            </Grid>
+            </Scene>
           </Canvas>
         </div>
       </main>
