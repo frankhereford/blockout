@@ -14,7 +14,7 @@ import { useRef, useEffect } from 'react'
 
 
 import { Canvas } from '@react-three/fiber'
-import { Experience } from "./Components/Experience";
+import { Grid } from "./Components/Grid";
 
 export default function Home() {
   
@@ -32,9 +32,9 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
           <Canvas>
-            <Experience>
+            <Grid>
 
-            </Experience>
+            </Grid>
           </Canvas>
         </div>
       </main>
