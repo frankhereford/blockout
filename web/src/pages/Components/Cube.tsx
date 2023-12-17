@@ -5,7 +5,7 @@ export const Cube = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            console.log("Cube position: " + cubePosition)
+            //console.log("Cube position: " + cubePosition)
             setCubePosition((prev) => Math.abs((prev - 1 + 5) % 5)); // Update cube position using state setter function
         }, 1000);
 
