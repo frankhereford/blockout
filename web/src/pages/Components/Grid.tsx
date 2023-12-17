@@ -18,10 +18,10 @@ const Cylinder: React.FC<CylinderProps> = ({ point1, point2, rotation = [0, 0, 0
     ];
 
     return (
-        <mesh position={position} rotation={finalRotation}>
+        <mesh position={position} rotation={finalRotation} castShadow>
             <cylinderGeometry args={[0.01, 0.01, height, 12]} />
-            {/* <meshStandardMaterial color="royalblue" wireframe /> */}
-            <meshNormalMaterial />
+            <meshStandardMaterial color="royalblue" />
+            {/*<meshNormalMaterial />*/}
         </mesh>
     );
 };
@@ -51,8 +51,4 @@ const Grid: React.FC = () => {
     return <>{cylinders}</>;
 };
 
-const App: React.FC = () => (
-    <Grid />
-);
-
-export default App;
+export default Grid;

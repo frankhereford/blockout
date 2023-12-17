@@ -1,13 +1,11 @@
-//import { extend } from '@react-three/fiber'
 import { useEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls  } from "@react-three/drei";
 import Grid from "./Grid";
 
-
-
 //extend({ OrbitControls })
 export const Scene = () => {
+
     const { camera } = useThree();
     const clockRef = useRef({ elapsedTime: 0 });
 
@@ -31,9 +29,10 @@ export const Scene = () => {
         camera.lookAt(2.5, 0, 2.5); // Keep the camera looking at the center
     });
 
+
     return (
         <>
-            <mesh position={[0.5, 0.5, 0.5]}>
+            <mesh position={[0.5, 0.5, 0.5]} castShadow>
                 <boxGeometry args={[1, 1, 1]} />
                 <meshNormalMaterial />
             </mesh>

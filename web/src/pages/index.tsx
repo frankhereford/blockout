@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { api } from "~/utils/api";
@@ -5,9 +7,28 @@ import { Canvas } from '@react-three/fiber'
 import { Scene } from "./Components/Scene";
 import { GridHelper } from 'three';
 import { Text, Plane } from '@react-three/drei';
+import { useEffect, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { OrbitControls } from "@react-three/drei";
+
+function SpotLight() {
+  const spotLightRef = useRef();
+
+  useFrame(() => {
+    if (spotLightRef.current) {
+      spotLightRef.current.target.position.set(2.5, 0, 2.5); // replace x, y, z with the coordinates you want to target
+      spotLightRef.current.target.updateMatrixWorld(); // necessary to apply the changes
+    }
+  });
+
+  return (
+    <spotLight ref={spotLightRef} position={[2.5, 8, 2.5]} angle={1} penumbra={1} intensity={500} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+  );
+}
 
 
 export default function Home() {
+
   
   return (
     <>
@@ -18,14 +39,19 @@ export default function Home() {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
-          <Canvas>
+          <Canvas shadows>
+
+            <OrbitControls />
             {/*<primitive object={new GridHelper(10, 10)} />*/}
-            <Text position={[3, 0, 0]} fontSize={0.5} color="red">X</Text>
-            <Text position={[0, 3, 0]} fontSize={0.5} color="green">Y</Text>
-            <Text position={[0, 0, 3]} fontSize={0.5} color="blue">Z</Text>
-            <ambientLight intensity={1} />
+            <Text position={[5, 0, 0]} fontSize={1} color="red">X</Text>
+            <Text position={[0, 5, 0]} fontSize={1} color="green">Y</Text>
+            <Text position={[0, 0, 5]} fontSize={1} color="blue">Z</Text>
+            <ambientLight intensity={.3} />
+            <SpotLight />
             <Scene />
-            <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -0.1 , 2.5]} />
+            <Plane args={[50, 50]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -1, 2.5]} receiveShadow>
+              <meshStandardMaterial attach="material" color="green" />
+            </Plane>
           </Canvas>
         </div>
       </main>
