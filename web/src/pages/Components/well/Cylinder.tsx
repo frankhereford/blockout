@@ -16,7 +16,7 @@ const Cylinder: React.FC<CylinderProps> = ({ point1, point2, width }) => {
     const height = Math.sqrt(Math.pow(point2[0] - point1[0], 2) + Math.pow(point2[1] - point1[1], 2) + Math.pow(point2[2] - point1[2], 2));
 
     return (
-        <mesh position={position} quaternion={quaternion} castShadow>
+        <mesh position={new Vector3(...position)} quaternion={quaternion} castShadow>
             <cylinderGeometry args={[width, width, height, 32]} />
             <meshStandardMaterial color="royalblue" />
         </mesh>

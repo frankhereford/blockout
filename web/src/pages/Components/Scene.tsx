@@ -44,7 +44,7 @@ export const Scene = () => {
                 <boxGeometry args={[1, 1, 1]} />
                 <meshNormalMaterial />
             </mesh>
-            <Well width={5} height={5} depth={5} />
+            <Well width={6} height={3} depth={6} />
         </>
     );
 };

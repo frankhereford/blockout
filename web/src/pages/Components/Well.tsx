@@ -13,7 +13,7 @@ const Well: React.FC<WellProps> = ({ width, height, depth }) => {
             {/* Floor */}
             <GridPlane
                 lowerLeft={{ x: 0, y: 0, z: 0 }}
-                upperRight={{ x: width, y: 0, z: height}}
+                upperRight={{ x: width, y: 0, z: depth}}
             />
             {/* Front wall */}
             <GridPlane

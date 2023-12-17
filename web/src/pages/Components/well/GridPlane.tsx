@@ -48,7 +48,9 @@ const GridPlane: React.FC<GridPlaneProps> = ({ lowerLeft, upperRight }) => {
                 point1 = [lowerLeft.x + i, lowerLeft.y + j, lowerLeft.z];
                 point2 = [lowerLeft.x + i, lowerLeft.y + j + 1, lowerLeft.z];
             }
-            cylinders.push(<Cylinder point1={point1} point2={point2} width={width} key={`line1_${i}_${j}`} />);
+            if (point1 && point2) {
+                cylinders.push(<Cylinder point1={point1 as [number, number, number]} point2={point2 as [number, number, number]} width={width} key={`line1_${i}_${j}`} />);
+            }
         }
     }
 
@@ -66,7 +68,9 @@ const GridPlane: React.FC<GridPlaneProps> = ({ lowerLeft, upperRight }) => {
                 point1 = [lowerLeft.x + j, lowerLeft.y + i, lowerLeft.z];
                 point2 = [lowerLeft.x + j + 1, lowerLeft.y + i, lowerLeft.z];
             }
-            cylinders.push(<Cylinder point1={point1} point2={point2} width={width} key={`line2_${i}_${j}`} />);
+            if (point1 && point2) {
+                cylinders.push(<Cylinder point1={point1 as [number, number, number]} point2={point2 as [number, number, number]} width={width} key={`line2_${i}_${j}`} />);
+            }
         }
     }
 
