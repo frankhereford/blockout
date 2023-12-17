@@ -18,6 +18,14 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     const [offset, setOffset] = useState(new Vector3(2, 0, 2));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
+
+    const context = useContext(PieceContext);
+    if (!context) {
+        throw new Error('YourComponent must be used within a PieceProvider');
+    }
+    const { cubes } = context;
+
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             switch (event.key) {
