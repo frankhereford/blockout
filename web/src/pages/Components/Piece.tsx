@@ -37,6 +37,6 @@ export const Piece = () => {
     }, []);
 
     return (
-        <ElPiece offset={offset} />
+        <ElPiece offset={offset} rotation={new Vector3(Math.PI / 2, 0, Math.PI / 2)} />
     );
 };
