@@ -1,23 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import Well from "./Well";
+import { Cube } from './Cube'; // Import the Cube component
 
 export const Scene = () => {
 
     const { camera } = useThree();
     const clockRef = useRef({ elapsedTime: 0 });
-    const [cubePosition, setCubePosition] = useState(4.5);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            console.log("Cube position: " + cubePosition)
-            setCubePosition((prev) => Math.abs((prev - 1 + 5) % 5)); // Update cube position using state setter function
-        }, 1000);
-
-        // Cleanup on component unmount
-        return () => clearInterval(interval);
-    }, []);
-
 
     useEffect(() => {
         camera.position.y = 10; // Set initial height of the camera
@@ -40,10 +29,7 @@ export const Scene = () => {
 
     return (
         <>
-            <mesh position={[0.5, cubePosition, 0.5]} castShadow>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshNormalMaterial />
-            </mesh>
+            {/* <Cube /> */}
             <Well width={6} height={3} depth={6} />
         </>
     );
