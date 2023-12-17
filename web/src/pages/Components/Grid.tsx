@@ -1,7 +1,6 @@
 import React from 'react';
 import type { MeshProps } from '@react-three/fiber';
 
-
 interface CylinderProps extends MeshProps {
     point1: [number, number, number];
     point2: [number, number, number];
@@ -27,18 +26,24 @@ const Cylinder: React.FC<CylinderProps> = ({ point1, point2, rotation = [0, 0, 0
     );
 };
 
-
 const Grid: React.FC = () => {
     const cylinders = [];
     const scalar = 5;
     for (let i = 0; i <= scalar; i++) {
         for (let j = 0; j <= scalar; j++) {
             if (i < scalar) {
-                cylinders.push(<Cylinder point1={[i, j, 0]} point2={[i + 1, j, 0]} rotation={[Math.PI / 2, 0, Math.PI / 2]} key={`h-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[i, j, 0]} point2={[i + 1, j, 0]} rotation={[Math.PI / 2, 0, Math.PI / 2]} key={`h_xy-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[0, j, i]} point2={[0, j, i + 1]} rotation={[Math.PI / 2, 0, 0]} key={`h_zy-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[i, j, scalar]} point2={[i + 1, j, scalar]} rotation={[Math.PI / 2, 0, Math.PI / 2]} key={`h_xy5-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[scalar, j, i]} point2={[scalar, j, i + 1]} rotation={[Math.PI / 2, 0, 0]} key={`h_zy5-${i}-${j}`} />);
             }
             if (j < scalar) {
-                cylinders.push(<Cylinder point1={[i, j, 0]} point2={[i, j + 1, 0]} rotation={[Math.PI / 2, 0, 0]} key={`v-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[i, j, 0]} point2={[i, j + 1, 0]} rotation={[Math.PI / 2, 0, 0]} key={`v_xy-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[0, j + .5, i - .5]} point2={[0, j + .5, i + .5]} rotation={[0, Math.PI, 0]} key={`v_zy-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[i, j, scalar]} point2={[i, j + 1, scalar]} rotation={[Math.PI / 2, 0, 0]} key={`v_xy5-${i}-${j}`} />);
+                cylinders.push(<Cylinder point1={[scalar, j + .5, i - .5]} point2={[scalar, j + .5, i + .5]} rotation={[0, Math.PI, 0]} key={`v_zy5-${i}-${j}`} />);
             }
+
         }
     }
     return <>{cylinders}</>;

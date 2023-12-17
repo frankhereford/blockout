@@ -8,7 +8,7 @@ export const Scene = () => {
     return (
         <>
             <OrbitControls />
-            <mesh position={[0, 0, 0]}>
+            <mesh position={[.5, .5, .5]}>
                 <boxGeometry args={[1, 1, 1]} />
                 <meshNormalMaterial />
             </mesh>
