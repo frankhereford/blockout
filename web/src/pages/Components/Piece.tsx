@@ -8,9 +8,10 @@ import type { FunctionComponent } from 'react';
 
 interface PieceProps {
     pieceType: 'el' | 'tee' | 'block' | 'solo';
+    fallInterval: number; // New prop for the fall interval
 }
 
-export const Piece = ({ pieceType }: PieceProps) => {
+export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     const [offset, setOffset] = useState(new Vector3(2, 0, 2));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
@@ -54,6 +55,21 @@ export const Piece = ({ pieceType }: PieceProps) => {
         };
     }, []);
 
+    useEffect(() => {
+        const fallTimer = setInterval(() => {
+            setOffset(prevOffset => {
+                let newY = prevOffset.y - 1;
+                if (newY < 0) {
+                    newY = 5; // Reset y to 5 if it goes below 0
+                }
+                return new Vector3(prevOffset.x, newY, prevOffset.z);
+            });
+        }, fallInterval * 1000); // Convert seconds to milliseconds
+
+        return () => {
+            clearInterval(fallTimer);
+        };
+    }, [fallInterval]);
 
     let PieceType: FunctionComponent<{ offset: Vector3, rotation: Vector3 }>;
 
