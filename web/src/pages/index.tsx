@@ -4,7 +4,7 @@ import { api } from "~/utils/api";
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./Components/Scene";
 import { GridHelper } from 'three';
-import { Text } from '@react-three/drei';
+import { Text, Plane } from '@react-three/drei';
 
 
 export default function Home() {
@@ -19,14 +19,13 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[rgb(253,244,173)] to-[#d7cffc]">
         <div className="scene">
           <Canvas>
-            <primitive object={new GridHelper(10, 10)} />
+            {/*<primitive object={new GridHelper(10, 10)} />*/}
             <Text position={[3, 0, 0]} fontSize={0.5} color="red">X</Text>
             <Text position={[0, 3, 0]} fontSize={0.5} color="green">Y</Text>
             <Text position={[0, 0, 3]} fontSize={0.5} color="blue">Z</Text>
             <ambientLight intensity={1} />
-            <Scene>
-
-            </Scene>
+            <Scene />
+            <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} position={[2.5, -0.1 , 2.5]} />
           </Canvas>
         </div>
       </main>
