@@ -1,15 +1,16 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { SpotLight as ThreeSpotLight } from 'three'; // Import SpotLight from three package with a different name
+import type { SpotLight as ThreeSpotLight } from 'three';
 
 interface SpotLightProps {
     width: number;
     height: number;
     depth: number;
     position: [number, number, number];
+    intensity?: number; // Add intensity as an optional prop
 }
 
-export function SpotLight({ width, height, depth, position }: SpotLightProps) {
+export function SpotLight({ width, height, depth, position, intensity = 100 }: SpotLightProps) { // Set default value for intensity
     const spotLightRef = useRef<ThreeSpotLight>(null);
 
     useFrame(() => {
@@ -20,6 +21,6 @@ export function SpotLight({ width, height, depth, position }: SpotLightProps) {
     });
 
     return (
-        <spotLight ref={spotLightRef} position={position} angle={1} penumbra={.5} intensity={300} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+        <spotLight ref={spotLightRef} position={position} angle={1} penumbra={.5} intensity={intensity} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
     );
 }
