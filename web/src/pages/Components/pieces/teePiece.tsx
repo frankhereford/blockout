@@ -14,7 +14,7 @@ export const TeePiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new
     const context = useContext(GameContext);
 
     if (!context) {
-        throw new Error('TeePiece must be used within a PieceProvider');
+        throw new Error('Context must be used within a GameProvider');
     }
 
     const { setCubes } = context;

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Vector3 } from 'three';
+import type { Vector3 } from 'three';
 
 interface GameContextType {
     pieceType: 'el' | 'tee' | 'block' | 'solo';
