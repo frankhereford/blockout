@@ -23,16 +23,16 @@ function roundVector3(vector: Vector3): Vector3 {
     );
 }
 
-function areAnyCubesBelowZero(cubes: Vector3[]): boolean {
-    return cubes.some(cube => {
-        const roundedCube = roundVector3(cube);
-        return roundedCube.y < 0;
-    });
-}
+// function areAnyCubesBelowZero(cubes: Vector3[]): boolean {
+//     return cubes.some(cube => {
+//         const roundedCube = roundVector3(cube);
+//         return roundedCube.y < 0;
+//     });
+// }
 
-function applyOffsetToCubes(cubes: Vector3[], offset: Vector3): Vector3[] {
-    return cubes.map(cube => cube.clone().add(offset));
-}
+// function applyOffsetToCubes(cubes: Vector3[], offset: Vector3): Vector3[] {
+//     return cubes.map(cube => cube.clone().add(offset));
+// }
 
 export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     const [offset, setOffset] = useState(new Vector3(0, 0, 0));
@@ -43,6 +43,14 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
         throw new Error('YourComponent must be used within a PieceProvider');
     }
     const { cubes } = context;
+
+    useEffect(() => {
+        console.log("cubes changed:");
+        cubes.forEach((cube, index) => {
+            console.log(`Cube ${index}:`, roundVector3(cube));
+        });
+    }, [cubes]);
+
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
