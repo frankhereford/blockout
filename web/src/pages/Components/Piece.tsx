@@ -84,25 +84,25 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
         };
     }, []);
 
-    useEffect(() => {
-        const fallTimer = setInterval(() => {
-            setOffset(prevOffset => {
-                const proposedOffset = new Vector3(prevOffset.x, prevOffset.y - 1, prevOffset.z);
-                const downOneOffset = new Vector3(0, -2, 0);
-                const cubesDownOne = applyOffsetToCubes(cubes, downOneOffset);
-                const underFloor = areAnyCubesBelowZero(cubesDownOne);
-                if (!underFloor) {
-                    return proposedOffset;
-                }
+    // useEffect(() => {
+    //     const fallTimer = setInterval(() => {
+    //         setOffset(prevOffset => {
+    //             const proposedOffset = new Vector3(prevOffset.x, prevOffset.y - 1, prevOffset.z);
+    //             const downOneOffset = new Vector3(0, -2, 0);
+    //             const cubesDownOne = applyOffsetToCubes(cubes, downOneOffset);
+    //             const underFloor = areAnyCubesBelowZero(cubesDownOne);
+    //             if (!underFloor) {
+    //                 return proposedOffset;
+    //             }
 
-                return new Vector3(prevOffset.x, 6, prevOffset.z);
-            });
-        }, fallInterval * 1000); // Convert seconds to milliseconds
+    //             return new Vector3(prevOffset.x, 6, prevOffset.z);
+    //         });
+    //     }, fallInterval * 1000); // Convert seconds to milliseconds
 
-        return () => {
-            clearInterval(fallTimer);
-        };
-    }, [fallInterval, rotation, offset]);
+    //     return () => {
+    //         clearInterval(fallTimer);
+    //     };
+    // }, [fallInterval, rotation, offset]);
 
     let PieceType: FunctionComponent<{ offset: Vector3, rotation: Vector3 }>;
 
