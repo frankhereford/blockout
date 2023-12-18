@@ -30,25 +30,19 @@ function areAnyCubesBelowZero(cubes: Vector3[]): boolean {
     });
 }
 
-export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
-    const [offset, setOffset] = useState(new Vector3(2, 0, 2));
-    const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
+function applyOffsetToCubes(cubes: Vector3[], offset: Vector3): Vector3[] {
+    return cubes.map(cube => cube.clone().add(offset));
+}
 
+export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
+    const [offset, setOffset] = useState(new Vector3(0, 0, 0));
+    const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
     const context = useContext(PieceContext);
     if (!context) {
         throw new Error('YourComponent must be used within a PieceProvider');
     }
     const { cubes } = context;
-
-    useEffect(() => {
-        cubes.forEach((cube, index) => {
-            console.log(`Cube ${index}:`, cube);
-        });
-
-        const underZeros = areAnyCubesBelowZero(cubes);
-        console.log('underZeros:', underZeros);
-    }, [cubes]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -90,21 +84,38 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
         };
     }, []);
 
+    // useEffect(() => {
+    //     cubes.forEach((cube, index) => {
+    //         console.log(`Cube ${index}:`, cube);
+    //     });
+
+    //     const underZeros = areAnyCubesBelowZero(cubes);
+    //     console.log('underZeros:', underZeros);
+    // }, [cubes]);
+
+
     useEffect(() => {
         const fallTimer = setInterval(() => {
             setOffset(prevOffset => {
-                let newY = prevOffset.y - 1;
-                if (newY < 0) {
-                    newY = 5; // Reset y to 5 if it goes below 0
+                const proposedOffset = new Vector3(prevOffset.x, prevOffset.y - 1, prevOffset.z);
+                const downOneOffset = new Vector3(0, -2, 0);
+                const cubesDownOne = applyOffsetToCubes(cubes, downOneOffset);
+                console.log('cubesDownOne:');
+                console.log(cubesDownOne);
+                const underFloor = areAnyCubesBelowZero(cubesDownOne);
+                console.log('underFloor:', underFloor);
+                if (!underFloor) {
+                    return proposedOffset;
                 }
-                return new Vector3(prevOffset.x, newY, prevOffset.z);
+
+                return new Vector3(prevOffset.x, 6, prevOffset.z);
             });
         }, fallInterval * 1000); // Convert seconds to milliseconds
 
         return () => {
             clearInterval(fallTimer);
         };
-    }, [fallInterval]);
+    }, [fallInterval, rotation, offset]);
 
     let PieceType: FunctionComponent<{ offset: Vector3, rotation: Vector3 }>;
 
