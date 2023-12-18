@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from "@react-three/drei";
+//import { ArcballControls } from "@react-three/drei";
+import { Vector3, Euler } from 'three';
 
 interface CameraProps {
     width: number;
@@ -91,6 +93,12 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
                         console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`);
                         calculateOrbitRadius();
                         console.log(`Camera orbit radius: ${cameraOrbitRadius}`);
+
+                        console.log('Camera rotation:');
+                        console.log(camera.rotation);
+                        //camera.rotateX(Math.PI / 2);  
+                        //camera.rotatePolarTo(0);
+                        //camera.setRotationFromEuler(new Euler(0, Math.PI / 2, 0));
 
                         // Calculate the correct angle
                         const dx = camera.position.x - width / 2;
