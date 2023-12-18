@@ -7,9 +7,10 @@ interface ElPieceProps {
     offset: Vector3;
     rotation?: Vector3;
     origin?: Vector3;
+    color?: string;
 }
 
-export const ElPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(1, 0, 0) }: ElPieceProps) => {
+export const ElPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(1, 0, 0), color = 'yellow' }: ElPieceProps) => {
     
     const context = useContext(PieceContext);
 
@@ -33,7 +34,7 @@ export const ElPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new 
     return (
         <>
             {cubes.map((location, index) => (
-                <Cube key={index} location={location.add(offset)} />
+                <Cube key={index} location={location.add(offset)} color={color} />
             ))}
         </>
     );

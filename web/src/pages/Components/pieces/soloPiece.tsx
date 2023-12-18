@@ -7,9 +7,10 @@ interface SoloPieceProps {
     offset: Vector3;
     rotation?: Vector3;
     origin?: Vector3;
+    color?: string;
 }
 
-export const SoloPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(0,0,0) }: SoloPieceProps) => {
+export const SoloPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(0,0,0), color = 'green' }: SoloPieceProps) => {
 
     const context = useContext(PieceContext);
 
@@ -26,5 +27,5 @@ export const SoloPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = ne
         setCubes(cubes);
     }, [offset, rotation]);
 
-    return <Cube location={cube.add(offset)} />;
+    return <Cube location={cube.add(offset)} color={color} />;
 };

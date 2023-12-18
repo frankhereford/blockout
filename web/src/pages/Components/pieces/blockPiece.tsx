@@ -8,9 +8,10 @@ interface BlockPieceProps {
     offset: Vector3;
     rotation?: Vector3;
     origin?: Vector3;
+    color?: string;
 }
 
-export const BlockPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(0.5, 0.5, 0.5) }: BlockPieceProps) => {
+export const BlockPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(0.5, 0.5, 0.5), color = 'red' }: BlockPieceProps) => {
     const context = useContext(PieceContext);
 
     if (!context) {
@@ -38,7 +39,7 @@ export const BlockPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = n
     return (
         <>
             {cubes.map((location, index) => (
-                <Cube key={index} location={location.add(offset)} />
+                <Cube key={index} location={location.add(offset)} color={color} />
             ))}
         </>
     );
