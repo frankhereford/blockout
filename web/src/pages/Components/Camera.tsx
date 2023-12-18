@@ -94,8 +94,8 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
                         calculateOrbitRadius();
                         console.log(`Camera orbit radius: ${cameraOrbitRadius}`);
 
-                        console.log('Camera rotation:');
-                        console.log(camera.rotation);
+                        //console.log('Camera rotation:');
+                        //console.log(camera.rotation);
                         //camera.rotateX(Math.PI / 2);  
                         //camera.rotatePolarTo(0);
                         //camera.setRotationFromEuler(new Euler(0, Math.PI / 2, 0));
