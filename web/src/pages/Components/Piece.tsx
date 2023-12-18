@@ -11,7 +11,23 @@ import type { FunctionComponent } from 'react';
 
 interface PieceProps {
     pieceType: 'el' | 'tee' | 'block' | 'solo';
-    fallInterval: number; // New prop for the fall interval
+    fallInterval: number;
+}
+
+
+function roundVector3(vector: Vector3): Vector3 {
+    return new Vector3(
+        Math.round(vector.x),
+        Math.round(vector.y),
+        Math.round(vector.z)
+    );
+}
+
+function areAnyCubesBelowZero(cubes: Vector3[]): boolean {
+    return cubes.some(cube => {
+        const roundedCube = roundVector3(cube);
+        return roundedCube.y < 0;
+    });
 }
 
 export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
@@ -26,7 +42,12 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     const { cubes } = context;
 
     useEffect(() => {
-        console.log(cubes);
+        cubes.forEach((cube, index) => {
+            console.log(`Cube ${index}:`, cube);
+        });
+
+        const underZeros = areAnyCubesBelowZero(cubes);
+        console.log('underZeros:', underZeros);
     }, [cubes]);
 
     useEffect(() => {
