@@ -25,9 +25,8 @@ export const ElPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new 
         new Vector3(2, 0, 0),
     ].map(cube => cube.clone().sub(origin).applyEuler(new Euler(rotation.x, rotation.y, rotation.z)).add(origin));
 
-    // Update the context with the cubes' positions after translation and rotation
     useEffect(() => {
-        setCubes(cubes.map(cube => cube.add(offset)));
+        setCubes(cubes);
     }, [offset, rotation]);
 
 

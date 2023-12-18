@@ -32,7 +32,7 @@ export const BlockPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = n
     ].map(cube => cube.clone().sub(origin).applyEuler(new Euler(rotation.x, rotation.y, rotation.z)).add(origin));
 
     useEffect(() => {
-        setCubes(cubes.map(cube => cube.add(offset)));
+        setCubes(cubes);
     }, [offset, rotation]);
 
     return (

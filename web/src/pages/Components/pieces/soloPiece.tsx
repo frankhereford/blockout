@@ -23,7 +23,7 @@ export const SoloPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = ne
     const cubes = [cube];
 
     useEffect(() => {
-        setCubes(cubes.map(cube => cube.add(offset)));
+        setCubes(cubes);
     }, [offset, rotation]);
 
     return <Cube location={cube.add(offset)} />;
