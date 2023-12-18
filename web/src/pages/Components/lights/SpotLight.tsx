@@ -6,9 +6,10 @@ interface SpotLightProps {
     width: number;
     height: number;
     depth: number;
+    position: [number, number, number];
 }
 
-export function SpotLight({ width, height, depth }: SpotLightProps) {
+export function SpotLight({ width, height, depth, position }: SpotLightProps) {
     const spotLightRef = useRef<ThreeSpotLight>(null);
 
     useFrame(() => {
@@ -19,6 +20,6 @@ export function SpotLight({ width, height, depth }: SpotLightProps) {
     });
 
     return (
-        <spotLight ref={spotLightRef} position={[width / 2, height + 3, depth / 2]} angle={1} penumbra={.5} intensity={300} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+        <spotLight ref={spotLightRef} position={position} angle={1} penumbra={.5} intensity={300} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
     );
 }
