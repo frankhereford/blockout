@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { PieceContext } from '../contexts/PieceContext';
+import { GameContext } from '../contexts/GameContext';
 
 import { Vector3 } from 'three';
 import { ElPiece } from './pieces/elPiece';
@@ -38,7 +38,7 @@ export const Piece = ({ pieceType, fallInterval=1 }: PieceProps) => {
     const [offset, setOffset] = useState(new Vector3(0, 0, 0));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
-    const context = useContext(PieceContext);
+    const context = useContext(GameContext);
     if (!context) {
         throw new Error('YourComponent must be used within a PieceProvider');
     }

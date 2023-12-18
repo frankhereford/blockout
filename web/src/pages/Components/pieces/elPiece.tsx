@@ -1,7 +1,7 @@
 import { Vector3, Euler } from 'three';
 import { Cube } from '../Cube';
 import { useContext, useEffect } from 'react';
-import { PieceContext } from '../../contexts/PieceContext';
+import { GameContext } from '../../contexts/GameContext';
 
 interface ElPieceProps {
     offset: Vector3;
@@ -12,7 +12,7 @@ interface ElPieceProps {
 
 export const ElPiece = ({ offset, rotation = new Vector3(0, 0, 0), origin = new Vector3(1, 0, 0), color = 'yellow' }: ElPieceProps) => {
     
-    const context = useContext(PieceContext);
+    const context = useContext(GameContext);
 
     if (!context) {
         throw new Error('TeePiece must be used within a PieceProvider');
