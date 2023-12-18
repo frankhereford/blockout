@@ -20,7 +20,7 @@ export const Scene = ({width, height, depth}: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece pieceType={'block'} fallInterval={1} />
+            <Piece pieceType={'tee'} fallInterval={100} />
         </>
     );
 };
