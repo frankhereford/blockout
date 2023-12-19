@@ -9,7 +9,6 @@ interface SpringProps {
     location: SpringValue<number[]>;
 }
 
-
 interface PieceProps {
     piece?: PieceType;
     location?: Vector3;
