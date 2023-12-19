@@ -1,64 +1,72 @@
+import { Vector3 } from 'three';
 import { Cube } from './Cube';
 
 type PieceType = 'el' | 'tee' | 'block' | 'solo';
+type Color = 'red' | 'blue' | 'green' | 'yellow' | 'orange' | 'purple';
 
 interface PieceProps {
     piece: PieceType;
 }
 
-interface Coordinate {
-    x: number;
-    y: number;
-    z: number;
-}
-
 interface Piece {
-    coordinates: Coordinate[];
-    origin: Coordinate;
+    coordinates: Vector3[];
+    origin: Vector3;
+    color: Color;
 }
 
 const pieces: Record<PieceType, Piece> = {
     'el': {
         coordinates: [
-            { x: 0, y: 0, z: 0 },
-            { x: 1, y: 0, z: 0 },
-            { x: 2, y: 0, z: 0 },
-            { x: 1, y: 1, z: 0 }
+            new Vector3(0, 0, 0),
+            new Vector3(1, 0, 0),
+            new Vector3(2, 0, 0),
         ],
-        origin: { x: 1, y: 0, z: 0 }
+        origin: new Vector3(1, 0, 0),
+        color: 'red',
     },
     'tee': {
         coordinates: [
-            { x: 0, y: 0, z: 0 },
-            { x: 1, y: 0, z: 0 },
-            { x: 2, y: 0, z: 0 },
-            { x: 1, y: 1, z: 0 }
+            new Vector3(0, 0, 0),
+            new Vector3(1, 0, 0),
+            new Vector3(2, 0, 0),
+            new Vector3(1, 1, 0),
         ],
-        origin: { x: 1, y: 0, z: 0 }
+        origin: new Vector3(1, 0, 0),
+        color: 'blue',
     },
     'block': {
         coordinates: [
-            { x: 0, y: 0, z: 0 },
-            { x: 1, y: 0, z: 0 },
-            { x: 2, y: 0, z: 0 },
-            { x: 1, y: 1, z: 0 }
+            new Vector3(0, 0, 0),
+            new Vector3(1, 0, 0),
+            new Vector3(0, 0, 1),
+            new Vector3(1, 0, 1),
+            new Vector3(0, 1, 0),
+            new Vector3(1, 1, 0),
+            new Vector3(0, 1, 1),
+            new Vector3(1, 1, 1),
         ],
-        origin: { x: 1, y: 0, z: 0 }
+        origin: new Vector3(1, 0, 0),
+        color: 'green',
     },
     'solo': {
         coordinates: [
-            { x: 0, y: 0, z: 0 },
-            { x: 1, y: 0, z: 0 },
-            { x: 2, y: 0, z: 0 },
-            { x: 1, y: 1, z: 0 }
+            new Vector3(0, 0, 0),
         ],
-        origin: { x: 1, y: 0, z: 0 }
+        origin: new Vector3(1, 0, 0),
+        color: 'yellow',
     }
 };
 
-export const Piece = ({ }: PieceProps) => {
+export const Piece = ({ piece = 'tee' }: PieceProps) => {
+
+    const createCubes = (pieceName: PieceType) => {
+        const { coordinates, color } = pieces[pieceName];
+        return coordinates.map((coordinate, index) => <Cube key={index} location={coordinate} color={color} />);
+    };
+
     return (
         <>
+            {createCubes(piece)} 
         </>
     );
 };
