@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -15,7 +16,7 @@ interface CubeProps {
 }
 
 export const Cube = ({ location, scale = 0.93, color = "red" }: CubeProps) => {
-    const offsetLocation = location.to((x, y, z) => new Vector3(x + 0.5, y + 0.5, z + 0.5));
+    const offsetLocation = location.to((x: number, y: number, z: number) => new Vector3(x + 0.5, y + 0.5, z + 0.5));
 
     return (
         <animated.mesh position={offsetLocation} scale={[scale, scale, scale]} castShadow receiveShadow>
