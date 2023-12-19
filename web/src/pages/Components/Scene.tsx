@@ -26,15 +26,13 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const cubesStore = usePieceStore((state) => state.cubesStore); 
     const locationStore = usePieceStore((state) => state.locationStore);
 
-
-    const updateLocation = (newLocation: Vector3) => {
+    const updatePosition = (newLocation: Vector3) => {
         setPieceStoreName(pieceName);
         setLocationStore(newLocation);
         setRotationStore(rotation);
     };
 
     useEffect(() => {
-        console.log(cubesStore);
         const allCubesInWell = cubesStore.every(cube =>
             cube.x >= 0 && cube.x < width &&
             cube.y >= 0 && cube.y < height &&
@@ -71,7 +69,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 default:
                     return;
             }
-            updateLocation(newLocation);
+            updatePosition(newLocation);
         };
 
         window.addEventListener('keydown', handleKeyPress);
