@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Canvas } from '@react-three/fiber'
-import { Game } from "./components/Game";
+import { Scene } from "./components/Scene";
 //import { GridHelper } from 'three';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="scene">
           <Canvas shadows>
             {/* <primitive object={new GridHelper(10, 10)} /> */}
-            <Game width={5} height={7} depth={5} />
+            <Scene width={5} height={7} depth={5} />
           </Canvas>
         </div>
       </main>

@@ -13,7 +13,7 @@ interface SceneProps {
     depth: number;
 }
 
-export const Game = ({ width, height, depth }: SceneProps) => {
+export const Scene = ({ width, height, depth }: SceneProps) => {
     const [location, setLocation] = useState(new Vector3(0, 0, 0));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
 
