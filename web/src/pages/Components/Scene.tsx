@@ -1,13 +1,13 @@
 import { useState, useEffect, use } from 'react';
-import Well from "./Well";
+import Well from "./well/Well";
 import { Camera } from './Camera';
-import { Lighting } from "./Lighting";
-import { AxesLabels } from "./AxesLabels";
+import { Lighting } from "./lights/Lighting";
+import { AxesLabels } from "./well/AxesLabels";
 import { GroundPlane } from "./GroundPlane";
 import { Piece } from './Piece';
 import { Vector3 } from "three";
 import { usePieceStore } from "../stores/Piece"; //
-import type { PieceType } from './pieces';
+import type { PieceType } from './data/pieces';
 
 interface SceneProps {
     width: number;
@@ -111,7 +111,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece piece={pieceName} location={location} rotation={rotation} />
+            {/* <Piece piece={pieceName} location={location} rotation={rotation} /> */}
         </>
     );
 };

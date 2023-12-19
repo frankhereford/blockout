@@ -1,5 +1,5 @@
 import React from 'react';
-import GridPlane from './well/GridPlane';
+import GridPlane from './GridPlane';
 
 interface WellProps {
     width: number;

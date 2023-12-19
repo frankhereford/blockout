@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { Cube } from './Cube';
-import { pieces } from './pieces';
-import type { PieceType } from './pieces';
+import { Cube } from './primatives/Cube';
+import { pieces } from './data/pieces';
+import type { PieceType } from './data/pieces';
 import { Vector3, Euler } from 'three';
 import { useSpring} from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
