@@ -83,24 +83,13 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
             <OrbitControls
                 onStart={() => {
                     setIsManualOrbiting(true);
-                    console.log('Orbiting engaged');
+
                     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
                 }}
                 onEnd={() => {
                     debounceTimeout.current = setTimeout(() => {
                         setIsManualOrbiting(false);
-                        console.log('Orbiting disengaged');
-                        console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`);
                         calculateOrbitRadius();
-                        console.log(`Camera orbit radius: ${cameraOrbitRadius}`);
-
-                        //console.log('Camera rotation:');
-                        //console.log(camera.rotation);
-                        //camera.rotateX(Math.PI / 2);  
-                        //camera.rotatePolarTo(0);
-                        //camera.setRotationFromEuler(new Euler(0, Math.PI / 2, 0));
-
-                        // Calculate the correct angle
                         const dx = camera.position.x - width / 2;
                         const dz = camera.position.z - depth / 2;
                         const radian = Math.atan2(dz, dx);
