@@ -16,6 +16,8 @@ interface SceneProps {
     depth: number;
 }
 
+type CubeStore = Vector3[];
+
 const roundVector3 = (vector: Vector3): Vector3 => {
     return new Vector3(
         Math.round(vector.x),
@@ -133,6 +135,10 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                     newPile = makeRandomCubeInvisible(pile);
                     setPile(newPile);
                     return;
+                case 'KeyC':
+                    newPile = addCubesToThePile(pile, cubesStore);
+                    setPile(newPile);
+                    return;
                 default:
                     return;
             }
@@ -145,7 +151,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [location, rotation, pile]);
+    }, [location, rotation, pile, cubesStore]);
 
     type Cube = { location: Vector3, id: string, visible: boolean };
     type Pile = Cube[][][];
@@ -174,7 +180,19 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return newPile;
     }
 
+    function addCubesToThePile(pile: Pile, cubeStore: CubeStore): Pile {
+        // Copy the pile
+        const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
 
+        // Iterate over each cube in the cubeStore
+        for (const cube of cubeStore) {
+            // Find the corresponding cube in the new pile and set its visible property to true
+            newPile[cube.x][cube.y][cube.z].visible = true;
+        }
+
+        // Return the new pile
+        return newPile;
+    }
 
     return (
         <>
