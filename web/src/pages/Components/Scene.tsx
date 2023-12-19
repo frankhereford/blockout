@@ -8,6 +8,7 @@ import { Piece } from './Piece';
 import { Vector3 } from "three";
 import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
+import { Pile } from './Pile';
 
 interface SceneProps {
     width: number;
@@ -103,6 +104,12 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         };
     }, [location, rotation]);
 
+    const pile = [
+        new Vector3(1, 0, 0),
+        new Vector3(2, 1, 1),
+        new Vector3(3, 0, 0),
+    ];
+
 
     return (
         <>
@@ -111,6 +118,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
+            <Pile cubes={pile} />
             {/* <Piece piece={pieceName} location={location} rotation={rotation} /> */}
         </>
     );
