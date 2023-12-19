@@ -1,7 +1,7 @@
 // pieces.ts
 import { Vector3 } from 'three';
 
-type PieceType = 'el' | 'tee' | 'block' | 'solo';
+export type PieceType = 'el' | 'tee' | 'block' | 'solo';
 type Color = 'red' | 'blue' | 'green' | 'yellow' | 'orange' | 'purple';
 
 interface Piece {
