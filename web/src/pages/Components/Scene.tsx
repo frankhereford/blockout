@@ -36,6 +36,18 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const locationStore = usePieceStore((state) => state.locationStore);
     const rotationStore = usePieceStore((state) => state.rotationStore);
 
+    const initialPile: { location: Vector3, id: string, visible: boolean }[][][] = new Array(width).fill(null).map((_, x) =>
+        new Array(height).fill(null).map((_, y) =>
+            new Array(depth).fill(null).map((_, z) => ({
+                location: new Vector3(x, y, z),
+                id: `${x}-${y}-${z}`,
+                visible: false,
+            }))
+        )
+    );
+    const [pile, setPile] = useState(initialPile);
+
+
     const updatePosition = (newLocation: Vector3, newRotation: Vector3) => {
         setPieceStoreName(pieceName);
         setLocationStore(newLocation);
@@ -46,6 +58,28 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         console.log("new Cubes: ", cubesStore)
 
         const roundedCubes = cubesStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
+
+        // Flatten the 3D array into a 1D array
+        const flattenedPile = ([] as Cube[]).concat(...pile.map(row => ([] as Cube[]).concat(...row)));
+
+        // Filter the flattened array to only include cubes that are visible
+        const visibleCubes = flattenedPile.filter(cube => cube.visible);
+
+        // Check if any cube in cubesStore intersects with any visible cube in the pile
+        const intersects = roundedCubes.some(cube1 =>
+            visibleCubes.some(cube2 =>
+                cube1.x === cube2.location.x &&
+                cube1.y === cube2.location.y &&
+                cube1.z === cube2.location.z
+            )
+        );
+
+        // If there's an intersection, return early
+        if (intersects) {
+            return;
+        }
+
+
 
         const allCubesInWell = roundedCubes.every(cube =>
             cube.x >= 0 && cube.x < width &&
@@ -62,6 +96,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         const handleKeyPress = (event: KeyboardEvent) => {
             let newLocation: Vector3 = location;
             let newRotation: Vector3 = rotation;
+            let newPile: Pile = pile;
             switch (event.code) {
                 case 'ArrowUp':
                     newLocation = new Vector3(location.x, location.y, location.z - 1);
@@ -90,6 +125,14 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 case 'KeyE':
                     newRotation = new Vector3(rotation.x, rotation.y, rotation.z + 1);
                     break;
+                case 'KeyZ':
+                    newPile = makeRandomCubeVisible(pile);
+                    setPile(newPile);
+                    return;
+                case 'KeyX':
+                    newPile = makeRandomCubeInvisible(pile);
+                    setPile(newPile);
+                    return;
                 default:
                     return;
             }
@@ -102,18 +145,35 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [location, rotation]);
+    }, [location, rotation, pile]);
 
-    const initialPile: { location: Vector3, id: string, visible: boolean }[][][] = new Array(width).fill(null).map((_, x) =>
-        new Array(height).fill(null).map((_, y) =>
-            new Array(depth).fill(null).map((_, z) => ({
-                location: new Vector3(x, y, z),
-                id: `${x}-${y}-${z}`,
-                visible: false,
-            }))
-        )
-    );
-    const [pile, setPile] = useState(initialPile);
+    type Cube = { location: Vector3, id: string, visible: boolean };
+    type Pile = Cube[][][];
+
+    function makeRandomCubeVisible(pile: Pile): Pile {
+        const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
+        const flattenedCubes = newPile.flat(3);
+        const invisibleCubes = flattenedCubes.filter(cube => !cube.visible);
+        if (invisibleCubes.length === 0) {
+            return pile;
+        }
+        const randomCube = invisibleCubes[Math.floor(Math.random() * invisibleCubes.length)];
+        randomCube!.visible = true;
+        return newPile;
+    }
+
+    function makeRandomCubeInvisible(pile: Pile): Pile {
+        const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
+        const flattenedCubes = newPile.flat(3);
+        const visibleCubes = flattenedCubes.filter(cube => cube.visible);
+        if (visibleCubes.length === 0) {
+            return pile;
+        }
+        const randomCube = visibleCubes[Math.floor(Math.random() * visibleCubes.length)];
+        randomCube!.visible = false;
+        return newPile;
+    }
+
 
 
     return (
@@ -124,7 +184,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
             <Pile cubes={pile} />
-            {/* <Piece piece={pieceName} location={location} rotation={rotation} /> */}
+            <Piece piece={pieceName} location={location} rotation={rotation} />
         </>
     );
 };

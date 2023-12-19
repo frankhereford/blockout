@@ -17,7 +17,7 @@ interface PileProps {
     cubes: CubeProps[][][];
 }
 
-const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']; // Add more colors if needed
+const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].reverse();
 
 export const Pile = ({ cubes }: PileProps) => {
     // Flatten the 3D array into a 1D array
