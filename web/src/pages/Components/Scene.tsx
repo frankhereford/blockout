@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Well from "./well/Well";
 import { Camera } from './Camera';
 import { Lighting } from "./lights/Lighting";
