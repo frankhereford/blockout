@@ -21,6 +21,22 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
     const { coordinates, color, origin } = pieces[piece];
     const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
 
+    const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vector3(0, 0, 0), rotation: Vector3 = new Vector3(0, 0, 0)) => {
+        const { coordinates, origin } = pieces[piece];
+        const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
+        const locations: Vector3[] = [];
+
+        coordinates.forEach(coordinate => {
+            const offsetCoordinate = coordinate.clone().sub(origin);
+            offsetCoordinate.applyEuler(eulerRotation);
+            offsetCoordinate.add(origin);
+            offsetCoordinate.add(location);
+            locations.push(offsetCoordinate);
+        });
+
+        return locations;
+    };
+
     const createCubes = (coordinate: Vector3, index: number) => {
         const offsetCoordinate = coordinate.clone().sub(origin);
         offsetCoordinate.applyEuler(eulerRotation);
