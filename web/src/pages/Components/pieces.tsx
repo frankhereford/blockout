@@ -40,7 +40,7 @@ export const pieces: Record<PieceType, Piece> = {
             new Vector3(0, 1, 1),
             new Vector3(1, 1, 1),
         ],
-        origin: new Vector3(1, 0, 0),
+        origin: new Vector3(.5, .5, .5), // playing with fire, but this is 3-way symmetrical 
         color: 'green',
     },
     'solo': {
