@@ -30,9 +30,9 @@ export const Pile = ({ cubes }: PileProps) => {
     return (
         <>
             {springs.map((spring: SpringProps, index: number) => {
-                const color = colors[cubes[index]?.location.y % colors.length]; // Cycle through colors
-                console.log("key:", cubes[index].id)
-                return <Cube key={cubes[index].id} location={spring.location} color={color} />;
+                const color = colors[cubes[index]!.location.y % colors.length]; // Cycle through colors
+                console.log("key:", cubes[index]!.id)
+                return <Cube key={cubes[index]!.id} location={spring.location} color={color} />;
             })}
         </>
     );
