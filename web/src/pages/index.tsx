@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Canvas } from '@react-three/fiber'
 import { Scene } from "./components/Scene";
-import { GridHelper } from 'three';
+//import { GridHelper } from 'three';
 
 export default function Home() {
   return (

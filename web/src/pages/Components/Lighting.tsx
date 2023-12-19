@@ -1,27 +1,5 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import type { SpotLight as ThreeSpotLight } from 'three'; // Import SpotLight from three package with a different name
 
-interface SpotLightProps {
-    width: number;
-    height: number;
-    depth: number;
-}
-
-function SpotLight({width, height, depth}: SpotLightProps) {
-    const spotLightRef = useRef<ThreeSpotLight>(null); // Assign SpotLight type to spotLightRef
-
-    useFrame(() => {
-        if (spotLightRef.current) {
-            spotLightRef.current.target.position.set(width / 2, 0, depth / 2); // Replace x, y, z with the coordinates you want to target
-            spotLightRef.current.target.updateMatrixWorld(); // Necessary to apply the changes
-        }
-    });
-
-    return (
-        <spotLight ref={spotLightRef} position={[width / 2, height + 3, depth / 2]} angle={1} penumbra={.5} intensity={300} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
-    );
-}
+import { SpotLight } from './lights/SpotLight'
 
 interface LightingProps {
     width: number;
@@ -30,10 +8,15 @@ interface LightingProps {
 }
 
 export function Lighting({width, height, depth}: LightingProps) {
+    const lightLift = 5;
     return (
         <>
             <ambientLight intensity={.4} />
-            <SpotLight width={width} height={height} depth={depth} />
+            <SpotLight intensity={100} width={width} height={height} depth={depth} position={[width / 2, height + lightLift, depth / 2]} />
+            <SpotLight intensity={100} width={width} height={height} depth={depth} position={[width, height + lightLift, depth]} />
+            <SpotLight intensity={100} width={width} height={height} depth={depth} position={[0, height + lightLift, 0]} />
+            <SpotLight intensity={100} width={width} height={height} depth={depth} position={[width, height + lightLift, 0]} />
+            <SpotLight intensity={100} width={width} height={height} depth={depth} position={[0, height + lightLift, depth]} />
         </>
     );
 }

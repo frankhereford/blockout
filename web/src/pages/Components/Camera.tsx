@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from "@react-three/drei";
+//import { ArcballControls } from "@react-three/drei";
+import { Vector3, Euler } from 'three';
 
 interface CameraProps {
     width: number;
@@ -81,18 +83,13 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
             <OrbitControls
                 onStart={() => {
                     setIsManualOrbiting(true);
-                    console.log('Orbiting engaged');
+
                     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
                 }}
                 onEnd={() => {
                     debounceTimeout.current = setTimeout(() => {
                         setIsManualOrbiting(false);
-                        console.log('Orbiting disengaged');
-                        console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`);
                         calculateOrbitRadius();
-                        console.log(`Camera orbit radius: ${cameraOrbitRadius}`);
-
-                        // Calculate the correct angle
                         const dx = camera.position.x - width / 2;
                         const dz = camera.position.z - depth / 2;
                         const radian = Math.atan2(dz, dx);

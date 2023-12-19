@@ -1,11 +1,10 @@
 import Well from "./Well";
-import { Cube } from './Cube';
 import { Camera } from './Camera';
 import { Lighting } from "./Lighting";
 import { AxesLabels } from "./AxesLabels";
 import { GroundPlane } from "./GroundPlane";
-//import { Vector3 } from 'three';
 import { Piece } from './Piece';
+import { Vector3 } from "three";
 
 
 interface SceneProps {
@@ -22,7 +21,7 @@ export const Scene = ({width, height, depth}: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece pieceType={'tee'}/>
+            <Piece piece="tee" location={new Vector3(1, 4, 2)} rotation={new Vector3(1, 0, 0)} />
         </>
     );
 };
