@@ -26,7 +26,7 @@ const roundVector3 = (vector: Vector3): Vector3 => {
 export const Scene = ({ width, height, depth }: SceneProps) => {
     const [location, setLocation] = useState(new Vector3(0, 0, 0));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
-    const [pieceName, setPieceName] = useState<PieceType>('block');
+    const [pieceName, setPieceName] = useState<PieceType>('tee');
 
     const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName); // get setPieceStoreName from store
     const setLocationStore = usePieceStore((state) => state.setLocationStore); // get setLocationStore from store

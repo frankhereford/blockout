@@ -7,7 +7,6 @@ import { useSpring} from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
 import { usePieceStore } from '../stores/Piece';
 
-
 interface SpringProps {
     location: SpringValue<number[]>;
 }
@@ -47,9 +46,7 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
         piece = pieceStoreName as PieceType;
         location = locationStore;
         rotation = rotationStore;
-        //console.log("interested in this update here: ", pieceStoreName, locationStore, rotationStore)
         const locations = generateLocations(piece, location, rotation);
-        //console.log("locations: ", locations)
         setCubesStore(locations);
     }, [pieceStoreName, locationStore, rotationStore]);
 
