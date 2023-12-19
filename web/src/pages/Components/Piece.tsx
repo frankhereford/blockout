@@ -18,8 +18,6 @@ interface PieceProps {
     rotation?: Vector3;
 }
 
-
-
 const rotation_unit = Math.PI / 2;
 
 const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vector3(0, 0, 0), rotation: Vector3 = new Vector3(0, 0, 0)) => {

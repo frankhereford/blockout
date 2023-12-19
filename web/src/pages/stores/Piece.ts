@@ -14,7 +14,7 @@ type PieceState = {
 };
 
 export const usePieceStore = create<PieceState>((set) => ({
-    pieceStoreName: '', // initial state
+    pieceStoreName: 'tee', // initial state
     locationStore: new Vector3(), // initial state
     rotationStore: new Vector3(), // initial state
     cubesStore: [], // initial state
