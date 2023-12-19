@@ -38,7 +38,6 @@ export const Pile = ({ cubes }: PileProps) => {
                 if (!cube) { return null; }
                 if (!cube.visible) { return null; }
                 const color = colors[cube.location.y % colors.length]; // Cycle through colors
-                console.log("key:", cube.id)
                 return <Cube key={cube.id} location={spring.location} color={color} />;
             })}
         </>
