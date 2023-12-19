@@ -1,5 +1,5 @@
-import { Cube } from './primatives/Cube';
-import { Vector3, Euler } from 'three';
+import { Cube } from './primitives/Cube';
+import type { Vector3 } from 'three';
 import { useSpring } from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
 
@@ -11,14 +11,15 @@ interface PileProps {
     cubes: Vector3[];
 }
 
+const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']; // Add more colors if needed
+
 const createCubes = (location: Vector3, index: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const spring: SpringProps = useSpring({
         location: [location.x, location.y, location.z],
         config: { mass: 1, tension: 170, friction: 26 },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    return <Cube key={index} location={spring.location} />;
+    const color = colors[location.y % colors.length]; // Cycle through colors
+    return <Cube key={index} location={spring.location} color={color} />;
 };
 
 export const Pile = ({ cubes }: PileProps) => {

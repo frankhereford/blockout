@@ -29,9 +29,9 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
     const [pieceName, setPieceName] = useState<PieceType>('tee');
 
-    const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName); // get setPieceStoreName from store
-    const setLocationStore = usePieceStore((state) => state.setLocationStore); // get setLocationStore from store
-    const setRotationStore = usePieceStore((state) => state.setRotationStore); // get setRotationStore from store
+    const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName);
+    const setLocationStore = usePieceStore((state) => state.setLocationStore);
+    const setRotationStore = usePieceStore((state) => state.setRotationStore);
     const cubesStore = usePieceStore((state) => state.cubesStore); 
     const locationStore = usePieceStore((state) => state.locationStore);
     const rotationStore = usePieceStore((state) => state.rotationStore);
@@ -105,9 +105,14 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     }, [location, rotation]);
 
     const pile = [
-        new Vector3(1, 0, 0),
-        new Vector3(2, 1, 1),
-        new Vector3(3, 0, 0),
+        new Vector3(0, 0, 0),
+        new Vector3(0, 1, 0),
+        new Vector3(0, 2, 0),
+        new Vector3(0, 3, 0),
+        new Vector3(0, 4, 0),
+        new Vector3(1, 4, 1),
+        new Vector3(0, 5, 0),
+        new Vector3(0, 6, 0),
     ];
 
 

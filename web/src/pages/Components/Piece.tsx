@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Cube } from './primatives/Cube';
+import { Cube } from './primitives/Cube';
 import { pieces } from './data/pieces';
 import type { PieceType } from './data/pieces';
 import { Vector3, Euler } from 'three';
