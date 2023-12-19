@@ -104,16 +104,16 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         };
     }, [location, rotation]);
 
-    const pile = [
-        { location: new Vector3(0, 0, 0), id: 'a' },
-        { location: new Vector3(0, 1, 0), id: 'b' },
-        { location: new Vector3(0, 2, 0), id: 'c' },
-        { location: new Vector3(0, 3, 0), id: 'd' },
-        { location: new Vector3(0, 4, 0), id: 'e' },
-        { location: new Vector3(1, 4, 1), id: 'f' },
-        { location: new Vector3(0, 5, 0), id: 'g' },
-        { location: new Vector3(0, 6, 0), id: 'h' },
-    ];
+    const initialPile: { location: Vector3, id: string, visible: boolean }[][][] = new Array(width).fill(null).map((_, x) =>
+        new Array(height).fill(null).map((_, y) =>
+            new Array(depth).fill(null).map((_, z) => ({
+                location: new Vector3(x, y, z),
+                id: `${x}-${y}-${z}`,
+                visible: false,
+            }))
+        )
+    );
+    const [pile, setPile] = useState(initialPile);
 
 
     return (

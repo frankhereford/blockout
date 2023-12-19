@@ -10,18 +10,22 @@ interface SpringProps {
 interface CubeProps {
     location: Vector3;
     id: string;
+    visible: boolean;
 }
 
 interface PileProps {
-    cubes: CubeProps[];
+    cubes: CubeProps[][][];
 }
 
 const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']; // Add more colors if needed
 
 export const Pile = ({ cubes }: PileProps) => {
+    // Flatten the 3D array into a 1D array
+    const flattenedCubes = cubes.flat(3);
+
     const springs = useSprings(
-        cubes.length,
-        cubes.map((cube: CubeProps) => ({
+        flattenedCubes.length,
+        flattenedCubes.map((cube: CubeProps) => ({
             location: [cube.location.x, cube.location.y, cube.location.z],
             config: { mass: 1, tension: 170, friction: 26 },
         }))
@@ -30,9 +34,12 @@ export const Pile = ({ cubes }: PileProps) => {
     return (
         <>
             {springs.map((spring: SpringProps, index: number) => {
-                const color = colors[cubes[index]!.location.y % colors.length]; // Cycle through colors
-                console.log("key:", cubes[index]!.id)
-                return <Cube key={cubes[index]!.id} location={spring.location} color={color} />;
+                const cube = flattenedCubes[index];
+                if (!cube) { return null; }
+                if (!cube.visible) { return null; }
+                const color = colors[cube.location.y % colors.length]; // Cycle through colors
+                console.log("key:", cube.id)
+                return <Cube key={cube.id} location={spring.location} color={color} />;
             })}
         </>
     );
