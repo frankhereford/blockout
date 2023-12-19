@@ -12,12 +12,14 @@ interface PieceProps {
 export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation = new Vector3(0, 0, 0) }: PieceProps) => {
 
     const createCubes = (pieceName: PieceType) => {
-        const { coordinates, color } = pieces[pieceName];
+        const { coordinates, color, origin } = pieces[pieceName];
         const rotation_unit = Math.PI / 2;
         const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
         return coordinates.map((coordinate, index) => {
-            const offsetCoordinate = coordinate.clone().add(location);
+            const offsetCoordinate = coordinate.clone().sub(origin);
             offsetCoordinate.applyEuler(eulerRotation);
+            offsetCoordinate.add(origin);
+            offsetCoordinate.add(location);
             return <Cube key={index} location={offsetCoordinate} color={color} />;
         });
     };

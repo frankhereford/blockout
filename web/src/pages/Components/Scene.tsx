@@ -21,7 +21,7 @@ export const Scene = ({width, height, depth}: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece piece="tee" location={new Vector3(0, 0, 0)}  rotation={new Vector3(0,0,0)} />
+            <Piece piece="tee" location={new Vector3(1, 2, 2)} rotation={new Vector3(0, 0, 0)} />
         </>
     );
 };
