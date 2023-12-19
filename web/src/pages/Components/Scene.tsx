@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Well from "./Well";
 import { Camera } from './Camera';
 import { Lighting } from "./Lighting";
@@ -6,6 +6,8 @@ import { AxesLabels } from "./AxesLabels";
 import { GroundPlane } from "./GroundPlane";
 import { Piece } from './Piece';
 import { Vector3 } from "three";
+import { usePieceStore } from "../stores/Piece"; //
+import type { PieceType } from './pieces';
 
 interface SceneProps {
     width: number;
@@ -16,14 +18,33 @@ interface SceneProps {
 export const Scene = ({ width, height, depth }: SceneProps) => {
     const [location, setLocation] = useState(new Vector3(0, 0, 0));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
+    const [pieceName, setPieceName] = useState<PieceType>('tee');
+
+    const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName); // get setPieceStoreName from store
+    const setLocationStore = usePieceStore((state) => state.setLocationStore); // get setLocationStore from store
+    const setRotationStore = usePieceStore((state) => state.setRotationStore); // get setRotationStore from store
+    const cubesStore = usePieceStore((state) => state.cubesStore); 
+    const locationStore = usePieceStore((state) => state.locationStore);
+
 
     const updateLocation = (newLocation: Vector3) => {
-        if (newLocation.x >= 0 && newLocation.x < width &&
-            newLocation.y >= 0 && newLocation.y < height &&
-            newLocation.z >= 0 && newLocation.z < depth) {
-            setLocation(newLocation);
-        }
+        setPieceStoreName(pieceName);
+        setLocationStore(newLocation);
+        setRotationStore(rotation);
     };
+
+    useEffect(() => {
+        console.log(cubesStore);
+        const allCubesInWell = cubesStore.every(cube =>
+            cube.x >= 0 && cube.x < width &&
+            cube.y >= 0 && cube.y < height &&
+            cube.z >= 0 && cube.z < depth
+        );
+        if (allCubesInWell) {
+            setLocation(locationStore);
+        }
+    }, [cubesStore]);
+
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -69,7 +90,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             <AxesLabels width={width} height={height} depth={depth} />
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
-            <Piece piece="tee" location={location} rotation={rotation} />
+            <Piece piece={pieceName} location={location} rotation={rotation} />
         </>
     );
 };
