@@ -1,31 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-//import { Cube } from './Cube';
+import { Cube } from './Cube';
 import { pieces } from './pieces';
 import type { PieceType } from './pieces';
 import { Vector3, Euler } from 'three';
-import { useSpring, animated } from '@react-spring/three'
+import { useSpring} from '@react-spring/three'
+import type { SpringValue } from '@react-spring/three'
 
-
-interface CubeProps {
-    location: AnimatedValue<Vector3>;
-    scale?: number;
-    color?: string;
+interface SpringProps {
+    location: SpringValue<number[]>;
 }
-
-export const Cube = ({ location, scale = 0.93, color = "red" }: CubeProps) => {
-    const offsetLocation = location.to((x: number, y: number, z: number) => new Vector3(x + 0.5, y + 0.5, z + 0.5));
-
-    return (
-        <animated.mesh position={offsetLocation} scale={[scale, scale, scale]} castShadow receiveShadow>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshPhysicalMaterial attach="material" color={color} clearcoat={1} clearcoatRoughness={1} roughness={0} metalness={.5} />
-        </animated.mesh>
-    );
-};
-
 
 
 interface PieceProps {
@@ -34,19 +16,23 @@ interface PieceProps {
     rotation?: Vector3;
 }
 
+const rotation_unit = Math.PI / 2;
+
 export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation = new Vector3(0, 0, 0) }: PieceProps) => {
     const { coordinates, color, origin } = pieces[piece];
-    const rotation_unit = Math.PI / 2;
     const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
 
     const createCubes = (coordinate: Vector3, index: number) => {
         const offsetCoordinate = coordinate.clone().sub(origin);
         offsetCoordinate.applyEuler(eulerRotation);
         offsetCoordinate.add(origin);
-        const spring = useSpring({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+        const spring: SpringProps = useSpring({
             location: [offsetCoordinate.x + location.x, offsetCoordinate.y + location.y, offsetCoordinate.z + location.z],
-            config: { mass: 1, tension: 170, friction: 26 }, // You can adjust these values for different animation effects
+            config: { mass: 1, tension: 170, friction: 26 },
         });
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         return <Cube key={index} location={spring.location} color={color} />;
     };
 
