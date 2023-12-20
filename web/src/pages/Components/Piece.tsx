@@ -3,7 +3,7 @@ import { Cube } from './primitives/Cube';
 import { pieces } from './data/pieces';
 import type { PieceType } from './data/pieces';
 import { Vector3, Euler } from 'three';
-import { useSpring} from '@react-spring/three'
+import { useSprings } from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
 import { usePieceStore } from '../stores/Piece';
 
@@ -53,21 +53,26 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
 
     const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
 
-    const createCubes = (coordinate: Vector3, index: number) => {
+    const coordinatesWithEulerApplied = coordinates.map(coordinate => {
         const offsetCoordinate = coordinate.clone().sub(origin);
         offsetCoordinate.applyEuler(eulerRotation);
         offsetCoordinate.add(origin);
-        const spring: SpringProps = useSpring({
-            location: [offsetCoordinate.x + location.x, offsetCoordinate.y + location.y, offsetCoordinate.z + location.z],
-            config: { mass: 1, tension: 170, friction: 26 },
-        });
+        return offsetCoordinate;
+    });
 
-        return <Cube key={index} location={spring.location} color={color} />;
-    };
+    const springs = useSprings(
+        coordinatesWithEulerApplied.length,
+        coordinatesWithEulerApplied.map((coordinate: Vector3) => ({
+            location: [coordinate.x + location.x, coordinate.y + location.y, coordinate.z + location.z],
+            config: { mass: 1, tension: 170, friction: 26 },
+        }))
+    );
 
     return (
         <>
-            {coordinates.map(createCubes)}
+            {springs.map((spring: SpringProps, index: number) => {
+                return <Cube key={index} location={spring.location} color={color} />;
+            })}
         </>
     );
 };
