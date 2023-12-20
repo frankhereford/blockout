@@ -253,9 +253,9 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         let newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
         console.log("planesToEmpty: ", planesToEmpty)
         for (const plane of planesToEmpty) {
-            pile = emptyPlaneAndShiftAbove(pile, plane);
+            newPile = emptyPlaneAndShiftAbove(newPile, plane);
         }
-    return pile;
+        return newPile;
     }
 
     function addPieceToPile(pile: Pile, position: Vector3[]): Pile {
