@@ -37,10 +37,10 @@ const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vec
 
 export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation = new Vector3(0, 0, 0) }: PieceProps) => {
     const { coordinates, color, origin } = pieces[piece];
-    const pieceStoreName = usePieceStore((state) => state.pieceStoreName); // get pieceStoreName from store
-    const locationStore = usePieceStore((state) => state.locationStore); // get locationStore from store
-    const rotationStore = usePieceStore((state) => state.rotationStore); // get rotationStore from store
-    const setCubesStore = usePieceStore((state) => state.setCubesStore); // get setCubesStore from store
+    const pieceStoreName = usePieceStore((state) => state.pieceStoreName);
+    const locationStore = usePieceStore((state) => state.locationStore);
+    const rotationStore = usePieceStore((state) => state.rotationStore);
+    const setCubesStore = usePieceStore((state) => state.setCubesStore);
 
     useEffect(() => {
         piece = pieceStoreName as PieceType;
@@ -57,13 +57,11 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
         const offsetCoordinate = coordinate.clone().sub(origin);
         offsetCoordinate.applyEuler(eulerRotation);
         offsetCoordinate.add(origin);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
         const spring: SpringProps = useSpring({
             location: [offsetCoordinate.x + location.x, offsetCoordinate.y + location.y, offsetCoordinate.z + location.z],
             config: { mass: 1, tension: 170, friction: 26 },
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         return <Cube key={index} location={spring.location} color={color} />;
     };
 
