@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { useState, useEffect } from 'react';
 import Well from "./well/Well";
 import { Camera } from './Camera';
@@ -184,6 +185,27 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return newPile;
     }
 
+
+    function checkFullPlanes(pile: Pile): void {
+        const planesToEmpty: number[] = [];
+        for (let y = 0; y < pile[0].length; y++) {
+            let isPlaneFull = true;
+            for (let x = 0; x < pile.length; x++) {
+                for (let z = 0; z < pile[x]![y]!.length; z++) {
+                    if (!pile[x]![y]![z]!.visible) {
+                        isPlaneFull = false;
+                        break;
+                    }
+                }
+                if (!isPlaneFull) break;
+            }
+            if (isPlaneFull) {
+                planesToEmpty.push(y);
+            }
+        }
+    console.log("planesToEmpty: ", planesToEmpty)
+    }
+
     function addPieceToPile(pile: Pile, position: Vector3[]): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
         const roundedCubes = position.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
@@ -192,6 +214,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             console.log('cube', cube);
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
+        checkFullPlanes(newPile);
         createPiece();
         return newPile;
     }
