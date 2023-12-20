@@ -144,6 +144,34 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 case 'KeyF':
                     console.log("position: ", position)
                     return;
+                case 'Digit1':
+                    newPile = emptyPlaneAndShiftAbove(pile, 0);
+                    setPile(newPile);
+                    return;
+                case 'Digit2':
+                    newPile = emptyPlaneAndShiftAbove(pile, 1);
+                    setPile(newPile);
+                    return;
+                case 'Digit3':
+                    newPile = emptyPlaneAndShiftAbove(pile, 2);
+                    setPile(newPile);
+                    return;
+                case 'Digit4':
+                    newPile = emptyPlaneAndShiftAbove(pile, 3);
+                    setPile(newPile);
+                    return;
+                case 'Digit5':
+                    newPile = emptyPlaneAndShiftAbove(pile, 4);
+                    setPile(newPile);
+                    return;
+                case 'Digit6':
+                    newPile = emptyPlaneAndShiftAbove(pile, 5);
+                    setPile(newPile);
+                    return;
+                case 'Digit7':
+                    newPile = emptyPlaneAndShiftAbove(pile, 6);
+                    setPile(newPile);
+                    return;
                 default:
                     return;
             }
@@ -185,10 +213,30 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return newPile;
     }
 
+    function emptyPlaneAndShiftAbove(pile: Pile, plane: number): Pile {
+        const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
+        for (let x = 0; x < newPile.length; x++) {
+            for (let z = 0; z < newPile[x][plane].length; z++) {
+                newPile[x][plane][z].visible = false;
+            }
+        }
+        for (let y = plane + 1; y < newPile[0].length; y++) {
+            for (let x = 0; x < newPile.length; x++) {
+                for (let z = 0; z < newPile[x][y].length; z++) {
+                    //newPile[x][y - 1][z] = newPile[x][y][z];
+                    if (newPile[x][y][z].visible) {
+                        newPile[x][y - 1][z].visible = true;
+                        newPile[x][y][z].visible = false;
+                    }
+                }
+            }
+        }
+        return newPile;
+    }
 
-    function checkFullPlanes(pile: Pile): void {
+    function checkFullPlanes(pile: Pile): Pile {
         const planesToEmpty: number[] = [];
-        for (let y = 0; y < pile[0].length; y++) {
+        for (let y = 0; y < pile[0]!.length; y++) {
             let isPlaneFull = true;
             for (let x = 0; x < pile.length; x++) {
                 for (let z = 0; z < pile[x]![y]!.length; z++) {
@@ -203,18 +251,23 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 planesToEmpty.push(y);
             }
         }
-    console.log("planesToEmpty: ", planesToEmpty)
+        let newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
+        console.log("planesToEmpty: ", planesToEmpty)
+        for (const plane of planesToEmpty) {
+            pile = emptyPlaneAndShiftAbove(pile, plane);
+        }
+    return pile;
     }
 
     function addPieceToPile(pile: Pile, position: Vector3[]): Pile {
-        const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
+        let newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
         const roundedCubes = position.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
         console.log('newPile', newPile)
         for (const cube of roundedCubes) {
             console.log('cube', cube);
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
-        checkFullPlanes(newPile);
+        newPile = checkFullPlanes(newPile);
         createPiece();
         return newPile;
     }
