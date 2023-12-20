@@ -183,7 +183,8 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
 
     function addPieceToPile(pile: Pile, cubeStore: CubeStore): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
-        for (const cube of cubeStore) {
+        const roundedCubes = cubeStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
+        for (const cube of roundedCubes) {
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
         return newPile;
