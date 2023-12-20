@@ -10,6 +10,7 @@ import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
 import { Pile } from './Pile';
 import { pieces } from './data/pieces';
+import { create } from 'domain';
 
 interface SceneProps {
     width: number;
@@ -34,11 +35,12 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const [location, setLocation] = useState(startingPosition);
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
     const [pieceName, setPieceName] = useState<PieceType>('tee');
+    const [position, setPosition] = useState<Vector3[]>([]);
 
     const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName);
     const setLocationStore = usePieceStore((state) => state.setLocationStore);
     const setRotationStore = usePieceStore((state) => state.setRotationStore);
-    const cubesStore = usePieceStore((state) => state.cubesStore); 
+    const cubesStore = usePieceStore((state) => state.cubesStore);  // remember, this is the location of the next requested move, granted or not
     const locationStore = usePieceStore((state) => state.locationStore);
     const rotationStore = usePieceStore((state) => state.rotationStore);
 
@@ -65,7 +67,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     };
 
     useEffect(() => {
-        console.log("new Cubes: ", cubesStore)
+        //console.log("new Cubes: ", cubesStore)
 
         const roundedCubes = cubesStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
 
@@ -87,6 +89,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         );
         if (allCubesInWell) {
             console.log("updatePosition: ", locationStore, rotationStore)
+            setPosition(cubesStore);
             setLocation(locationStore);
             setRotation(rotationStore);
         }
@@ -134,11 +137,14 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                     setPile(newPile);
                     return;
                 case 'KeyC':
-                    newPile = addPieceToPile(pile, cubesStore);
+                    newPile = addPieceToPile(pile, position);
                     setPile(newPile);
                     return;
                 case 'KeyV':
                     createPiece();
+                    return;
+                case 'KeyF':
+                    console.log("position: ", position)
                     return;
                 default:
                     return;
@@ -181,12 +187,15 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return newPile;
     }
 
-    function addPieceToPile(pile: Pile, cubeStore: CubeStore): Pile {
+    function addPieceToPile(pile: Pile, position: Vector3[]): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
-        const roundedCubes = cubeStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
+        const roundedCubes = position.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
+        console.log('newPile', newPile)
         for (const cube of roundedCubes) {
+            console.log('cube', cube);
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
+        createPiece();
         return newPile;
     }
 
