@@ -216,17 +216,16 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     function emptyPlaneAndShiftAbove(pile: Pile, plane: number): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
         for (let x = 0; x < newPile.length; x++) {
-            for (let z = 0; z < newPile[x][plane].length; z++) {
-                newPile[x][plane][z].visible = false;
+            for (let z = 0; z < newPile[x]![plane]!.length; z++) {
+                newPile[x]![plane]![z]!.visible = false;
             }
         }
-        for (let y = plane + 1; y < newPile[0].length; y++) {
+        for (let y = plane + 1; y < newPile[0]!.length; y++) {
             for (let x = 0; x < newPile.length; x++) {
-                for (let z = 0; z < newPile[x][y].length; z++) {
-                    //newPile[x][y - 1][z] = newPile[x][y][z];
-                    if (newPile[x][y][z].visible) {
-                        newPile[x][y - 1][z].visible = true;
-                        newPile[x][y][z].visible = false;
+                for (let z = 0; z < newPile[x]![y]!.length; z++) {
+                    if (newPile[x]![y]![z]!.visible) {
+                        newPile[x]![y - 1]![z]!.visible = true;
+                        newPile[x]![y]![z]!.visible = false;
                     }
                 }
             }
