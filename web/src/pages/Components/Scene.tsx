@@ -10,15 +10,12 @@ import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
 import { Pile } from './Pile';
 import { pieces } from './data/pieces';
-import { create } from 'domain';
 
 interface SceneProps {
     width: number;
     height: number;
     depth: number;
 }
-
-type CubeStore = Vector3[];
 
 const roundVector3 = (vector: Vector3): Vector3 => {
     return new Vector3(
