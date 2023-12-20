@@ -13,8 +13,7 @@ interface CameraProps {
 export const Camera = ({ width, height, depth }: CameraProps) => {
     const { camera } = useThree();
     const [isManualOrbiting, setIsManualOrbiting] = useState(false);
-    const [autoRotate, setAutoRotate] = useState(true); // New state variable
-    const [cameraHeight, setCameraHeight] = useState(height);
+    const [autoRotate, setAutoRotate] = useState(false); // New state variable
     const [cameraOrbitRadius, setCameraOrbitRadius] = useState(1);
     const [angle, setAngle] = useState(0);
     const targetOrbitSpeed = 0.1; // Adjust this value to change the speed of orbiting
@@ -30,8 +29,9 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
     };
 
     useEffect(() => {
-        camera.position.y = 1.8 * height; // Set initial height of the camera
-        setCameraHeight(camera.position.y);
+        camera.position.y = height + 5; // Set initial height of the camera
+        camera.position.x = width / 2; // Set initial x position of the camera
+        camera.position.z = depth * .6; // Set initial z position of the camera
 
         // New event listener for 'p' key
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,7 +46,7 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [camera, height]);
+    }, [camera, height, width, depth]);
 
     useFrame(() => {
         camera.lookAt(width / 2, 0, depth / 2);
