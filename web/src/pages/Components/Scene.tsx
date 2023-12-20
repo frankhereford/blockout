@@ -27,8 +27,11 @@ const roundVector3 = (vector: Vector3): Vector3 => {
     );
 };
 
+
 export const Scene = ({ width, height, depth }: SceneProps) => {
-    const [location, setLocation] = useState(new Vector3((width / 2) - 1, height - 2, (width / 2) - 1));
+    const startingPosition = new Vector3((width / 2) - .5, height - 2, (width / 2) - .5);
+
+    const [location, setLocation] = useState(startingPosition);
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
     const [pieceName, setPieceName] = useState<PieceType>('tee');
 
@@ -189,8 +192,8 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     function createPiece() {
         const keys = Object.keys(pieces) as PieceType[];
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        setPieceName(randomKey);
-        setLocation(new Vector3(width / 2, height, width / 2));
+        setPieceName(randomKey!);
+        setLocation(startingPosition);
         setRotation(new Vector3(0, 0, 0));
         console.log("createPiece: ", pieceName, location, rotation)
     }
