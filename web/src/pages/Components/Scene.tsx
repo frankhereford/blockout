@@ -9,6 +9,7 @@ import { Vector3 } from "three";
 import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
 import { Pile } from './Pile';
+import { pieces } from './data/pieces';
 
 interface SceneProps {
     width: number;
@@ -27,7 +28,7 @@ const roundVector3 = (vector: Vector3): Vector3 => {
 };
 
 export const Scene = ({ width, height, depth }: SceneProps) => {
-    const [location, setLocation] = useState(new Vector3(0, 0, 0));
+    const [location, setLocation] = useState(new Vector3((width / 2) - 1, height - 2, (width / 2) - 1));
     const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
     const [pieceName, setPieceName] = useState<PieceType>('tee');
 
@@ -37,6 +38,10 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const cubesStore = usePieceStore((state) => state.cubesStore); 
     const locationStore = usePieceStore((state) => state.locationStore);
     const rotationStore = usePieceStore((state) => state.rotationStore);
+
+    useEffect(() => {
+        setLocationStore(location);
+    }, []);
 
     const initialPile: { location: Vector3, id: string, visible: boolean }[][][] = new Array(width).fill(null).map((_, x) =>
         new Array(height).fill(null).map((_, y) =>
@@ -61,13 +66,8 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
 
         const roundedCubes = cubesStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
 
-        // Flatten the 3D array into a 1D array
         const flattenedPile = ([] as Cube[]).concat(...pile.map(row => ([] as Cube[]).concat(...row)));
-
-        // Filter the flattened array to only include cubes that are visible
         const visibleCubes = flattenedPile.filter(cube => cube.visible);
-
-        // Check if any cube in cubesStore intersects with any visible cube in the pile
         const intersects = roundedCubes.some(cube1 =>
             visibleCubes.some(cube2 =>
                 cube1.x === cube2.location.x &&
@@ -75,13 +75,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 cube1.z === cube2.location.z
             )
         );
-
-        // If there's an intersection, return early
-        if (intersects) {
-            return;
-        }
-
-
+        if (intersects) { return; }
 
         const allCubesInWell = roundedCubes.every(cube =>
             cube.x >= 0 && cube.x < width &&
@@ -89,6 +83,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             cube.z >= 0 && cube.z < depth
         );
         if (allCubesInWell) {
+            console.log("updatePosition: ", locationStore, rotationStore)
             setLocation(locationStore);
             setRotation(rotationStore);
         }
@@ -136,8 +131,11 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                     setPile(newPile);
                     return;
                 case 'KeyC':
-                    newPile = addCubesToThePile(pile, cubesStore);
+                    newPile = addPieceToPile(pile, cubesStore);
                     setPile(newPile);
+                    return;
+                case 'KeyV':
+                    createPiece();
                     return;
                 default:
                     return;
@@ -180,18 +178,21 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         return newPile;
     }
 
-    function addCubesToThePile(pile: Pile, cubeStore: CubeStore): Pile {
-        // Copy the pile
+    function addPieceToPile(pile: Pile, cubeStore: CubeStore): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
-
-        // Iterate over each cube in the cubeStore
         for (const cube of cubeStore) {
-            // Find the corresponding cube in the new pile and set its visible property to true
-            newPile[cube.x][cube.y][cube.z].visible = true;
+            newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
-
-        // Return the new pile
         return newPile;
+    }
+
+    function createPiece() {
+        const keys = Object.keys(pieces) as PieceType[];
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        setPieceName(randomKey);
+        setLocation(new Vector3(width / 2, height, width / 2));
+        setRotation(new Vector3(0, 0, 0));
+        console.log("createPiece: ", pieceName, location, rotation)
     }
 
     return (
