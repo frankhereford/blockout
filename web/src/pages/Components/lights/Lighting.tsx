@@ -1,5 +1,5 @@
 
-import { SpotLight } from './lights/SpotLight'
+import { SpotLight } from './SpotLight'
 
 interface LightingProps {
     width: number;
