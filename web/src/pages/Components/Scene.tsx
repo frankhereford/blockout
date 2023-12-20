@@ -65,8 +65,6 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     };
 
     useEffect(() => {
-        //console.log("new Cubes: ", cubesStore)
-
         const roundedCubes = cubesStore.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
 
         const flattenedPile = ([] as Cube[]).concat(...pile.map(row => ([] as Cube[]).concat(...row)));
@@ -180,7 +178,6 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
 
         window.addEventListener('keydown', handleKeyPress);
 
-        // Cleanup function to remove the event listener when the component unmounts
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
