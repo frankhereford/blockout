@@ -251,7 +251,6 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             }
         }
         let newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
-        console.log("planesToEmpty: ", planesToEmpty)
         for (const plane of planesToEmpty) {
             newPile = emptyPlaneAndShiftAbove(newPile, plane);
         }
