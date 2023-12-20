@@ -80,11 +80,11 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
 
         const allCubesInWell = roundedCubes.every(cube =>
             cube.x >= 0 && cube.x < width &&
-            cube.y >= 0 && cube.y < height &&
+            cube.y >= 0 && //cube.y < height && // let the cube rotate out of the well's top
             cube.z >= 0 && cube.z < depth
         );
         if (allCubesInWell) {
-            console.log("updatePosition: ", locationStore, rotationStore)
+            //console.log("updatePosition: ", locationStore, rotationStore)
             setPosition(cubesStore);
             setLocation(locationStore);
             setRotation(rotationStore);
@@ -257,7 +257,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     function addPieceToPile(pile: Pile, position: Vector3[]): Pile {
         let newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
         const roundedCubes = position.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
-        console.log('newPile', newPile)
+        //console.log('newPile', newPile)
         for (const cube of roundedCubes) {
             console.log('cube', cube);
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
