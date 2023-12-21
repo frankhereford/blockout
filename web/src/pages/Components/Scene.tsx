@@ -13,6 +13,8 @@ import { Pile } from './Pile';
 import { pieces } from './data/pieces';
 import { useInterval } from 'react-use';
 
+type Cube = { location: Vector3, id: string, visible: boolean };
+type Pile = Cube[][][];
 interface SceneProps {
     width: number;
     height: number;
@@ -27,7 +29,25 @@ const roundVector3 = (vector: Vector3): Vector3 => {
     );
 };
 
-
+function getLandingY(pile: Pile, cubes: Vector3[]): number {
+    let landingY = Math.max(...cubes.map(cube => cube.y));
+    for (let y = landingY; y >= 0; y--) {
+        const adjustedCubes = cubes.map(cube => new Vector3(cube.x, y, cube.z));
+        const flattenedPile = ([] as Cube[]).concat(...pile.map(row => ([] as Cube[]).concat(...row)));
+        const visibleCubes = flattenedPile.filter(cube => cube.visible);
+        const intersects = adjustedCubes.some(cube1 =>
+            visibleCubes.some(cube2 =>
+                cube1.x === cube2.location.x &&
+                cube1.y === cube2.location.y &&
+                cube1.z === cube2.location.z
+            )
+        );
+        if (intersects) {
+            return y + 1;
+        }
+    }
+    return 0;
+}
 export const Scene = ({ width, height, depth }: SceneProps) => {
     const startingPosition = new Vector3((width / 2) - .5, height - 2, (width / 2) - .5);
 
@@ -35,6 +55,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const [rotation, setRotation] = useState(new Quaternion());
     const [pieceName, setPieceName] = useState<PieceType>('tee');
     const [position, setPosition] = useState<Vector3[]>([]);
+    const [isFalling, setIsFalling] = useState<boolean>(true);
 
     const setPieceStoreName = usePieceStore((state) => state.setPieceStoreName);
     const setLocationStore = usePieceStore((state) => state.setLocationStore);
@@ -98,7 +119,6 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             cube.z >= 0 && cube.z < depth
         );
         if (allCubesInWell) {
-            //console.log("updatePosition: ", locationStore, rotationStore)
             setPosition(cubesStore);
             setLocation(locationStore);
             setRotation(rotationStore);
@@ -141,6 +161,13 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 case 'KeyE':
                     const globalRotationE = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
                     newRotation.premultiply(globalRotationE);
+                    break;
+                case 'KeyA':
+                    const landingY = getLandingY(pile, position);
+                    newLocation = new Vector3(location.x, landingY, location.z);
+                    break;
+                case 'KeyO':
+                    setIsFalling(prev => !prev);
                     break;
                 case 'KeyZ':
                     newPile = makeRandomCubeVisible(pile);
@@ -203,13 +230,13 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
 
     // Inside your component
     useInterval(() => {
+        if (!isFalling) return;
         const newRotation: Quaternion = rotation.clone();
         const newLocation = new Vector3(location.x, location.y - 1, location.z);
         updatePosition(newLocation, newRotation);
     }, dropInterval);
 
-    type Cube = { location: Vector3, id: string, visible: boolean };
-    type Pile = Cube[][][];
+
 
     function makeRandomCubeVisible(pile: Pile): Pile {
         const newPile: Pile = JSON.parse(JSON.stringify(pile)) as Pile;
@@ -284,7 +311,6 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         const roundedCubes = position.map(cube => roundVector3(new Vector3(cube.x, cube.y, cube.z)));
         //console.log('newPile', newPile)
         for (const cube of roundedCubes) {
-            console.log('cube', cube);
             newPile[cube.x]![cube.y]![cube.z]!.visible = true;
         }
         newPile = checkFullPlanes(newPile);
@@ -298,7 +324,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         setPieceName(randomKey!);
         setLocation(startingPosition);
         setRotation(new Quaternion());
-        console.log("createPiece: ", pieceName, location, rotation)
+        //console.log("createPiece: ", pieceName, location, rotation)
     }
 
     return (
