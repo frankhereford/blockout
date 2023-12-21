@@ -11,6 +11,7 @@ import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
 import { Pile } from './Pile';
 import { pieces } from './data/pieces';
+import { useInterval } from 'react-use';
 
 interface SceneProps {
     width: number;
@@ -41,6 +42,9 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const cubesStore = usePieceStore((state) => state.cubesStore);  // remember, this is the location of the next requested move, granted or not
     const locationStore = usePieceStore((state) => state.locationStore);
     const rotationStore = usePieceStore((state) => state.rotationStore);
+
+    const [dropInterval, setDropInterval] = useState(1000);
+
 
     useEffect(() => {
         setLocationStore(location);
@@ -185,6 +189,13 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [location, rotation, pile, cubesStore]);
+
+    // Inside your component
+    useInterval(() => {
+        const newRotation: Quaternion = rotation.clone();
+        const newLocation = new Vector3(location.x, location.y - 1, location.z);
+        updatePosition(newLocation, newRotation);
+    }, dropInterval);
 
     type Cube = { location: Vector3, id: string, visible: boolean };
     type Pile = Cube[][][];
