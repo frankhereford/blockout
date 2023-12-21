@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Cube } from './primitives/Cube';
 import { pieces } from './data/pieces';
 import type { PieceType } from './data/pieces';
-import { Vector3, Euler } from 'three';
+import { Vector3, Quaternion } from 'three';
 import { useSprings } from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
 import { usePieceStore } from '../stores/Piece';
@@ -14,19 +14,16 @@ interface SpringProps {
 interface PieceProps {
     piece?: PieceType;
     location?: Vector3;
-    rotation?: Vector3;
+    rotation?: Quaternion;
 }
 
-const rotation_unit = Math.PI / 2;
-
-const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vector3(0, 0, 0), rotation: Vector3 = new Vector3(0, 0, 0)) => {
+const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vector3(0, 0, 0), rotation: Quaternion = new Quaternion()) => {
     const { coordinates, origin } = pieces[piece];
-    const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
     const locations: Vector3[] = [];
 
     coordinates.forEach(coordinate => {
         const offsetCoordinate = coordinate.clone().sub(origin);
-        offsetCoordinate.applyEuler(eulerRotation);
+        offsetCoordinate.applyQuaternion(rotation);
         offsetCoordinate.add(origin);
         offsetCoordinate.add(location);
         locations.push(offsetCoordinate);
@@ -35,7 +32,7 @@ const generateLocations = (piece: PieceType = 'tee', location: Vector3 = new Vec
     return locations;
 };
 
-export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation = new Vector3(0, 0, 0) }: PieceProps) => {
+export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation = new Quaternion() }: PieceProps) => {
     const { coordinates, color, origin } = pieces[piece];
     const pieceStoreName = usePieceStore((state) => state.pieceStoreName);
     const locationStore = usePieceStore((state) => state.locationStore);
@@ -50,29 +47,26 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
         setCubesStore(locations);
     }, [pieceStoreName, locationStore, rotationStore]);
 
-
-    const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
-
-    const coordinatesWithEulerApplied = coordinates.map(coordinate => {
+    const coordinatesWithQuaternionApplied = useMemo(() => coordinates.map(coordinate => {
         const offsetCoordinate = coordinate.clone().sub(origin);
-        offsetCoordinate.applyEuler(eulerRotation);
+        offsetCoordinate.applyQuaternion(rotation);
         offsetCoordinate.add(origin);
         return offsetCoordinate;
-    });
+    }), [coordinates, origin, rotation]);
 
     const springs = useSprings(
-        coordinatesWithEulerApplied.length,
-        coordinatesWithEulerApplied.map((coordinate: Vector3) => ({
+        coordinatesWithQuaternionApplied.length,
+        coordinatesWithQuaternionApplied.map((coordinate: Vector3) => ({
             location: [coordinate.x + location.x, coordinate.y + location.y, coordinate.z + location.z],
             config: { mass: 1, tension: 170, friction: 26 },
         }))
     );
 
     return (
-        <>
-            {springs.map((spring: SpringProps, index: number) => {
-                return <Cube key={index} location={spring.location} color={color} />;
-            })}
-        </>
-    );
-};
+                <>
+                    {springs.map(({ location }: SpringProps, index: number) => (
+                        <Cube key={index} location={location} color={color} />
+                    ))}
+                </>
+            );
+        };

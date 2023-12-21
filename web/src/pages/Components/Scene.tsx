@@ -6,7 +6,7 @@ import { Lighting } from "./lights/Lighting";
 import { AxesLabels } from "./well/AxesLabels";
 import { GroundPlane } from "./GroundPlane";
 import { Piece } from './Piece';
-import { Vector3 } from "three";
+import { Vector3, Quaternion } from "three";
 import { usePieceStore } from "../stores/Piece"; //
 import type { PieceType } from './data/pieces';
 import { Pile } from './Pile';
@@ -31,7 +31,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const startingPosition = new Vector3((width / 2) - .5, height - 2, (width / 2) - .5);
 
     const [location, setLocation] = useState(startingPosition);
-    const [rotation, setRotation] = useState(new Vector3(0, 0, 0));
+    const [rotation, setRotation] = useState(new Quaternion());
     const [pieceName, setPieceName] = useState<PieceType>('tee');
     const [position, setPosition] = useState<Vector3[]>([]);
 
@@ -58,7 +58,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     const [pile, setPile] = useState(initialPile);
 
 
-    const updatePosition = (newLocation: Vector3, newRotation: Vector3) => {
+    const updatePosition = (newLocation: Vector3, newRotation: Quaternion) => {
         setPieceStoreName(pieceName);
         setLocationStore(newLocation);
         setRotationStore(newRotation);
@@ -94,7 +94,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             let newLocation: Vector3 = location;
-            let newRotation: Vector3 = rotation;
+            const newRotation: Quaternion = rotation.clone();
             let newPile: Pile = pile;
             switch (event.code) {
                 case 'ArrowUp':
@@ -116,13 +116,16 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                     newLocation = new Vector3(location.x, location.y - 1, location.z);
                     break;
                 case 'KeyQ':
-                    newRotation = new Vector3(rotation.x + 1, rotation.y, rotation.z);
+                    const globalRotationQ = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+                    newRotation.premultiply(globalRotationQ);
                     break;
                 case 'KeyW':
-                    newRotation = new Vector3(rotation.x, rotation.y + 1, rotation.z);
+                    const globalRotationW = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
+                    newRotation.premultiply(globalRotationW);
                     break;
                 case 'KeyE':
-                    newRotation = new Vector3(rotation.x, rotation.y, rotation.z + 1);
+                    const globalRotationE = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+                    newRotation.premultiply(globalRotationE);
                     break;
                 case 'KeyZ':
                     newPile = makeRandomCubeVisible(pile);
@@ -272,7 +275,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
         setPieceName(randomKey!);
         setLocation(startingPosition);
-        setRotation(new Vector3(0, 0, 0));
+        setRotation(new Quaternion());
         console.log("createPiece: ", pieceName, location, rotation)
     }
 
@@ -284,7 +287,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             <Lighting width={width} height={height} depth={depth} />
             <GroundPlane width={width} depth={depth} scaleFactor={20} />
             <Pile cubes={pile} />
-            <Piece piece={pieceName} location={location} rotation={rotation} />
+            <Piece piece={pieceName} location={location} rotation={rotation.clone()} />
         </>
     );
 };
