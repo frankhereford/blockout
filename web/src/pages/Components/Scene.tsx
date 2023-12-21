@@ -80,11 +80,21 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                 cube1.z === cube2.location.z
             )
         );
-        if (intersects) { return; }
+        if (intersects) {
+            const newPile = addPieceToPile(pile, position);
+            setPile(newPile);
+            return;
+        }
+        const allCubesAboveFloor = roundedCubes.every(cube => cube.y >= 0);
+
+        if (!allCubesAboveFloor) {
+            const newPile = addPieceToPile(pile, position);
+            setPile(newPile);
+        }
 
         const allCubesInWell = roundedCubes.every(cube =>
             cube.x >= 0 && cube.x < width &&
-            cube.y >= 0 && //cube.y < height && // let the cube rotate out of the well's top
+            cube.y >= 0 && 
             cube.z >= 0 && cube.z < depth
         );
         if (allCubesInWell) {
@@ -93,6 +103,7 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
             setLocation(locationStore);
             setRotation(rotationStore);
         }
+        
     }, [cubesStore]);
 
     useEffect(() => {
