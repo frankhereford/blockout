@@ -116,13 +116,16 @@ export const Scene = ({ width, height, depth }: SceneProps) => {
                     newLocation = new Vector3(location.x, location.y - 1, location.z);
                     break;
                 case 'KeyQ':
-                    newRotation.multiply(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2));
+                    const globalRotationQ = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+                    newRotation.premultiply(globalRotationQ);
                     break;
                 case 'KeyW':
-                    newRotation.multiply(new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2));
+                    const globalRotationW = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
+                    newRotation.premultiply(globalRotationW);
                     break;
                 case 'KeyE':
-                    newRotation.multiply(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2));
+                    const globalRotationE = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+                    newRotation.premultiply(globalRotationE);
                     break;
                 case 'KeyZ':
                     newPile = makeRandomCubeVisible(pile);
