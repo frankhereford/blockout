@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Cube } from './primitives/Cube';
 import { pieces } from './data/pieces';
 import type { PieceType } from './data/pieces';
@@ -53,12 +53,13 @@ export const Piece = ({ piece = 'tee', location = new Vector3(0, 0, 0), rotation
 
     const eulerRotation = new Euler(rotation.x * rotation_unit, rotation.y * rotation_unit, rotation.z * rotation_unit);
 
-    const coordinatesWithEulerApplied = coordinates.map(coordinate => {
+    const coordinatesWithEulerApplied = useMemo(() => coordinates.map(coordinate => {
         const offsetCoordinate = coordinate.clone().sub(origin);
         offsetCoordinate.applyEuler(eulerRotation);
         offsetCoordinate.add(origin);
         return offsetCoordinate;
-    });
+    }), [coordinates, origin, eulerRotation]);
+
 
     const springs = useSprings(
         coordinatesWithEulerApplied.length,
