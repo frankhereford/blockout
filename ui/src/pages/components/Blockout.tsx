@@ -1,4 +1,6 @@
 import { GroundPlane } from "~/pages/components/GroundPlane"
+import Well from "~/pages/components/well/Well";
+
 import { Lighting } from "~/pages/components/lighting/Lighting";
 import { Camera } from "~/pages/components/Camera";
 import { Vector2 } from 'three';
@@ -12,6 +14,7 @@ interface SceneProps {
 export const Blockout = ({ width, height, depth }: SceneProps) => {
     return (
         <>
+            <Well width={width} height={height} depth={depth} />
             <Camera width={width} height={height} depth={depth} />
             <GroundPlane
                 width={width}
