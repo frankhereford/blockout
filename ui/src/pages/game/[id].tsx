@@ -17,11 +17,6 @@ export default function Game() {
                         <Blockout width={7} height={10} depth={5} />
                     </Canvas>
                 </div>
-                {/* <Link href="/game">
-                    <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        New Game
-                    </button>
-                </Link> */}
             </main>
         </>
     );
