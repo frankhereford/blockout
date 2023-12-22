@@ -69,11 +69,11 @@ model Game {
     width     Int
     height    Int
     depth     Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
     userId    String
     user      User     @relation(fields: [userId], references: [id])
     pile      Pile?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     @@map("game")
 }
 
@@ -81,5 +81,21 @@ model Pile {
     id        String   @id @default(cuid())
     gameId    String   @unique
     game      Game     @relation(fields: [gameId], references: [id])
+    cubes     Cube[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     @@map("pile")
+}
+
+model Cube {
+    id        String   @id @default(cuid())
+    x         Int
+    y         Int
+    z         Int
+    pileId    String
+    pile      Pile     @relation(fields: [pileId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@unique([x, y, z, pileId])
+    @@map("cube")
 }
