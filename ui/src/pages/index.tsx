@@ -1,5 +1,5 @@
 import Head from "next/head";
-// import Link from "next/link";
+import Link from "next/link";
 import Login from "~/pages/components/Login";
 
 import { api } from "~/utils/api";
@@ -23,6 +23,11 @@ export default function Home() {
             </p> */}
             <Login />
           </div>
+          <Link href="/game">
+            <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                New Game
+            </button>
+          </Link>
         </div>
       </main>
     </>
