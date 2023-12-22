@@ -1,7 +1,7 @@
 
 import Head from "next/head";
-import Link from "next/link";
-import AuthShowcase from "~/pages/components/Login";
+// import Link from "next/link";
+import Login from "~/pages/components/Login";
 
 import { api } from "~/utils/api";
 
@@ -22,7 +22,7 @@ export default function Home() {
             {/* <p className="text-2xl text-white">
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             </p> */}
-            <AuthShowcase />
+            <Login />
           </div>
         </div>
       </main>
