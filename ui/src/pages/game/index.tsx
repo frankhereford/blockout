@@ -1,26 +1,25 @@
-import Head from "next/head";
 import { useEffect } from "react";
-// import Link from "next/link";
+import { useRouter } from 'next/router';
 
 import { api } from "~/utils/api";
 
-
 export default function Home() {
-
+    const router = useRouter();
     const createGame = api.game.create.useMutation({ });
 
     useEffect(() => {
-        const response = createGame.mutate({ })
-        console.log(response)
+        createGame.mutate({ })
     }, []);
+
+    useEffect(() => {
+        console.log("createGame.data: ", createGame.data);
+        if (createGame.data?.id) {
+            void router.push(`/game/${createGame.data.id}`);
+        }
+    }, [createGame.data]);
 
     return (
         <>
-            <Head>
-                <title>Blockout</title>
-                <meta name="description" content="Web Port of Blockout" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89e3fc] to-[#3a3e89]">
                 this is to create a game
             </main>
