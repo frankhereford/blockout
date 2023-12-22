@@ -45,6 +45,9 @@ export const gameRouter = createTRPCRouter({
                 where: {
                     id: input.id,
                 },
+                include: {
+                    pile: true, // Include the pile relation
+                },
             });
             return game;
         }),
