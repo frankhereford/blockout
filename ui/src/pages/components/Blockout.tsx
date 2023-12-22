@@ -20,7 +20,7 @@ export const Blockout = ({ width, height, depth }: SceneProps) => {
                 width={width}
                 depth={depth}
                 texture="/textures/metal_texture.png"
-                // bumpMap="/textures/stones_bump.jpg"
+                //bumpMap="/textures/stones_bump.jpg"
                 //displacementMap="/textures/stones_displacement.jpg"
                 textureRepeat={new Vector2(3, 3)}
             />

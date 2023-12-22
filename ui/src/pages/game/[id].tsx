@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import { Blockout } from "~/pages/components/Blockout";
 
 import { Canvas } from '@react-three/fiber'
+import { get } from 'http';
 
 export default function Game() {
     const [width, setWidth] = useState(1);
@@ -17,20 +18,20 @@ export default function Game() {
     const { id } = router.query;
     console.log("id: ", id)
     const getGame = api.game.get.useQuery({id: id as string});
-    const getPile = api.pile.get.useQuery({id: id as string});
+    const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
 
     useEffect(() => {
         if (getGame.data) {
             setWidth(getGame.data.width);
             setHeight(getGame.data.height);
             setDepth(getGame.data.depth);
-            console.log("getGame.data: ", getGame.data);
+            console.log("getGame.data.pile.id: ", getGame.data.pile?.id);
         }
     }, [getGame.data]);
 
     useEffect(() => {
-    console.log("getGame.data: ", getGame.data);
-    }, [getGame.data]);
+    console.log("getPile.data: ", getPile?.data);
+    }, [getPile?.data]);
     
 
     return (
