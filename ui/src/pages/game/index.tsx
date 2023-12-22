@@ -17,7 +17,6 @@ export default function Home() {
             </Head>
             <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89e3fc] to-[#3a3e89]">
                 this is to create a game
-
             </main>
         </>
     );
