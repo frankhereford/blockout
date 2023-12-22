@@ -23,7 +23,7 @@
         {
             "previewLimit": 50,
             "server": "localhost",
-            "port": 5432,
+            "port": 5532,
             "driver": "PostgreSQL",
             "name": "blockout-local",
             "group": "blockout",

@@ -1,7 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
-export default function AuthShowcase() {
+export default function Login() {
     const { data: sessionData } = useSession();
 
     // const { data: secretMessage } = api.post.getSecretMessage.useQuery(
