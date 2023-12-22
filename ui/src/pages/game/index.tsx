@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useEffect } from "react";
 // import Link from "next/link";
 
 import { api } from "~/utils/api";
@@ -6,7 +7,11 @@ import { api } from "~/utils/api";
 
 export default function Home() {
 
-    const game = api.game.create.useMutation({ });
+    const createGame = api.game.create.useMutation({ });
+
+    useEffect(() => {
+        createGame.mutate({ })
+    }, []);
 
     return (
         <>
