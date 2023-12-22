@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Login from "~/pages/components/Login";
 
-import { api } from "~/utils/api";
+//import { api } from "~/utils/api";
 
 
 export default function Home() {
