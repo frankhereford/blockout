@@ -16,6 +16,9 @@ export const pileRouter = createTRPCRouter({
                 where: {
                     id: input.id,
                 },
+                include: {
+                    cubes: true,
+                }
             });
             console.log("pile: ", pile);
             return pile;

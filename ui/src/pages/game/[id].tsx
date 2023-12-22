@@ -7,7 +7,7 @@ import { api } from "~/utils/api";
 export default function Game() {
     const router = useRouter();
     const { id } = router.query;
-    const getGame = api.game.get.useQuery({id: id as string});
+    const getGame = api.game.get.useQuery({id: id as string}, {enabled: id !== undefined});
     const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
     const addRandomCube = api.pile.addRandomCube.useMutation({ 
         onSuccess: (data) => {

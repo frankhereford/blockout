@@ -7,7 +7,6 @@ import { Lighting } from "~/pages/components/lighting/Lighting";
 import { Camera } from "~/pages/components/Camera";
 import { Vector2, Vector3 } from 'three';
 
-
 import { api } from "~/utils/api";
 
 interface SceneProps {
@@ -29,14 +28,6 @@ export const Blockout = ({ id }: SceneProps) => {
         }
     }, [getGame.data]);
 
-    const cubes = [[[
-        {
-            location: new Vector3(0, 0, 0),
-            id: 'cube1',
-            visible: true,
-        },
-    ]]];
-
     if (!getGame.data) {
         return null;
     }
@@ -54,7 +45,7 @@ export const Blockout = ({ id }: SceneProps) => {
                 textureRepeat={new Vector2(3, 3)}
             />
             <Lighting width={width} height={height} depth={depth} />
-            <Pile cubes={cubes} />
+            <Pile id={getGame.data.pile?.id ?? ''} />
         </>
     )
 }
