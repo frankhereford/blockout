@@ -12,7 +12,7 @@ export const gameRouter = createTRPCRouter({
         .input(z.object({ width: z.number(), height: z.number(), depth: z.number() }))
         .mutation(async ({ ctx, input }) => {
             //console.log(ctx);
-            console.log("input: ", input);
+            //console.log("input: ", input);
             const game = await ctx.db.game.create({
                 data: {
                     height: input.height,
@@ -32,7 +32,7 @@ export const gameRouter = createTRPCRouter({
                     }
                 }
             });
-            console.log("game: ", game)
+            //console.log("game: ", game)
             return game;
         }),
 
