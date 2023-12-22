@@ -1,4 +1,3 @@
-
 import Head from "next/head";
 // import Link from "next/link";
 import Login from "~/pages/components/Login";
@@ -12,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Blockout</title>
         <meta name="description" content="Web Port of Blockout" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
