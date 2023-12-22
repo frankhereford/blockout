@@ -6,6 +6,16 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
-export const postRouter = createTRPCRouter({
+export const gameRouter = createTRPCRouter({
+
+    create: protectedProcedure
+        .input(z.object({  }))
+        .mutation(async ({ ctx, input }) => {
+            return ctx.db.game.create({
+                data: {
+                    user: { connect: { id: ctx.session.user.id } },
+                },
+            });
+        }),
 
 });
