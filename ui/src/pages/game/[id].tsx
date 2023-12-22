@@ -17,6 +17,7 @@ export default function Game() {
     const { id } = router.query;
     console.log("id: ", id)
     const getGame = api.game.get.useQuery({id: id as string});
+    const getPile = api.pile.get.useQuery({id: id as string});
 
     useEffect(() => {
         if (getGame.data) {
