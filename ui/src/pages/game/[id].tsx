@@ -7,7 +7,6 @@ import { api } from "~/utils/api";
 import { Blockout } from "~/pages/components/Blockout";
 
 import { Canvas } from '@react-three/fiber'
-import { get } from 'http';
 
 export default function Game() {
     const [width, setWidth] = useState(1);
@@ -18,6 +17,12 @@ export default function Game() {
     const { id } = router.query;
     const getGame = api.game.get.useQuery({id: id as string});
     const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
+    const addRandomCube = api.pile.addRandomCube.useMutation({ 
+        onSuccess: (data) => {
+            console.log("Mutation data: ", data);
+            // Handle the mutation data here
+        },
+    });
 
     useEffect(() => {
         if (getGame.data) {
@@ -27,10 +32,9 @@ export default function Game() {
         }
     }, [getGame.data]);
 
-    useEffect(() => {
-    console.log("getPile.data: ", getPile?.data);
-    }, [getPile?.data]);
-    
+    const addRandomCubeToPile = () => {
+        addRandomCube.mutate({ id: getPile.data?.id ?? "" });
+    }
 
     return (
         <>
@@ -39,12 +43,15 @@ export default function Game() {
                     <Canvas shadows>
                         <Blockout width={width} height={height} depth={depth} />
                     </Canvas>
-                    <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                         <Link href="/game">
                             <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 New Game
                             </button>
                         </Link>
+                        <button onClick={addRandomCubeToPile} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Add Random Cube
+                        </button>
                     </div>
                 </div>
             </main>
