@@ -8,7 +8,8 @@ export default function Home() {
     const createGame = api.game.create.useMutation({ });
 
     useEffect(() => {
-        createGame.mutate({ })
+        createGame.mutate({ height: 5, width: 5, depth: 5 })
+        //createGame.mutate({  })
     }, []);
 
     useEffect(() => {
@@ -20,9 +21,6 @@ export default function Home() {
 
     return (
         <>
-            <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89e3fc] to-[#3a3e89]">
-                this is to create a game
-            </main>
         </>
     );
 }
