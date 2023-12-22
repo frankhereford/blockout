@@ -73,5 +73,13 @@ model Game {
     updatedAt DateTime @updatedAt
     userId    String
     user      User     @relation(fields: [userId], references: [id])
+    pile      Pile?
     @@map("game")
+}
+
+model Pile {
+    id        String   @id @default(cuid())
+    gameId    String   @unique
+    game      Game     @relation(fields: [gameId], references: [id])
+    @@map("pile")
 }
