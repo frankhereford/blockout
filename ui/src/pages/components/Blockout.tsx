@@ -21,8 +21,8 @@ export const Blockout = ({ width, height, depth }: SceneProps) => {
                 depth={depth}
                 texture="/textures/metal_texture.png"
                 // bumpMap="/textures/stones_bump.jpg"
-                // displacementMap="/textures/stones_displacement.jpg"
-                textureRepeat={new Vector2(4, 4)}
+                //displacementMap="/textures/stones_displacement.jpg"
+                textureRepeat={new Vector2(3, 3)}
             />
             <Lighting width={width} height={height} depth={depth} />
         </>
