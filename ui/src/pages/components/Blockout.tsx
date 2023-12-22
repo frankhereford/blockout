@@ -29,7 +29,6 @@ export const Blockout = ({ id }: SceneProps) => {
         }
     }, [getGame.data]);
 
-
     const cubes = [[[
         {
             location: new Vector3(0, 0, 0),

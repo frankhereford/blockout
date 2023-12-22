@@ -1,34 +1,22 @@
 import Link from 'next/link';
-import { useEffect} from "react";
 import { useRouter } from 'next/router';
-
-import { api } from "~/utils/api";
-
 import { Blockout } from "~/pages/components/Blockout";
-
 import { Canvas } from '@react-three/fiber'
+import { api } from "~/utils/api";
 
 export default function Game() {
     const router = useRouter();
     const { id } = router.query;
-    // const getGame = api.game.get.useQuery({id: id as string});
-    // const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
-    // const addRandomCube = api.pile.addRandomCube.useMutation({ 
-    //     onSuccess: (data) => {
-    //         console.log("Cube added: ", data);
-    //     },
-    // });
-
-    // useEffect(() => {
-    //     if (getGame.data) {
-    //         setWidth(getGame.data.width);
-    //         setHeight(getGame.data.height);
-    //         setDepth(getGame.data.depth);
-    //     }
-    // }, [getGame.data]);
+    const getGame = api.game.get.useQuery({id: id as string});
+    const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
+    const addRandomCube = api.pile.addRandomCube.useMutation({ 
+        onSuccess: (data) => {
+            console.log("Cube added: ", data);
+        },
+    });
 
     const addRandomCubeToPile = () => {
-        //addRandomCube.mutate({ id: getPile.data?.id ?? "" });
+        addRandomCube.mutate({ id: getPile.data?.id ?? "" });
     }
 
     return (
