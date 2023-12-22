@@ -10,7 +10,8 @@ export default function Home() {
     const createGame = api.game.create.useMutation({ });
 
     useEffect(() => {
-        createGame.mutate({ })
+        const response = createGame.mutate({ })
+        console.log(response)
     }, []);
 
     return (
