@@ -22,4 +22,11 @@ export const pileRouter = createTRPCRouter({
             return pile;
         }),
 
+
+    addRandomCube: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+        console.log("addRandomCube input!: ", input);
+        }),
+
 });

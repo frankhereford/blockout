@@ -16,7 +16,6 @@ export default function Game() {
 
     const router = useRouter();
     const { id } = router.query;
-    console.log("id: ", id)
     const getGame = api.game.get.useQuery({id: id as string});
     const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
 
@@ -25,7 +24,6 @@ export default function Game() {
             setWidth(getGame.data.width);
             setHeight(getGame.data.height);
             setDepth(getGame.data.depth);
-            console.log("getGame.data.pile.id: ", getGame.data.pile?.id);
         }
     }, [getGame.data]);
 
