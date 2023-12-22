@@ -12,7 +12,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        console.log("createGame.data: ", createGame.data);
+        //console.log("createGame.data: ", createGame.data);
         if (createGame.data?.id) {
             void router.push(`/game/${createGame.data.id}`);
         }
