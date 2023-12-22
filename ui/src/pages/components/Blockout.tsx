@@ -10,7 +10,7 @@ interface SceneProps {
 export const Blockout = ({ width, height, depth }: SceneProps) => {
     return (
         <>
-            <GroundPlane width={width} depth={depth} />
+            <GroundPlane width={width} depth={depth} texture="/textures/stones_texture.jpg" />
             <Lighting width={width} height={height} depth={depth} />
         </>
     )
