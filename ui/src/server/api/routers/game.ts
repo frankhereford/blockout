@@ -11,8 +11,6 @@ export const gameRouter = createTRPCRouter({
     create: protectedProcedure
         .input(z.object({ width: z.number(), height: z.number(), depth: z.number() }))
         .mutation(async ({ ctx, input }) => {
-            //console.log(ctx);
-            //console.log("input: ", input);
             const game = await ctx.db.game.create({
                 data: {
                     height: input.height,
@@ -32,7 +30,6 @@ export const gameRouter = createTRPCRouter({
                     }
                 }
             });
-            //console.log("game: ", game)
             return game;
         }),
 
@@ -46,7 +43,7 @@ export const gameRouter = createTRPCRouter({
                     id: input.id,
                 },
                 include: {
-                    pile: true, // Include the pile relation
+                    pile: true,
                 },
             });
             return game;

@@ -25,7 +25,6 @@ export const pileRouter = createTRPCRouter({
     addRandomCube: protectedProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            //console.log("addRandomCube input!: ", input);
             const pile = await ctx.db.pile.findUnique({
                 where: {
                     id: input.id,
@@ -35,11 +34,8 @@ export const pileRouter = createTRPCRouter({
                     cubes: true,
                 },
             });
-            //console.log("found pile: ", pile);
 
-            if (!pile) {
-                throw new Error("Pile not found");
-            }
+            if (!pile) { throw new Error("Pile not found"); }
 
             const positions = [];
             for (let x = 0; x < pile.game.width; x++) {
@@ -53,26 +49,19 @@ export const pileRouter = createTRPCRouter({
                 }
             }
 
-            // Pick a random position
             const randomIndex = Math.floor(Math.random() * positions.length);
             const randomPosition = positions[randomIndex];
 
-            //console.log("Random position: ", randomPosition);
+            if (!randomPosition) { throw new Error("No random position found"); }
 
-            if (!randomPosition) {
-                throw new Error("No random position found");
-            }
-
-            // Insert the new cube into the cubes table
             const newCube = await ctx.db.cube.create({
                 data: {
                     x: randomPosition.x,
                     y: randomPosition.y,
                     z: randomPosition.z,
-                    pileId: pile.id, // Use the pile id from the pile query
+                    pileId: pile.id,
                 },
             });
-            //console.log("New cube: ", newCube);
             return newCube;
         }),
 
