@@ -27,8 +27,6 @@ const Pile = ({ id }: PileProps) => {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === '1') {
-                // Call the clearFloor mutation here
-                // Replace 'floorNumber' with the actual floor number you want to clear
                 clearFloor.mutate({ id: id, floor: 0});
             }
         };
