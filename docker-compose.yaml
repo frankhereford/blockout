@@ -23,12 +23,14 @@ services:
   nextjs:
     container_name: nextjs
     build: ui 
+    ports:
+      - 3000:3000
     env_file:
       - ./ui/.env
     depends_on:
       - redis
     volumes:
-      - ./ui:/application
+      - .:/application
     entrypoint: ["npx", "next", "dev"]
 
 volumes:
