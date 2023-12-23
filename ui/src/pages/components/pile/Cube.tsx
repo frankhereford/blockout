@@ -9,12 +9,12 @@ interface CubeProps {
 
 export const Cube = ({ location, scale = 0.93, color = "red" }: CubeProps) => {
     const position = location.toArray().map(coord => coord + 0.5);
-    const springProps = useSpring({ position });
+    const springProps = useSpring({ position, color });
 
     return (
-        <animated.mesh position={springProps.position} scale={[scale, scale, scale]}>
+        <animated.mesh position={springProps.position as unknown as Vector3} scale={[scale, scale, scale]}>
             <boxGeometry attach="geometry" args={[1, 1, 1]} />
-            <meshStandardMaterial attach="material" color={color} />
+            <animated.meshStandardMaterial attach="material" color={springProps.color} />
         </animated.mesh>
     );
 };
