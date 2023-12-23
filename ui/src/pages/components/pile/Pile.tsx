@@ -1,7 +1,5 @@
 import { Cube } from './Cube';
 import { Vector3 } from 'three';
-import { useSprings } from '@react-spring/three'
-import type { SpringValue } from '@react-spring/three'
 import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
@@ -35,13 +33,15 @@ const Pile = ({ id }: PileProps) => {
         }
     }, [getPile.data]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            void getPile.refetch();
-        }, 3000);
 
-        return () => clearInterval(interval);
-    }, [getPile]);
+
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         void getPile.refetch();
+    //     }, 3000);
+
+    //     return () => clearInterval(interval);
+    // }, [getPile]);
 
     return (
         <>
