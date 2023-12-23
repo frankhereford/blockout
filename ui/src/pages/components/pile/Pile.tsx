@@ -35,13 +35,20 @@ const Pile = ({ id }: PileProps) => {
         }
     }, [getPile.data]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            void getPile.refetch();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [getPile]);
+
     return (
         <>
-            {Object.values(cubeState).map((cube: Cube, index: number) => {
+            {Object.values(cubeState).map((cube: Cube, _index: number) => {
                 if (cube.active) {
                     const location = new Vector3(cube.x, cube.y, cube.z);
-                    const color = colors[index % colors.length];
-
+                    const color = colors[cube.y % colors.length];
                     return <Cube key={cube.id} location={location} color={color} />;
                 }
             })}
