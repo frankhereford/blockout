@@ -35,6 +35,43 @@ export const pileRouter = createTRPCRouter({
             return pile;
         }),
 
+    clearFloor: protectedProcedure
+        .input(z.object({ id: z.string(), floor: z.number() }))
+        .mutation(async ({ ctx, input }) => {
+            const { id, floor } = input;
+
+            const updatedCubes = await ctx.db.cube.updateMany({
+                where: {
+                    pileId: id,
+                    y: floor,
+                },
+                data: {
+                    active: false,
+                },
+            });
+
+            // Then, decrease the y value of all active cubes above the cleared floor
+            const movedCubes = await ctx.db.cube.updateMany({
+                where: {
+                    pileId: id,
+                    y: {
+                        gt: floor,
+                    },
+                    active: true,
+                },
+                data: {
+                    y: {
+                        decrement: 1,
+                    },
+                },
+            });
+
+            await client.multi()
+                .publish('pile_update', JSON.stringify({ pileId: id })) // more fake data
+                .exec();
+
+            return updatedCubes;
+        }),
 
     addRandomCube: protectedProcedure
         .input(z.object({ id: z.string() }))
@@ -45,7 +82,11 @@ export const pileRouter = createTRPCRouter({
                 },
                 include: {
                     game: true,
-                    cubes: true,
+                    cubes: {
+                        where: {
+                            active: true,
+                        },
+                    },
                 },
             });
 
@@ -80,7 +121,6 @@ export const pileRouter = createTRPCRouter({
             await client.multi()
                 .publish('pile_update', JSON.stringify(newCube))
                 .exec();
-
 
             return newCube;
         }),

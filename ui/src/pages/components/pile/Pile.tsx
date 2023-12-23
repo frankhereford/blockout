@@ -22,6 +22,25 @@ const Pile = ({ id }: PileProps) => {
     const getPile = api.pile.get.useQuery({ id: id});
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
+    const clearFloor = api.pile.clearFloor.useMutation({});
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === '1') {
+                // Call the clearFloor mutation here
+                // Replace 'floorNumber' with the actual floor number you want to clear
+                clearFloor.mutate({ id: id, floor: 0});
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Remove event listener on cleanup
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [id, clearFloor]);
+
     useEffect(() => {
         if (getPile.data) {
             console.log("getPile.data: ", getPile.data);
