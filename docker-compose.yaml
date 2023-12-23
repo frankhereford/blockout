@@ -1,9 +1,9 @@
 version: '3.1'
 
 services:
-  db:
+  postgres:
     image: postgres
-    restart: always
+    #restart: unless-stopped
     environment:
       POSTGRES_USER: blockout
       POSTGRES_PASSWORD: blockout
@@ -13,6 +13,23 @@ services:
       - blockout-database:/var/lib/postgresql/data
     ports:
       - 5532:5432
+
+  redis:
+    image: redis
+    #restart: unless-stopped
+    ports:
+      - 6379:6379
+
+  nextjs:
+    container_name: nextjs
+    build: ui 
+    env_file:
+      - ./ui/.env
+    depends_on:
+      - redis
+    volumes:
+      - ./ui:/application
+    entrypoint: ["npx", "next", "dev"]
 
 volumes:
   blockout-database:
