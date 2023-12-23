@@ -9,7 +9,10 @@ RUN apt-get update && \
 RUN apt-get install -y vim aptitude python3-pip magic-wormhole file
 
 RUN mkdir /application
-COPY . /application/nextjs
-WORKDIR /application/nextjs
+COPY . /application/ui
+WORKDIR /application/ui
 RUN npm install
+
+RUN npx prisma generate
+
 ENTRYPOINT ["npx", "next", "dev"]
