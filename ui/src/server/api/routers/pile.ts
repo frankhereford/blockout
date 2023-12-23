@@ -6,6 +6,17 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
+import { createClient } from "redis";
+
+const client = createClient({
+    url: 'redis://redis'
+});
+
+client.on('error', (err) => console.log('Redis Client Error', err));
+
+await client.connect();
+
+
 export const pileRouter = createTRPCRouter({
 
     get: protectedProcedure
@@ -65,6 +76,12 @@ export const pileRouter = createTRPCRouter({
                     pileId: pile.id,
                 },
             });
+            
+            await client.multi()
+                .publish('pile_update', JSON.stringify(newCube))
+                .exec();
+
+
             return newCube;
         }),
     
