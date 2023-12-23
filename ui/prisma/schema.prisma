@@ -101,6 +101,7 @@ model Cube {
 
 model Library {
     id        String   @id @default(cuid())
+    name      String
     origin    Json
     shape     Json
     createdAt DateTime @default(now())

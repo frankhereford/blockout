@@ -7,11 +7,11 @@ const prisma = new PrismaClient();
 async function main() {
     await prisma.library.create({
         data: {
+            name: 'solo',
             origin: { x: 0, y: 0, z: 0 },
             shape: [{ x: 0, y: 0, z: 0 }],
         },
     });
-
 }
 
 main()
