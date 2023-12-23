@@ -6,13 +6,8 @@ generator client {
     binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
-
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
 }
 
@@ -84,6 +79,7 @@ model Pile {
     gameId    String   @unique
     game      Game     @relation(fields: [gameId], references: [id])
     cubes     Cube[]
+    pieces    Piece[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@map("pile")
@@ -101,4 +97,42 @@ model Cube {
     updatedAt DateTime @updatedAt
     //@@unique([x, y, z, pileId])
     @@map("cube")
+}
+
+model Library {
+    id        String   @id @default(cuid())
+    origin    Json
+    shape     Json
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Pieces    Piece[]
+    @@map("library")
+}
+
+model Piece {
+    id        String   @id @default(cuid())
+    active    Boolean  @default(true)
+    libraryId String
+    library   Library  @relation(fields: [libraryId], references: [id])
+    pileId    String
+    pile      Pile     @relation(fields: [pileId], references: [id])
+    movements Movement[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@map("piece")
+}
+
+model Movement {
+    id        String   @id @default(cuid())
+    pieceId   String
+    piece     Piece    @relation(fields: [pieceId], references: [id])
+    x         Int
+    y         Int
+    z         Int
+    pitch     Int
+    yaw       Int
+    roll      Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@map("movement")
 }
