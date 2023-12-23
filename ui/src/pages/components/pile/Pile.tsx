@@ -33,15 +33,38 @@ const Pile = ({ id }: PileProps) => {
         }
     }, [getPile.data]);
 
+    useEffect(() => {
+        const websocket = new WebSocket('ws://localhost:3001/ws');
 
+        websocket.onopen = () => {
+            console.log('WebSocket Connected');
+        };
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         void getPile.refetch();
-    //     }, 3000);
+        websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data as string) as object;
+            console.log("websocket data: ", data)
+            void getPile.refetch();
+            // if (data.clear) {
+            //     console.log('in clear')
+            //     getBoard.refetch();
+            // } else {
+            //     setColorAt(data.x, data.y, data.color);
+            // }
+        };
 
-    //     return () => clearInterval(interval);
-    // }, [getPile]);
+        websocket.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+        };
+
+        websocket.onclose = () => {
+            console.log('WebSocket Disconnected');
+        };
+
+        return () => {
+            websocket.close();
+        };
+    }, []);
+
 
     return (
         <>
