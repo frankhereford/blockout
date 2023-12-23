@@ -94,6 +94,7 @@ model Cube {
     z         Int
     pileId    String
     pile      Pile     @relation(fields: [pileId], references: [id])
+    active    Boolean  @default(true)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@unique([x, y, z, pileId])

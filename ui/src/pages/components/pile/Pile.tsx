@@ -1,23 +1,20 @@
 import { Cube } from './Cube';
-import type { Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { useSprings } from '@react-spring/three'
 import type { SpringValue } from '@react-spring/three'
 import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 
-// interface SpringProps {
-//     location: SpringValue<number[]>;
-// }
-
-// interface CubeProps {
-//     location: Vector3;
-//     id: string;
-//     visible: boolean;
-// }
-
 interface PileProps {
     id: string;
+}
+interface Cube {
+    id: string;
+    x: number;
+    y: number;
+    z: number;
+    active: boolean;
 }
 
 const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].reverse();
@@ -25,37 +22,29 @@ const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'].
 const Pile = ({ id }: PileProps) => {
 
     const getPile = api.pile.get.useQuery({ id: id});
+    const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
     useEffect(() => {
         if (getPile.data) {
             console.log("getPile.data: ", getPile.data);
+            const newCubeState = getPile.data.cubes.reduce((acc, cube) => {
+                return { ...acc, [cube.id]: cube };
+            }, {});
+
+            setCubeState(newCubeState);
         }
     }, [getPile.data]);
 
-    // Flatten the 3D array into a 1D array
-//     const flattenedCubes = cubes.flat(3);
-
-//     const springs = useSprings(
-//         flattenedCubes.length,
-//         flattenedCubes.map((cube: CubeProps) => ({
-//             location: [cube.location.x, cube.location.y, cube.location.z],
-//             config: { mass: 1, tension: 170, friction: 26 },
-//         }))
-//     );
-
-//     return (
-//         <>
-//             {springs.map((spring: SpringProps, index: number) => {
-//                 const cube = flattenedCubes[index];
-//                 if (!cube) { return null; }
-//                 if (!cube.visible) { return null; }
-//                 const color = colors[cube.location.y % colors.length]; // Cycle through colors
-//                 return <Cube key={cube.id} location={spring.location} color={color} />;
-//             })}
-//         </>
-//     );
     return (
         <>
+            {Object.values(cubeState).map((cube: Cube, index: number) => {
+                if (cube.active) {
+                    const location = new Vector3(cube.x, cube.y, cube.z);
+                    const color = colors[index % colors.length];
+
+                    return <Cube key={cube.id} location={location} color={color} />;
+                }
+            })}
         </>
     );
 }
