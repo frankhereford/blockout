@@ -8,12 +8,14 @@ export default function Home() {
     const createGame = api.game.create.useMutation({ });
 
     useEffect(() => {
-        createGame.mutate({ height: 5, width: 5, depth: 5 })
-        //createGame.mutate({  })
+        const height = Math.floor(Math.random() * 5) + 4; // Random integer between 4 and 8
+        const width = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+        const depth = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+
+        createGame.mutate({ height, width, depth });
     }, []);
 
     useEffect(() => {
-        //console.log("createGame.data: ", createGame.data);
         if (createGame.data?.id) {
             void router.push(`/game/${createGame.data.id}`);
         }
