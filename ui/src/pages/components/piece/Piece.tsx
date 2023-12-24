@@ -10,6 +10,7 @@ interface PieceProps {
 
 interface Cube {
     id: string;
+    color: string;
     x: number;
     y: number;
     z: number;
@@ -26,7 +27,7 @@ const Piece = ({ id }: PieceProps) => {
         websocket.onopen = () => { console.log('WebSocket Connected'); };
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
-            console.log("websocket data: ", data)
+            //console.log("websocket data: ", data)
             if ((data as { piece_added: boolean }).piece_added) {
                 void getPiece.refetch();
             //} else if ((data as { floor_removed: boolean }).floor_removed) {
@@ -40,21 +41,21 @@ const Piece = ({ id }: PieceProps) => {
 
     useEffect(() => {
         if (getPiece.data) {
-            console.log("getPiece.data: ", getPiece.data);
+            console.log("getPiece.data.library: ", getPiece.data.library);
+            const color = getPiece.data.library.color as string;
             const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
-                return { ...acc, [cube.id]: cube };
+                return { ...acc, [cube.id]: { ...cube, color } };
             }, {});
+            console.log("new cube state: ", newCubeState);
             setCubeState(newCubeState);
         }
     }, [getPiece.data]);
-
 
     return (
         <>
             {Object.values(cubeState).map((cube: Cube, _index: number) => {
                 const location = new Vector3(cube.x, cube.y, cube.z);
-                const color = "red";
-                return <Cube key={cube.id} location={location} color={color} />;
+                return <Cube key={cube.id} location={location} color={cube.color} />;
             })}
         </>
     );

@@ -10,6 +10,19 @@ async function main() {
             name: 'solo',
             origin: { x: 0, y: 0, z: 0 },
             shape: [{ x: 0, y: 0, z: 0 }],
+            color: 'red',
+        },
+    });
+    await prisma.library.create({
+        data: {
+            name: 'el',
+            origin: { x: 1, y: 0, z: 0 },
+            shape: [
+                { x: 0, y: 0, z: 0 },
+                { x: 1, y: 0, z: 0 },
+                { x: 2, y: 0, z: 0 },
+            ],
+            color: 'green',
         },
     });
 }
