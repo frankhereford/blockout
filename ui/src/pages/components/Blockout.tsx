@@ -32,14 +32,33 @@ export const Blockout = ({ id }: SceneProps) => {
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
-            if (event.key === 'PageUp') {
-                // Run command for Page Up key
-                movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
-                console.log('Page Up key pressed');
-            } else if (event.key === 'PageDown') {
-                // Run command for Page Down key
-                movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: -1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
-                console.log('Page Down key pressed');
+            switch (event.key) {
+                case 'PageUp':
+                case '[':
+                    console.log('Page Up key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
+                case 'PageDown':
+                case ']':
+                    console.log('Page Down key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: -1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
+                case 'ArrowUp':
+                    console.log('Up arrow key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 0, z: -1, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
+                case 'ArrowDown':
+                    console.log('Down arrow key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 0, z: 1, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
+                case 'ArrowLeft':
+                    console.log('Left arrow key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: -1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
+                case 'ArrowRight':
+                    console.log('Right arrow key pressed');
+                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    break;
             }
         };
 
