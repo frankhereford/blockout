@@ -18,11 +18,17 @@ export const Blockout = ({ id }: SceneProps) => {
     const [width, setWidth] = useState(1);
     const [height, setHeight] = useState(1);
     const [depth, setDepth] = useState(1);
+    const [piece, setPiece] = useState("");
 
     const getGame = api.game.get.useQuery({ id: id });
     const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
+        console.log("getGame.data.pile.pieces: ", getGame.data?.pile?.pieces);
+        if (getGame.data?.pile?.pieces) {
+        console.log("getGame.data.pile.pieces[0].id: ", getGame.data?.pile?.pieces[0]?.id);
+        setPiece(getGame.data?.pile?.pieces[0]?.id ?? "");
+        }
         if (getGame.data) {
             setWidth(getGame.data.width);
             setHeight(getGame.data.height);
@@ -89,7 +95,7 @@ export const Blockout = ({ id }: SceneProps) => {
             />
             <Lighting width={width} height={height} depth={depth} />
             <Pile id={getGame.data.pile?.id ?? ''} />
-            <Piece id={getGame.data.pile?.id ?? ''} />
+            <Piece id={piece} />
         </>
     )
 }
