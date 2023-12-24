@@ -10,7 +10,7 @@ connections: list[WebSocket] = []
 # Redis configuration
 redis_host = "redis"
 redis_port = 6379
-redis_channel = "pile_update"
+redis_channel = "events"
 
 # Initialize Redis client
 redis_client = redis.Redis(host=redis_host, port=redis_port)

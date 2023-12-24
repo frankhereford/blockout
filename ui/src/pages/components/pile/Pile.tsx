@@ -41,7 +41,7 @@ const Pile = ({ id }: PileProps) => {
 
     useEffect(() => {
         if (getPile.data) {
-            console.log("getPile.data: ", getPile.data);
+            //console.log("getPile.data: ", getPile.data);
             const newCubeState = getPile.data.cubes.reduce((acc, cube) => {
                 return { ...acc, [cube.id]: cube };
             }, {});
@@ -53,35 +53,20 @@ const Pile = ({ id }: PileProps) => {
     useEffect(() => {
         const websocket = new WebSocket('ws://localhost:3001/ws');
 
-        websocket.onopen = () => {
-            console.log('WebSocket Connected');
-        };
-
+        websocket.onopen = () => { console.log('WebSocket Connected'); };
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
             console.log("websocket data: ", data)
-            void getPile.refetch();
-            // if (data.clear) {
-            //     console.log('in clear')
-            //     getBoard.refetch();
-            // } else {
-            //     setColorAt(data.x, data.y, data.color);
-            // }
+            if ((data as { new_random_cube: boolean }).new_random_cube) {
+                void getPile.refetch();
+            } else if ((data as { floor_removed: boolean }).floor_removed) {
+                void getPile.refetch();
+            }
         };
-
-        websocket.onerror = (error) => {
-            console.error('WebSocket Error:', error);
-        };
-
-        websocket.onclose = () => {
-            console.log('WebSocket Disconnected');
-        };
-
-        return () => {
-            websocket.close();
-        };
+        websocket.onerror = (error) => { console.error('WebSocket Error:', error); };
+        websocket.onclose = () => { console.log('WebSocket Disconnected'); };
+        return () => { websocket.close(); };
     }, []);
-
 
     return (
         <>

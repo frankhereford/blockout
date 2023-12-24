@@ -10,13 +10,22 @@ export default function Game() {
     const getGame = api.game.get.useQuery({id: id as string}, {enabled: id !== undefined});
     const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
     const addRandomCube = api.pile.addRandomCube.useMutation({ 
-        onSuccess: (data) => {
-            console.log("Cube added: ", data);
-        },
+        // onSuccess: (data) => {
+            //console.log("Cube added: ", data);
+        // },
+    });
+    const addPiece = api.piece.create.useMutation({ 
+        // onSuccess: (data) => {
+            //console.log("Piece added: ", data);
+        // },
     });
 
     const addRandomCubeToPile = () => {
         addRandomCube.mutate({ id: getPile.data?.id ?? "" });
+    }
+
+    const addRandomPieceToPile = () => {
+        addPiece.mutate({ pile: getPile.data?.id ?? "" });
     }
 
     return (
@@ -34,6 +43,9 @@ export default function Game() {
                         </Link>
                         <button onClick={addRandomCubeToPile} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                             Add Random Cube
+                        </button>
+                        <button onClick={addRandomPieceToPile} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Add Piece
                         </button>
                     </div>
                 </div>
