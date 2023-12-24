@@ -41,7 +41,7 @@ export const gameRouter = createTRPCRouter({
     get: protectedProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
-            console.log("input: ", input);
+            //console.log("input: ", input);
 
             const game = await ctx.db.game.findUnique({
                 where: {
