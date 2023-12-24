@@ -118,9 +118,22 @@ model Piece {
     pileId    String
     pile      Pile     @relation(fields: [pileId], references: [id])
     movements Movement[]
+    cubes     PieceCube[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@map("piece")
+}
+
+model PieceCube { 
+    id        String   @id @default(cuid())
+    x         Int
+    y         Int
+    z         Int
+    pieceId   String
+    piece     Piece    @relation(fields: [pieceId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@map("piece_cube")
 }
 
 model Movement {
