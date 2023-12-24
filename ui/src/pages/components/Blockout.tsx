@@ -20,6 +20,7 @@ export const Blockout = ({ id }: SceneProps) => {
     const [depth, setDepth] = useState(1);
 
     const getGame = api.game.get.useQuery({ id: id });
+    const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
         if (getGame.data) {
@@ -28,6 +29,28 @@ export const Blockout = ({ id }: SceneProps) => {
             setDepth(getGame.data.depth);
         }
     }, [getGame.data]);
+
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            if (event.key === 'PageUp') {
+                // Run command for Page Up key
+                movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                console.log('Page Up key pressed');
+            } else if (event.key === 'PageDown') {
+                // Run command for Page Down key
+                movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: -1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                console.log('Page Down key pressed');
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, []);
+
 
     if (!getGame.data) {
         return null;
