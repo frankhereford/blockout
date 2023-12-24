@@ -19,6 +19,7 @@ interface Cube {
 const Piece = ({ id }: PieceProps) => {
 
     const getPiece = api.piece.get.useQuery({ pile: id });
+
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
     useEffect(() => {
@@ -27,11 +28,8 @@ const Piece = ({ id }: PieceProps) => {
         websocket.onopen = () => { console.log('WebSocket Connected'); };
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
-            //console.log("websocket data: ", data)
-            if ((data as { piece_added: boolean }).piece_added) {
+            if ((data as { piece: boolean }).piece) {
                 void getPiece.refetch();
-            //} else if ((data as { floor_removed: boolean }).floor_removed) {
-                //void getPile.refetch();
             }
         };
         websocket.onerror = (error) => { console.error('WebSocket Error:', error); };
@@ -41,12 +39,10 @@ const Piece = ({ id }: PieceProps) => {
 
     useEffect(() => {
         if (getPiece.data) {
-            console.log("getPiece.data.library: ", getPiece.data.library);
             const color = getPiece.data.library.color as string;
             const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
                 return { ...acc, [cube.id]: { ...cube, color } };
             }, {});
-            console.log("new cube state: ", newCubeState);
             setCubeState(newCubeState);
         }
     }, [getPiece.data]);
