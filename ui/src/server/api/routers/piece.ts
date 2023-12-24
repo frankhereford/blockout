@@ -81,7 +81,7 @@ export const pieceRouter = createTRPCRouter({
             }
 
             await client.multi()
-                .publish('events', JSON.stringify({ piece_added: piece.id }))
+                .publish('events', JSON.stringify({ piece: true }))
                 .exec();
 
             return piece;
@@ -104,4 +104,62 @@ export const pieceRouter = createTRPCRouter({
 
             return piece;
         }),
+
+    move: protectedProcedure
+        .input(z.object({ pile: z.string(), movement: z.object({ x: z.number(), y: z.number(), z: z.number(), pitch: z.number(), yaw: z.number(), roll: z.number() }) }))
+        .mutation(async ({ ctx, input }) => {
+            //console.log("input: ", input)
+            const piece = await ctx.db.piece.findFirst({
+                where: {
+                    active: true,
+                    pileId: input.pile,
+                },
+                include: {
+                    pile: {
+                        include: {
+                            cubes: {
+                                where: {
+                                    active: true,
+                                },
+                            },
+                        },
+                    },
+                    library: true,
+                    cubes: true,
+                }
+            });
+            //console.log("piece: ", piece)
+
+            await ctx.db.movement.create({
+                data: {
+                    x: input.movement.x,
+                    y: input.movement.y,
+                    z: input.movement.z,
+                    pitch: input.movement.pitch,
+                    yaw: input.movement.yaw,
+                    roll: input.movement.roll,
+                    pieceId: piece!.id,
+                },
+            });
+
+            if (piece && piece.cubes) {
+                for (const cube of piece.cubes) {
+                    console.log("cube: ", cube)
+                    await ctx.db.pieceCube.update({
+                        where: { id: cube.id },
+                        data: {
+                            x: cube.x + input.movement.x,
+                            y: cube.y + input.movement.y,
+                            z: cube.z + input.movement.z,
+                        },
+                    });
+                }
+            }
+
+            await client.multi()
+                .publish('events', JSON.stringify({ piece: true }))
+                .exec();
+
+        }),
+
 });
