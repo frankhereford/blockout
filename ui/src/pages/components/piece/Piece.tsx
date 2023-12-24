@@ -40,15 +40,22 @@ const Piece = ({ id }: PieceProps) => {
 
     useEffect(() => {
         if (getPiece.data) {
-            console.log("getPiece.data.library.shape: ", getPiece.data.library.shape);
-            //setCubeState(newCubeState);
+            console.log("getPiece.data: ", getPiece.data);
+            const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
+                return { ...acc, [cube.id]: cube };
+            }, {});
+            setCubeState(newCubeState);
         }
     }, [getPiece.data]);
 
 
     return (
         <>
-
+            {Object.values(cubeState).map((cube: Cube, _index: number) => {
+                const location = new Vector3(cube.x, cube.y, cube.z);
+                const color = "red";
+                return <Cube key={cube.id} location={location} color={color} />;
+            })}
         </>
     );
 }

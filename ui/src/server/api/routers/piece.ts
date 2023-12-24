@@ -53,11 +53,32 @@ export const pieceRouter = createTRPCRouter({
                     },
                     library: {
                         select: {
-                            id: true
+                            id: true,
+                            shape: true,
                         }
                     }
                 }
             });
+
+            interface Shape {
+                x: number;
+                y: number;
+                z: number;
+            }
+
+            if (Array.isArray(piece.library.shape)) {
+                for (const shape of piece.library.shape as unknown as Shape[]) {
+                    console.log("shape: ", shape)
+                    await ctx.db.pieceCube.create({
+                        data: {
+                            x: shape.x,
+                            y: shape.y,
+                            z: shape.z,
+                            pieceId: piece.id,
+                        },
+                    });
+                }
+            }
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece_added: piece.id }))
@@ -76,7 +97,8 @@ export const pieceRouter = createTRPCRouter({
                 },
                 include: {
                     pile: true,
-                    library: true
+                    library: true,
+                    cubes: true,
                 }
             });
 
