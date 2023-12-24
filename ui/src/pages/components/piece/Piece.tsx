@@ -18,7 +18,7 @@ interface Cube {
 
 const Piece = ({ id }: PieceProps) => {
 
-    const getPiece = api.piece.get.useQuery({ pile: id });
+    const getPiece = api.piece.get.useQuery({ id: id });
 
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
@@ -39,7 +39,7 @@ const Piece = ({ id }: PieceProps) => {
 
     useEffect(() => {
         if (getPiece.data) {
-            const color = getPiece.data.library.color as string;
+            const color = getPiece.data.library.color;
             const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
                 return { ...acc, [cube.id]: { ...cube, color } };
             }, {});
