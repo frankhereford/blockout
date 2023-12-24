@@ -88,12 +88,11 @@ export const pieceRouter = createTRPCRouter({
         }),
 
     get: protectedProcedure
-        .input(z.object({ pile: z.string()}))
+        .input(z.object({ id: z.string()}))
         .query(async ({ ctx, input }) => {
-            const piece = await ctx.db.piece.findFirst({
+            const piece = await ctx.db.piece.findUnique({
                 where: {
-                    active: true,
-                    pileId: input.pile,
+                    id: input.id,
                 },
                 include: {
                     pile: true,
