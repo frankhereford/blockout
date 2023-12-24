@@ -9,16 +9,8 @@ export default function Game() {
     const { id } = router.query;
     const getGame = api.game.get.useQuery({id: id as string}, {enabled: id !== undefined});
     const getPile = api.pile.get.useQuery({id: getGame.data?.pile?.id ?? ""}, {enabled: getGame.data?.pile?.id !== undefined});
-    const addRandomCube = api.pile.addRandomCube.useMutation({ 
-        // onSuccess: (data) => {
-            //console.log("Cube added: ", data);
-        // },
-    });
-    const addPiece = api.piece.create.useMutation({ 
-        // onSuccess: (data) => {
-            //console.log("Piece added: ", data);
-        // },
-    });
+    const addRandomCube = api.pile.addRandomCube.useMutation({ });
+    const addPiece = api.piece.create.useMutation({ });
 
     const addRandomCubeToPile = () => {
         addRandomCube.mutate({ id: getPile.data?.id ?? "" });
