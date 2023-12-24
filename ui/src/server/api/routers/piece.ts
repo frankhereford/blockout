@@ -130,6 +130,16 @@ export const pieceRouter = createTRPCRouter({
             });
             //console.log("piece: ", piece)
 
+            const movements = await ctx.db.movement.findMany({
+                where: {
+                    pieceId: piece!.id,
+                },
+            });
+
+            console.log('Movements:', movements);
+
+
+
             await ctx.db.movement.create({
                 data: {
                     x: input.movement.x,
@@ -142,6 +152,9 @@ export const pieceRouter = createTRPCRouter({
                 },
             });
 
+
+
+            // just temp stuff to get it working
             if (piece && piece.cubes) {
                 for (const cube of piece.cubes) {
                     console.log("cube: ", cube)
