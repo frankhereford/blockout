@@ -66,10 +66,11 @@ export const pieceRouter = createTRPCRouter({
                 z: number;
             }
 
+            const cubes: string[] = [];
+
             if (Array.isArray(piece.library.shape)) {
                 for (const shape of piece.library.shape as unknown as Shape[]) {
-                    console.log("shape: ", shape)
-                    await ctx.db.pieceCube.create({
+                    const new_cube = await ctx.db.pieceCube.create({
                         data: {
                             x: shape.x,
                             y: shape.y,
@@ -77,8 +78,16 @@ export const pieceRouter = createTRPCRouter({
                             pieceId: piece.id,
                         },
                     });
+                    cubes.push(new_cube.id);
                 }
             }
+
+            await ctx.db.piece.update({
+                where: { id: piece.id },
+                data: {
+                    cubeIds: cubes,
+                },
+            });
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
@@ -126,11 +135,50 @@ export const pieceRouter = createTRPCRouter({
                 }
             });
 
+
             const movements = await ctx.db.movement.findMany({
                 where: {
                     pieceId: input.id,
                 },
             });
+
+            const totalMovements = movements.reduce((total, movement) => {
+                return {
+                    x: total.x + movement.x,
+                    y: total.y + movement.y,
+                    z: total.z + movement.z,
+                    pitch: total.pitch + movement.pitch,
+                    yaw: total.yaw + movement.yaw,
+                    roll: total.roll + movement.roll,
+                };
+            }, { x: 0, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 });
+
+            const newTotalMovements = {
+                x: totalMovements.x + input.movement.x,
+                y: totalMovements.y + input.movement.y,
+                z: totalMovements.z + input.movement.z,
+                pitch: totalMovements.pitch + input.movement.pitch,
+                yaw: totalMovements.yaw + input.movement.yaw,
+                roll: totalMovements.roll + input.movement.roll,
+            };
+
+            const shape = piece!.library.shape as unknown as { x: number, y: number, z: number }[];
+
+            for (let index = 0; index < shape.length; index++) {
+                const cube = shape[index];
+                const x = cube!.x + newTotalMovements.x;
+                const y = cube!.y + newTotalMovements.y;
+                const z = cube!.z + newTotalMovements.z;
+                
+                await ctx.db.pieceCube.update({
+                    where: { id: piece!.cubes[index]!.id },
+                    data: {
+                        x: x,
+                        y: y,
+                        z: z,
+                    },
+                });
+            }
 
             await ctx.db.movement.create({
                 data: {
@@ -143,21 +191,6 @@ export const pieceRouter = createTRPCRouter({
                     pieceId: input.id,
                 },
             });
-
-            // just temp stuff to get it working
-            if (piece && piece.cubes) {
-                for (const cube of piece.cubes) {
-                    console.log("cube: ", cube)
-                    await ctx.db.pieceCube.update({
-                        where: { id: cube.id },
-                        data: {
-                            x: cube.x + input.movement.x,
-                            y: cube.y + input.movement.y,
-                            z: cube.z + input.movement.z,
-                        },
-                    });
-                }
-            }
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
