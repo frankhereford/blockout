@@ -6,6 +6,11 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
+import type { Prisma } from '@prisma/client';
+
+type GameWithActivePieces = Prisma.GameGetPayload<{ include: { pile: true } }> & { activePieces: Prisma.PieceGetPayload<{ include: { pile: true } }> | null };
+
+
 export const gameRouter = createTRPCRouter({
 
     create: protectedProcedure
@@ -36,16 +41,25 @@ export const gameRouter = createTRPCRouter({
     get: protectedProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
-            //console.log(ctx);
-            console.log("input: ", input);
+            //console.log("input: ", input);
+
             const game = await ctx.db.game.findUnique({
                 where: {
                     id: input.id,
                 },
                 include: {
-                    pile: true,
+                    pile: {
+                        include: {
+                            pieces: true,
+                        }
+                    },
                 },
-            });
+            });            
+
+            if (game?.pile?.pieces) {
+                game.pile.pieces = game.pile.pieces.filter(piece => piece.active);
+            }
+
             return game;
         }),
 
