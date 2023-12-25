@@ -18,7 +18,7 @@ interface Cube {
 
 const Piece = ({ id }: PieceProps) => {
 
-    const getPiece = api.piece.get.useQuery({ id: id });
+    const getPiece = api.piece.get.useQuery({ id: id }, { enabled: id !== undefined });
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
     useEffect(() => {

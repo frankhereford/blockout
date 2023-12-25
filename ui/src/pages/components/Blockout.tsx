@@ -24,10 +24,7 @@ export const Blockout = ({ id }: SceneProps) => {
     const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
-        console.log("getGame.data: ", getGame.data);
         if (getGame.data?.pile?.pieces) {
-            console.log("setting piece to first piece in pile: ", getGame.data?.pile?.pieces[0])
-            console.log("getGame.data?.pile?.pieces[0]?.id: ", getGame.data?.pile?.pieces[0]?.id)
             setPiece(getGame.data?.pile?.pieces[0]?.id ?? "");
         }
         if (getGame.data) {
