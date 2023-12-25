@@ -36,7 +36,7 @@ export const Blockout = ({ id }: SceneProps) => {
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
-            console.log("piece: ", piece)
+            //console.log("piece: ", piece)
             switch (event.key) {
                 case 'PageUp':
                 case '[':
