@@ -56,7 +56,6 @@ const Pile = ({ id }: PileProps) => {
         websocket.onopen = () => { console.log('WebSocket Connected'); };
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
-            console.log("websocket data: ", data)
             if ((data as { new_random_cube: boolean }).new_random_cube) {
                 void getPile.refetch();
             } else if ((data as { floor_removed: boolean }).floor_removed) {
