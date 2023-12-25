@@ -88,12 +88,11 @@ export const pieceRouter = createTRPCRouter({
         }),
 
     get: protectedProcedure
-        .input(z.object({ pile: z.string()}))
+        .input(z.object({ id: z.string()}))
         .query(async ({ ctx, input }) => {
-            const piece = await ctx.db.piece.findFirst({
+            const piece = await ctx.db.piece.findUnique({
                 where: {
-                    active: true,
-                    pileId: input.pile,
+                    id: input.id,
                 },
                 include: {
                     pile: true,
@@ -106,13 +105,11 @@ export const pieceRouter = createTRPCRouter({
         }),
 
     move: protectedProcedure
-        .input(z.object({ pile: z.string(), movement: z.object({ x: z.number(), y: z.number(), z: z.number(), pitch: z.number(), yaw: z.number(), roll: z.number() }) }))
+        .input(z.object({ id: z.string(), movement: z.object({ x: z.number(), y: z.number(), z: z.number(), pitch: z.number(), yaw: z.number(), roll: z.number() }) }))
         .mutation(async ({ ctx, input }) => {
-            //console.log("input: ", input)
             const piece = await ctx.db.piece.findFirst({
                 where: {
-                    active: true,
-                    pileId: input.pile,
+                    id: input.id,
                 },
                 include: {
                     pile: {
@@ -128,17 +125,12 @@ export const pieceRouter = createTRPCRouter({
                     cubes: true,
                 }
             });
-            //console.log("piece: ", piece)
 
             const movements = await ctx.db.movement.findMany({
                 where: {
-                    pieceId: piece!.id,
+                    pieceId: input.id,
                 },
             });
-
-            console.log('Movements:', movements);
-
-
 
             await ctx.db.movement.create({
                 data: {
@@ -148,11 +140,9 @@ export const pieceRouter = createTRPCRouter({
                     pitch: input.movement.pitch,
                     yaw: input.movement.yaw,
                     roll: input.movement.roll,
-                    pieceId: piece!.id,
+                    pieceId: input.id,
                 },
             });
-
-
 
             // just temp stuff to get it working
             if (piece && piece.cubes) {

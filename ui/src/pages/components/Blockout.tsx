@@ -18,11 +18,18 @@ export const Blockout = ({ id }: SceneProps) => {
     const [width, setWidth] = useState(1);
     const [height, setHeight] = useState(1);
     const [depth, setDepth] = useState(1);
+    const [piece, setPiece] = useState("");
 
     const getGame = api.game.get.useQuery({ id: id });
     const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
+        console.log("getGame.data: ", getGame.data);
+        if (getGame.data?.pile?.pieces) {
+            console.log("setting piece to first piece in pile: ", getGame.data?.pile?.pieces[0])
+            console.log("getGame.data?.pile?.pieces[0]?.id: ", getGame.data?.pile?.pieces[0]?.id)
+            setPiece(getGame.data?.pile?.pieces[0]?.id ?? "");
+        }
         if (getGame.data) {
             setWidth(getGame.data.width);
             setHeight(getGame.data.height);
@@ -32,32 +39,33 @@ export const Blockout = ({ id }: SceneProps) => {
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
+            console.log("piece: ", piece)
             switch (event.key) {
                 case 'PageUp':
                 case '[':
                     console.log('Page Up key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
                     break;
                 case 'PageDown':
                 case ']':
                     console.log('Page Down key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: -1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: -1, z: 0, pitch: 0, yaw: 0, roll: 0 } });
                     break;
                 case 'ArrowUp':
                     console.log('Up arrow key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 0, z: -1, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 0, z: -1, pitch: 0, yaw: 0, roll: 0 } });
                     break;
                 case 'ArrowDown':
                     console.log('Down arrow key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 0, y: 0, z: 1, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 0, z: 1, pitch: 0, yaw: 0, roll: 0 } });
                     break;
                 case 'ArrowLeft':
                     console.log('Left arrow key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: -1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: -1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
                     break;
                 case 'ArrowRight':
                     console.log('Right arrow key pressed');
-                    movePiece.mutate({ pile: getGame.data?.pile?.id ?? "", movement: { x: 1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
+                    movePiece.mutate({ id: piece, movement: { x: 1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
                     break;
             }
         };
@@ -68,6 +76,21 @@ export const Blockout = ({ id }: SceneProps) => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
+    }, [piece]);
+
+    useEffect(() => {
+        const websocket = new WebSocket('ws://localhost:3001/ws');
+
+        websocket.onopen = () => { console.log('WebSocket Connected'); };
+        websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data as string) as object;
+            if ((data as { piece: boolean }).piece) {
+                void getGame.refetch();
+            }
+        };
+        websocket.onerror = (error) => { console.error('WebSocket Error:', error); };
+        websocket.onclose = () => { console.log('WebSocket Disconnected'); };
+        return () => { websocket.close(); };
     }, []);
 
 
@@ -89,7 +112,7 @@ export const Blockout = ({ id }: SceneProps) => {
             />
             <Lighting width={width} height={height} depth={depth} />
             <Pile id={getGame.data.pile?.id ?? ''} />
-            <Piece id={getGame.data.pile?.id ?? ''} />
+            <Piece id={piece} />
         </>
     )
 }

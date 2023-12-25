@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get clean
 
 # normal stuff
-RUN apt-get install -y vim aptitude python3-pip magic-wormhole file
+RUN apt-get install -y vim aptitude python3-pip magic-wormhole file tmux
 
 RUN mkdir /application
 COPY . /application/ui
