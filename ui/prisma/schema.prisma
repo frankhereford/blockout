@@ -119,6 +119,7 @@ model Piece {
     pileId    String
     pile      Pile     @relation(fields: [pileId], references: [id])
     movements Movement[]
+    cubeIds   String[]
     cubes     PieceCube[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
