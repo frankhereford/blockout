@@ -135,7 +135,6 @@ export const pieceRouter = createTRPCRouter({
                 }
             });
 
-
             const movements = await ctx.db.movement.findMany({
                 where: {
                     pieceId: input.id,
