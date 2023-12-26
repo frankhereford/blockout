@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { z } from "zod";
 
 import {
@@ -149,83 +150,82 @@ export const pieceRouter = createTRPCRouter({
                 where: {
                     pieceId: input.id,
                 },
+                orderBy: {
+                    createdAt: 'asc',
+                },
             });
 
-            const totalMovements = movements.reduce((total, movement) => {
-                return {
-                    x: total.x + movement.x,
-                    y: total.y + movement.y,
-                    z: total.z + movement.z,
-                    pitch: total.pitch + movement.pitch,
-                    yaw: total.yaw + movement.yaw,
-                    roll: total.roll + movement.roll,
-                };
-            }, { x: 0, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 });
+            const orientation = new Quaternion();
+            orientation.setFromEuler(new Euler(0, 0, 0));
 
-            const newTotalMovements = {
-                x: totalMovements.x + input.movement.x,
-                y: totalMovements.y + input.movement.y,
-                z: totalMovements.z + input.movement.z,
-                pitch: totalMovements.pitch + input.movement.pitch,
-                yaw: totalMovements.yaw + input.movement.yaw,
-                roll: totalMovements.roll + input.movement.roll,
-            };
+            for (let i = 0; i < movements.length; i++) {
+                const movement = movements[i];
+                console.log("movement: ", movement);
+                for (let i = 0; i < movements.length; i++) {
+                    const movement = movements[i];
+                    console.log("movement: ", movement);
 
-            const shape = piece!.library.shape as unknown as { x: number, y: number, z: number }[];
-            console.log("\n\n"); 
-            console.log("ids", piece?.cubeIds)
-            console.log("shape", shape);
-            console.log("origin: ", piece?.library.origin)
-            console.log("newTotalMovements", newTotalMovements);
-            
-            //example shape: [ { x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0 } ]
-            
-            // Create a quaternion from the pitch, yaw, and roll values
-            const quaternion = new Quaternion();
-            quaternion.setFromEuler(new Euler(newTotalMovements.pitch * Math.PI / 2, newTotalMovements.yaw * Math.PI / 2, newTotalMovements.roll * Math.PI / 2, 'XYZ'));
+                    if (movement!.x !== 0 || movement!.y !== 0 || movement!.z !== 0) {
+                        console.log("This is a translation");
+                    } else if (movement!.pitch !== 0 || movement!.yaw !== 0 || movement!.roll !== 0) {
+                        console.log("This is a rotation");
+                        if (movement!.pitch !== 0) {
+                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+                            orientation.premultiply(rotation);
+                        } else if (movement!.yaw !== 0) {
+                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
+                            orientation.premultiply(rotation);
+                        } else if (movement!.roll !== 0) {
+                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+                            orientation.premultiply(rotation);
+                        }
+                    }
+                }
+            } 
 
-            for (let index = 0; index < shape.length; index++) {
-                const cube = shape[index];
-                const vector = new Vector3(cube!.x, cube!.y, cube!.z);
+            if (input.movement.x !== 0 || input.movement.y !== 0 || input.movement.z !== 0) {
+                console.log("This is a translation");
+            } else if (input.movement.pitch !== 0 || input.movement.yaw !== 0 || input.movement.roll !== 0) {
+                console.log("This is a rotation");
+                if (input.movement.pitch !== 0) {
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+                    orientation.premultiply(rotation);
+                } else if (input.movement.yaw !== 0) {
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
+                    orientation.premultiply(rotation);
+                } else if (input.movement.roll !== 0) {
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+                    orientation.premultiply(rotation);
+                }
+            }
 
-                // Apply the quaternion rotation to the vector
-                vector.applyQuaternion(quaternion);
+            console.log("orientation: ", orientation);
+            console.log("piece?.library.shape: ", piece?.library.shape);
 
+            const shape = piece?.library.shape as unknown as { x: number, y: number, z: number}[];
+            const transformedShape = shape.map(point => {
+                const vector = new Vector3(point.x, point.y, point.z);
+                vector.applyQuaternion(orientation);
                 const roundedVector = roundVector3(vector);
+                return { x: roundedVector.x, y: roundedVector.y, z: roundedVector.z };
+            });
 
-                console.log("vector", roundedVector);
+            console.log("rotated shape: ", transformedShape);
+            console.log("piece?.cubeIds: ", piece?.cubeIds);
 
-                // Update the cube with the rotated vector
+            for (let i = 0; i < (piece?.cubeIds.length ?? 0); i++) {
+                const cubeId = piece?.cubeIds[i];
+                const shape = transformedShape[i];
+
                 await ctx.db.pieceCube.update({
-                    where: { id: piece!.cubes[index]!.id },
+                    where: { id: cubeId },
                     data: {
-                        x: roundedVector.x + newTotalMovements.x,
-                        y: roundedVector.y + newTotalMovements.y,
-                        z: roundedVector.z + newTotalMovements.z,
+                        x: shape!.x,
+                        y: shape!.y,
+                        z: shape!.z,
                     },
                 });
             }
-
-
-            console.log("\n\n");
-
-
-
-            // for (let index = 0; index < shape.length; index++) {
-            //     const cube = shape[index];
-            //     const x = cube!.x + newTotalMovements.x;
-            //     const y = cube!.y + newTotalMovements.y;
-            //     const z = cube!.z + newTotalMovements.z;
-                
-            //     await ctx.db.pieceCube.update({
-            //         where: { id: piece!.cubes[index]!.id },
-            //         data: {
-            //             x: x,
-            //             y: y,
-            //             z: z,
-            //         },
-            //     });
-            // }
 
             await ctx.db.movement.create({
                 data: {
@@ -238,6 +238,8 @@ export const pieceRouter = createTRPCRouter({
                     pieceId: input.id,
                 },
             });
+
+            console.log("\n\n");
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
