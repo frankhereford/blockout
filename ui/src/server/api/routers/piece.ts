@@ -6,6 +6,8 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
+import { Quaternion, Euler, Vector3 } from 'three';
+
 import { createClient } from "redis";
 
 const client = createClient({
@@ -15,6 +17,14 @@ const client = createClient({
 client.on('error', (err) => console.log('Redis Client Error', err));
 
 await client.connect();
+
+const roundVector3 = (vector: Vector3): Vector3 => {
+    return new Vector3(
+        Math.round(vector.x),
+        Math.round(vector.y),
+        Math.round(vector.z)
+    );
+};
 
 export const pieceRouter = createTRPCRouter({
 
@@ -162,22 +172,60 @@ export const pieceRouter = createTRPCRouter({
             };
 
             const shape = piece!.library.shape as unknown as { x: number, y: number, z: number }[];
+            console.log("\n\n"); 
+            console.log("ids", piece?.cubeIds)
+            console.log("shape", shape);
+            console.log("origin: ", piece?.library.origin)
+            console.log("newTotalMovements", newTotalMovements);
+            
+            //example shape: [ { x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0 } ]
+            
+            // Create a quaternion from the pitch, yaw, and roll values
+            const quaternion = new Quaternion();
+            quaternion.setFromEuler(new Euler(newTotalMovements.pitch * Math.PI / 2, newTotalMovements.yaw * Math.PI / 2, newTotalMovements.roll * Math.PI / 2, 'XYZ'));
 
             for (let index = 0; index < shape.length; index++) {
                 const cube = shape[index];
-                const x = cube!.x + newTotalMovements.x;
-                const y = cube!.y + newTotalMovements.y;
-                const z = cube!.z + newTotalMovements.z;
-                
+                const vector = new Vector3(cube!.x, cube!.y, cube!.z);
+
+                // Apply the quaternion rotation to the vector
+                vector.applyQuaternion(quaternion);
+
+                const roundedVector = roundVector3(vector);
+
+                console.log("vector", roundedVector);
+
+                // Update the cube with the rotated vector
                 await ctx.db.pieceCube.update({
                     where: { id: piece!.cubes[index]!.id },
                     data: {
-                        x: x,
-                        y: y,
-                        z: z,
+                        x: roundedVector.x + newTotalMovements.x,
+                        y: roundedVector.y + newTotalMovements.y,
+                        z: roundedVector.z + newTotalMovements.z,
                     },
                 });
             }
+
+
+            console.log("\n\n");
+
+
+
+            // for (let index = 0; index < shape.length; index++) {
+            //     const cube = shape[index];
+            //     const x = cube!.x + newTotalMovements.x;
+            //     const y = cube!.y + newTotalMovements.y;
+            //     const z = cube!.z + newTotalMovements.z;
+                
+            //     await ctx.db.pieceCube.update({
+            //         where: { id: piece!.cubes[index]!.id },
+            //         data: {
+            //             x: x,
+            //             y: y,
+            //             z: z,
+            //         },
+            //     });
+            // }
 
             await ctx.db.movement.create({
                 data: {

@@ -64,6 +64,18 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log('Right arrow key pressed');
                     movePiece.mutate({ id: piece, movement: { x: 1, y: 0, z: 0, pitch: 0, yaw: 0, roll: 0 } });
                     break;
+                case 'q':
+                    console.log('Q key pressed');
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 0, z: 0, pitch: 1, yaw: 0, roll: 0 } });
+                    break;
+                case 'w':
+                    console.log('W key pressed');
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 0, z: 0, pitch: 0, yaw: 1, roll: 0 } });
+                    break;
+                case 'e':
+                    console.log('E key pressed');
+                    movePiece.mutate({ id: piece, movement: { x: 0, y: 0, z: 0, pitch: 0, yaw: 0, roll: 1 } });
+                    break;
             }
         };
 
