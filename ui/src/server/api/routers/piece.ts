@@ -140,7 +140,7 @@ export const pieceRouter = createTRPCRouter({
             function executeMove(input: { movement: { x: number; y: number; z: number; pitch: number; yaw: number; roll: number; }; id: string; }) {
                 return prisma.$transaction(async (prisma) => {
 
-                    const game = await prisma.piece.findUnique({
+                    const piece = await prisma.piece.findUnique({
                         where: {
                             id: input.id,
                         },
@@ -151,12 +151,25 @@ export const pieceRouter = createTRPCRouter({
                                 },
                             },
                             library: true,
+                            movements: true,
                         },
                     });
 
-                    const initial_x = (game!.pile.game.width / 2) - 0.5;
-                    const initial_y = (game!.pile.game.height - 1);
-                    const initial_z = (game!.pile.game.depth / 2) - 0.5;
+                    console.log("piece", piece);
+
+                    const totalMovement = piece!.movements.reduce((total, movement) => {
+                        return {
+                            x: total.x + movement.x,
+                            y: total.y + movement.y,
+                            z: total.z + movement.z,
+                        };
+                    }, { x: 0, y: 0, z: 0 });
+
+                    console.log("totalMovement", totalMovement);
+
+                    const initial_x = (piece!.pile.game.width / 2) - 0.5;
+                    const initial_y = (piece!.pile.game.height - 1);
+                    const initial_z = (piece!.pile.game.depth / 2) - 0.5;
 
                     const pieceCubes = await prisma.pieceCube.findMany({
                         where: {
@@ -187,9 +200,9 @@ export const pieceRouter = createTRPCRouter({
 
                     const finalPieceCubes = rotatedPieceCubesAtOffsetOrigin.map(rotatedPieceCube => ({
                         ...rotatedPieceCube,
+                        x: rotatedPieceCube.x + initial_x ,
                         x: rotatedPieceCube.x + initial_x,
-                        y: rotatedPieceCube.y + initial_y,
-                        z: rotatedPieceCube.z + initial_z,
+                        x: rotatedPieceCube.x + initial_x,
                     }));
 
                     for (const rotatedPieceCube of finalPieceCubes) {
@@ -204,6 +217,7 @@ export const pieceRouter = createTRPCRouter({
                             },
                         });
                     }
+
 
                     const maxSerialNumber = await prisma.movement.aggregate({
                         where: {
