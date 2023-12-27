@@ -151,53 +151,56 @@ export const pieceRouter = createTRPCRouter({
                     pieceId: input.id,
                 },
                 orderBy: {
-                    createdAt: 'asc',
+                    createdAt: 'desc',
                 },
             });
 
             const orientation = new Quaternion();
             orientation.setFromEuler(new Euler(0, 0, 0));
 
+            let totalPitch = input.movement.x, totalYaw = input.movement.y, totalRoll = input.movement.z;
+
             for (let i = 0; i < movements.length; i++) {
                 const movement = movements[i];
-                console.log("movement: ", movement);
-                for (let i = 0; i < movements.length; i++) {
-                    const movement = movements[i];
-                    console.log("movement: ", movement);
 
-                    if (movement!.x !== 0 || movement!.y !== 0 || movement!.z !== 0) {
-                        console.log("This is a translation");
-                    } else if (movement!.pitch !== 0 || movement!.yaw !== 0 || movement!.roll !== 0) {
-                        console.log("This is a rotation");
-                        if (movement!.pitch !== 0) {
-                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
-                            orientation.premultiply(rotation);
-                        } else if (movement!.yaw !== 0) {
-                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
-                            orientation.premultiply(rotation);
-                        } else if (movement!.roll !== 0) {
-                            const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
-                            orientation.premultiply(rotation);
-                        }
-                    }
-                }
-            } 
-
-            if (input.movement.x !== 0 || input.movement.y !== 0 || input.movement.z !== 0) {
-                console.log("This is a translation");
-            } else if (input.movement.pitch !== 0 || input.movement.yaw !== 0 || input.movement.roll !== 0) {
-                console.log("This is a rotation");
-                if (input.movement.pitch !== 0) {
-                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
-                    orientation.premultiply(rotation);
-                } else if (input.movement.yaw !== 0) {
-                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
-                    orientation.premultiply(rotation);
-                } else if (input.movement.roll !== 0) {
-                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
-                    orientation.premultiply(rotation);
+                if (movement!.pitch !== 0 || movement!.yaw !== 0 || movement!.roll !== 0) {
+                    console.log("This is a rotation");
+                    totalPitch += movement!.pitch;
+                    totalYaw += movement!.yaw;
+                    totalRoll += movement!.roll;
                 }
             }
+
+            // Apply the accumulated rotations
+            if (totalPitch !== 0) {
+                const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), (Math.PI / 2) * totalPitch);
+                orientation.multiply(rotation);
+            }
+            if (totalYaw !== 0) {
+                const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), (Math.PI / 2) * totalYaw);
+                orientation.multiply(rotation);
+            }
+            if (totalRoll !== 0) {
+                const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), (Math.PI / 2) * totalRoll);
+                orientation.multiply(rotation);
+            }
+
+
+            // if (input.movement.x !== 0 || input.movement.y !== 0 || input.movement.z !== 0) {
+            //     console.log("This is a translation");
+            // } else if (input.movement.pitch !== 0 || input.movement.yaw !== 0 || input.movement.roll !== 0) {
+            //     console.log("This is a rotation");
+            //     if (input.movement.pitch !== 0) {
+            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            //         orientation.premultiply(rotation);
+            //     } else if (input.movement.yaw !== 0) {
+            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
+            //         orientation.premultiply(rotation);
+            //     } else if (input.movement.roll !== 0) {
+            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+            //         orientation.premultiply(rotation);
+            //     }
+            // }
 
             console.log("orientation: ", orientation);
             console.log("piece?.library.shape: ", piece?.library.shape);

@@ -25,6 +25,19 @@ async function main() {
             color: 'green',
         },
     });
+    await prisma.library.create({
+        data: {
+            name: "zig",
+            origin: { x: 0, y: 0, z: 0 },
+            shape: [
+                { x: 0, y: 0, z: 0 },
+                { x: 1, y: 0, z: 0 },
+                { x: 1, y: 1, z: 0 },
+                { x: 2, y: 1, z: 0 },
+            ],
+            color: "blue",
+        },
+    });
 }
 
 main()
