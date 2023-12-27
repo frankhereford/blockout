@@ -37,7 +37,7 @@ export const pileRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { id, floor } = input;
 
-            await ctx.db.cube.updateMany({
+            await ctx.db.pileCube.updateMany({
                 where: {
                     pileId: id,
                     y: floor,
@@ -48,7 +48,7 @@ export const pileRouter = createTRPCRouter({
             });
 
             // Then, decrease the y value of all active cubes above the cleared floor
-            await ctx.db.cube.updateMany({
+            await ctx.db.pileCube.updateMany({
                 where: {
                     pileId: id,
                     y: {
@@ -108,7 +108,7 @@ export const pileRouter = createTRPCRouter({
 
                 if (!randomPosition) { throw new Error("No random position found"); }
 
-                const newCube = await ctx.db.cube.create({
+                const newCube = await ctx.db.pileCube.create({
                     data: {
                         x: randomPosition.x,
                         y: randomPosition.y,

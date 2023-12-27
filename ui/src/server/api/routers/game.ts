@@ -6,11 +6,6 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
-import type { Prisma } from '@prisma/client';
-
-type GameWithActivePieces = Prisma.GameGetPayload<{ include: { pile: true } }> & { activePieces: Prisma.PieceGetPayload<{ include: { pile: true } }> | null };
-
-
 export const gameRouter = createTRPCRouter({
 
     create: protectedProcedure
