@@ -27,6 +27,12 @@ const roundVector3 = (vector: Vector3): Vector3 => {
     );
 };
 
+interface Origin {
+    x: number;
+    y: number;
+    z: number;
+}
+
 export const pieceRouter = createTRPCRouter({
 
     create: protectedProcedure
@@ -86,20 +92,16 @@ export const pieceRouter = createTRPCRouter({
                 z: number;
             }
 
-            interface Origin {
-                x: number;
-                y: number;
-                z: number;
-            }
+
 
             if (Array.isArray(piece.library.shape)) {
                 for (const shape of piece.library.shape as unknown as Shape[]) {
                     const origin = piece.library.origin as unknown as Origin;
                     await ctx.db.pieceCube.create({
                         data: {
-                            x: shape.x + (game!.game.width / 2) - origin.x,
+                            x: shape.x + (game!.game.width / 2) - 0.5 - origin.x,
                             y: shape.y + (game!.game.height - 1) - origin.y,
-                            z: shape.z + (game!.game.depth / 2) - origin.z,
+                            z: shape.z + (game!.game.depth / 2) - 0.5 - origin.z,
                             pieceId: piece.id,
                         },
                     });
@@ -137,8 +139,71 @@ export const pieceRouter = createTRPCRouter({
 
             function executeMove(input: { movement: { x: number; y: number; z: number; pitch: number; yaw: number; roll: number; }; id: string; }) {
                 return prisma.$transaction(async (prisma) => {
-                    console.log("in executeMove");
-                    console.log("input", input);
+
+                    const game = await prisma.piece.findUnique({
+                        where: {
+                            id: input.id,
+                        },
+                        include: {
+                            pile: {
+                                include: {
+                                    game: true,
+                                },
+                            },
+                            library: true,
+                        },
+                    });
+
+                    const initial_x = (game!.pile.game.width / 2) - 0.5;
+                    const initial_y = (game!.pile.game.height - 1);
+                    const initial_z = (game!.pile.game.depth / 2) - 0.5;
+
+                    const pieceCubes = await prisma.pieceCube.findMany({
+                        where: {
+                            pieceId: input.id,
+                        },
+                    });
+
+                    const pieceCubesAtOffsetOrigin = pieceCubes.map(pieceCube => ({
+                        ...pieceCube,
+                        x: pieceCube.x - initial_x,
+                        y: pieceCube.y - initial_y,
+                        z: pieceCube.z - initial_z,
+                    }));
+
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(input.movement.pitch, input.movement.yaw, input.movement.roll), Math.PI / 2);
+
+                    const rotatedPieceCubesAtOffsetOrigin = pieceCubesAtOffsetOrigin.map(pieceCube => {
+                        const cubePosition = new Vector3(pieceCube.x, pieceCube.y, pieceCube.z);
+                        cubePosition.applyQuaternion(rotation);
+                        const roundedCubePosition = roundVector3(cubePosition);
+                        return {
+                            ...pieceCube,
+                            x: roundedCubePosition.x,
+                            y: roundedCubePosition.y,
+                            z: roundedCubePosition.z,
+                        };
+                    });
+
+                    const finalPieceCubes = rotatedPieceCubesAtOffsetOrigin.map(rotatedPieceCube => ({
+                        ...rotatedPieceCube,
+                        x: rotatedPieceCube.x + initial_x,
+                        y: rotatedPieceCube.y + initial_y,
+                        z: rotatedPieceCube.z + initial_z,
+                    }));
+
+                    for (const rotatedPieceCube of finalPieceCubes) {
+                        await prisma.pieceCube.update({
+                            where: {
+                                id: rotatedPieceCube.id,
+                            },
+                            data: {
+                                x: rotatedPieceCube.x,
+                                y: rotatedPieceCube.y,
+                                z: rotatedPieceCube.z,
+                            },
+                        });
+                    }
 
                     const maxSerialNumber = await prisma.movement.aggregate({
                         where: {
@@ -149,7 +214,7 @@ export const pieceRouter = createTRPCRouter({
                         },
                     });
 
-                    const nextSerialNumber: number = (maxSerialNumber._max.serial !== null ? maxSerialNumber._max.serial + 1 : 0) as number;
+                    const nextSerialNumber: number = (maxSerialNumber._max.serial !== null ? maxSerialNumber._max.serial + 1 : 0);
 
                     await prisma.movement.create({
                         data: {
