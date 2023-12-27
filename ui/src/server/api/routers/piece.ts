@@ -200,9 +200,9 @@ export const pieceRouter = createTRPCRouter({
 
                     const finalPieceCubes = rotatedPieceCubesAtOffsetOrigin.map(rotatedPieceCube => ({
                         ...rotatedPieceCube,
-                        x: rotatedPieceCube.x + initial_x ,
                         x: rotatedPieceCube.x + initial_x,
-                        x: rotatedPieceCube.x + initial_x,
+                        y: rotatedPieceCube.y + initial_y,
+                        z: rotatedPieceCube.z + initial_z,
                     }));
 
                     for (const rotatedPieceCube of finalPieceCubes) {
@@ -217,6 +217,8 @@ export const pieceRouter = createTRPCRouter({
                             },
                         });
                     }
+
+
 
 
                     const maxSerialNumber = await prisma.movement.aggregate({
