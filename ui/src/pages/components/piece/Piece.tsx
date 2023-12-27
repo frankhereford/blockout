@@ -18,7 +18,7 @@ interface Cube {
 
 const Piece = ({ id }: PieceProps) => {
 
-    //const getPiece = api.piece.get.useQuery({ id: id }, { enabled: id !== undefined });
+    const getPiece = api.piece.get.useQuery({ id: id }, { enabled: id !== undefined });
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const Piece = ({ id }: PieceProps) => {
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
             if ((data as { piece: boolean }).piece) {
-                //void getPiece.refetch();
+                void getPiece.refetch();
             }
         };
         websocket.onerror = (error) => { console.error('WebSocket Error:', error); };
@@ -36,16 +36,16 @@ const Piece = ({ id }: PieceProps) => {
         return () => { websocket.close(); };
     }, []);
 
-    // useEffect(() => {
-        //console.log("getPiece.data: ", getPiece.data)
-        // if (getPiece.data) {
-        //     const color = getPiece.data.library.color;
-        //     const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
-        //         return { ...acc, [cube.id]: { ...cube, color } };
-        //     }, {});
-        //     setCubeState(newCubeState);
-    //     }
-    // }, [getPiece.data]);
+    useEffect(() => {
+        if (getPiece.data) {
+            console.log("getPiece.data: ", getPiece.data)
+            const color = getPiece.data.library.color;
+            const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
+                return { ...acc, [cube.id]: { ...cube, color } };
+            }, {});
+            setCubeState(newCubeState);
+        }
+    }, [getPiece.data]);
 
     return (
         <>
