@@ -241,7 +241,8 @@ export const pieceRouter = createTRPCRouter({
                     function isPieceOverlappingPile(piece: ExtendedPiece) {
                         for (const pieceCube of piece.cubes) {
                             for (const pileCube of piece.pile.cubes) {
-                                if (pieceCube.x === pileCube.x &&
+                                if (pileCube.active && 
+                                    pieceCube.x === pileCube.x &&
                                     pieceCube.y === pileCube.y &&
                                     pieceCube.z === pileCube.z) {
                                     return true;
@@ -252,7 +253,7 @@ export const pieceRouter = createTRPCRouter({
                     }
 
                     const isOverlapping = isPieceOverlappingPile(piece);
-                    //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
+                    console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
                     if (isOverlapping) {
                         return;
                     }
