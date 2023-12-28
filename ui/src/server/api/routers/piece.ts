@@ -10,7 +10,17 @@ import {
 import { Quaternion, Euler, Vector3 } from 'three';
 
 import { createClient } from "redis";
-import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
+
+import type { Piece, Pile, Library, Movement, PieceCube, Game } from '@prisma/client';
+
+interface ExtendedPiece extends Piece {
+    pile: Pile & {
+        game: Game;
+    };
+    library: Library;
+    movements: Movement[];
+    cubes: PieceCube[];
+}
 
 const client = createClient({
     url: 'redis://redis'
@@ -161,6 +171,8 @@ export const pieceRouter = createTRPCRouter({
 
                     if (!piece) { return; }
 
+                    
+
                     piece.movements.push({
                         id: 'pending',
                         pieceId: input.id,
@@ -217,6 +229,33 @@ export const pieceRouter = createTRPCRouter({
                         cube.y += input.movement.y;
                         cube.z += input.movement.z;
                     }
+
+                    //console.log("piece: ", piece);
+
+                    function isPieceWithinBounds(piece: ExtendedPiece) {
+                        for (const cube of (piece.cubes)) {
+                            if (cube.x < 0 || cube.x >= piece.pile.game.width ||
+                                cube.y < 0 || // we're cool with the ceiling
+                                cube.z < 0 || cube.z >= piece.pile.game.depth) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    const game = {
+                        width: piece.pile.game.width,
+                        height: piece.pile.game.height,
+                        depth: piece.pile.game.depth
+                    };
+
+                    const isWithinBounds = isPieceWithinBounds(piece);
+                    console.log(`Is the piece within bounds? ${isWithinBounds}`);
+                    if (!isWithinBounds) {
+                        return;
+                    }
+
+                    // ! writing starts here
 
                     for (const cube of piece.cubes) {
                         await prisma.pieceCube.update({
