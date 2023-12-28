@@ -198,7 +198,7 @@ export const pieceRouter = createTRPCRouter({
                     for (const cube of piece.cubes) {
                         const cubePosition = new Vector3(cube.x, cube.y, cube.z);
                         cubePosition.applyQuaternion(rotation);
-                        const roundedCubePosition = roundVector3(cubePosition);
+                        const roundedCubePosition = roundVector3(cubePosition); // handles floating point noise
 
                         cube.x = roundedCubePosition.x;
                         cube.y = roundedCubePosition.y;
