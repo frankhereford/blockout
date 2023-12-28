@@ -97,8 +97,6 @@ async function createPiece(
         take: 1,
     });
 
-    //console.log("game", game);
-
     const piece = await ctx.db.piece.create({
         data: {
             active: true,
