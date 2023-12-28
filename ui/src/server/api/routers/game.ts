@@ -7,9 +7,14 @@ import {
 } from "~/server/api/trpc";
 
 export const gameRouter = createTRPCRouter({
-
     create: protectedProcedure
-        .input(z.object({ width: z.number(), height: z.number(), depth: z.number() }))
+        .input(
+            z.object({
+                width: z.number(),
+                height: z.number(),
+                depth: z.number(),
+            }),
+        )
         .mutation(async ({ ctx, input }) => {
             const game = await ctx.db.game.create({
                 data: {
@@ -18,17 +23,17 @@ export const gameRouter = createTRPCRouter({
                     depth: input.depth,
                     user: { connect: { id: ctx.session.user.id } },
                     pile: {
-                        create: {}
+                        create: {},
                     },
                 },
                 select: {
                     id: true,
                     pile: {
                         select: {
-                            id: true
-                        }
-                    }
-                }
+                            id: true,
+                        },
+                    },
+                },
             });
             return game;
         }),
@@ -46,16 +51,17 @@ export const gameRouter = createTRPCRouter({
                     pile: {
                         include: {
                             pieces: true,
-                        }
+                        },
                     },
                 },
-            });            
+            });
 
             if (game?.pile?.pieces) {
-                game.pile.pieces = game.pile.pieces.filter(piece => piece.active);
+                game.pile.pieces = game.pile.pieces.filter(
+                    (piece) => piece.active,
+                );
             }
 
             return game;
         }),
-
 });

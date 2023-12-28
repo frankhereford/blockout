@@ -226,7 +226,7 @@ export const pieceRouter = createTRPCRouter({
                     }
 
                     piece.movements.push({
-                        id: "pending",
+                        id: "pending", // many of these are not used, just here to fit the typing
                         pieceId: input.id,
                         serial: piece.movements.length,
                         x: input.movement.x,
