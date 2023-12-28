@@ -11,11 +11,12 @@ import { Quaternion, Euler, Vector3 } from 'three';
 
 import { createClient } from "redis";
 
-import type { Piece, Pile, Library, Movement, PieceCube, Game } from '@prisma/client';
+import type { Piece, Pile, Library, Movement, PieceCube, Game, PileCube } from '@prisma/client';
 
 interface ExtendedPiece extends Piece {
     pile: Pile & {
         game: Game;
+        cubes: PileCube[];
     };
     library: Library;
     movements: Movement[];
@@ -157,6 +158,7 @@ export const pieceRouter = createTRPCRouter({
                             pile: {
                                 include: {
                                     game: true,
+                                    cubes: true,
                                 },
                             },
                             library: true,
@@ -170,8 +172,6 @@ export const pieceRouter = createTRPCRouter({
                     });
 
                     if (!piece) { return; }
-
-                    
 
                     piece.movements.push({
                         id: 'pending',
@@ -189,8 +189,6 @@ export const pieceRouter = createTRPCRouter({
 
 
                     const originCube = piece.cubes.find(cube => cube.isOrigin === true);
-
-                    const origin = piece.library.origin as unknown as Origin;
 
                     const relativeX = 0 - originCube!.x;
                     const relativeY = 0 - originCube!.y;
@@ -216,7 +214,7 @@ export const pieceRouter = createTRPCRouter({
                         cube.z = roundedCubePosition.z;
                     }
 
-                    // undo the originification
+                    // undo the origin-ification
                     for (const cube of piece.cubes) {
                         cube.x -= relativeX;
                         cube.y -= relativeY;
@@ -243,17 +241,31 @@ export const pieceRouter = createTRPCRouter({
                         return true;
                     }
 
-                    const game = {
-                        width: piece.pile.game.width,
-                        height: piece.pile.game.height,
-                        depth: piece.pile.game.depth
-                    };
-
                     const isWithinBounds = isPieceWithinBounds(piece);
-                    console.log(`Is the piece within bounds? ${isWithinBounds}`);
+                    //console.log(`Is the piece within bounds? ${isWithinBounds}`);
                     if (!isWithinBounds) {
                         return;
                     }
+
+                    function isPieceOverlappingPile(piece: ExtendedPiece) {
+                        for (const pieceCube of piece.cubes) {
+                            for (const pileCube of piece.pile.cubes) {
+                                if (pieceCube.x === pileCube.x &&
+                                    pieceCube.y === pileCube.y &&
+                                    pieceCube.z === pileCube.z) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+
+                    const isOverlapping = isPieceOverlappingPile(piece);
+                    //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
+                    if (isOverlapping) {
+                        return;
+                    }
+
 
                     // ! writing starts here
 
