@@ -328,12 +328,10 @@ export const pieceRouter = createTRPCRouter({
                     const isOverlapping = isPieceOverlappingPile(piece);
                     //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
 
-                    if (
+                    if ( // moving down but bumping into something
                         input.movement.y < 0 &&
                         (!isWithinBounds || isOverlapping)
                     ) {
-                        console.log("\n\ntrying to go down with a problem\n\n");
-                        console.log("piece: ", piece);
                         for (const cube of piece.cubes) {
                             await prisma.pileCube.create({
                                 data: {
