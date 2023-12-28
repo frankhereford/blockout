@@ -7,7 +7,7 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
-import { Quaternion, Euler, Vector3 } from 'three';
+import { Quaternion, Vector3 } from 'three';
 
 import { createClient } from "redis";
 
@@ -46,6 +46,7 @@ interface Origin {
     z: number;
 }
 
+// this is so ugly here, inferring the type with the IDE and burning it in ..
 async function createPiece(ctx: { db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>; session: { user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } & { id: string; }; expires: string; }; }, input: { pile: string; }) {
     const pile = await ctx.db.pile.findUnique({
         where: {
@@ -192,7 +193,6 @@ export const pieceRouter = createTRPCRouter({
                         updatedAt: new Date(),
                     });
 
-
                     const originCube = piece.cubes.find(cube => cube.isOrigin === true);
 
                     const relativeX = 0 - originCube!.x;
@@ -232,8 +232,6 @@ export const pieceRouter = createTRPCRouter({
                         cube.y += input.movement.y;
                         cube.z += input.movement.z;
                     }
-
-                    //console.log("piece: ", piece);
 
                     function isPieceWithinBounds(piece: ExtendedPiece) {
                         for (const cube of (piece.cubes)) {
@@ -340,7 +338,6 @@ export const pieceRouter = createTRPCRouter({
 
             await executeMove(input);
 
-
             const piece = await prisma.piece.findUnique({
                 where: {
                     id: input.id,
@@ -425,17 +422,14 @@ export const pieceRouter = createTRPCRouter({
                         },
                     },
                 });
-
             }
 
-            await client.multi()
-                .publish('events', JSON.stringify({ floor_removed: true }))
-                .exec();
-
-            await client.multi()
-                .publish('events', JSON.stringify({ piece: true }))
-                .exec();
-
+        await client.multi()
+            .publish('events', JSON.stringify({ floor_removed: true }))
+            .exec();
+        await client.multi()
+            .publish('events', JSON.stringify({ piece: true }))
+            .exec();
         }),
 
 });
