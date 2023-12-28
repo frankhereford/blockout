@@ -269,7 +269,18 @@ export const pieceRouter = createTRPCRouter({
 
                     if (input.movement.y < 0 && (!isWithinBounds || isOverlapping)) {
                         console.log('\n\ntrying to go down with a problem\n\n')
+                        console.log("piece: ", piece);
                         for (const cube of piece.cubes) {
+                            piece.pile.cubes.push({
+                                id: 'pending',
+                                pileId: piece.pile.id,
+                                x: cube.x,
+                                y: cube.y + 1,
+                                z: cube.z,
+                                active: true,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            });
                             await prisma.pileCube.create({
                                 data: {
                                     x: cube.x,
@@ -281,12 +292,55 @@ export const pieceRouter = createTRPCRouter({
                                 }
                             });
 
-                            await createPiece(ctx, { pile: piece.pile.id });
 
-                            await client.multi()
-                                .publish('events', JSON.stringify({ new_random_cube: true}))
-                                .exec();
+
+                            // Create a 3D array to represent the game space
+                            const gameSpace = new Array(piece.pile.game.height).fill(0).map(() =>
+                                new Array(piece.pile.game.width).fill(0).map(() =>
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                                    new Array(piece.pile.game.depth).fill(false)
+                                )
+                            );
+
+                            // Fill the game space with the active cubes
+                            for (const cube of piece.pile.cubes) {
+                                if (cube.active) {
+                                    gameSpace[cube.y]![cube.x]![cube.z] = true;
+                                }
+                            }
+
+                            // Find the Y values where there is a full set of active pieces in every X,Z pair
+                            const fullYValues = [];
+                            for (let y = 0; y < piece.pile.game.height; y++) {
+                                let isFull = true;
+                                for (let x = 0; x < piece.pile.game.width; x++) {
+                                    for (let z = 0; z < piece.pile.game.depth; z++) {
+                                        if (!gameSpace[y]![x]![z]) {
+                                            isFull = false;
+                                            break;
+                                        }
+                                    }
+                                    if (!isFull) {
+                                        break;
+                                    }
+                                }
+                                if (isFull) {
+                                    fullYValues.push(y);
+                                }
+                            }
+
+
+
+
+
+
+
+                            await createPiece(ctx, { pile: piece.pile.id });
                         }
+                        await client.multi()
+                            .publish('events', JSON.stringify({ new_random_cube: true}))
+                            .exec();
+                        return;
                     }
 
                     if (!isWithinBounds) {
