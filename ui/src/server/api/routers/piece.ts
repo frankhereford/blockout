@@ -165,7 +165,13 @@ export const pieceRouter = createTRPCRouter({
                         };
                     }, { x: 0, y: 0, z: 0 });
 
-                    console.log("totalMovement", totalMovement);
+                    const totalMovementWithRequestedMovement = {
+                        x: totalMovement.x + input.movement.x,
+                        y: totalMovement.y + input.movement.y,
+                        z: totalMovement.z + input.movement.z,
+                    };
+
+                    console.log("totalMovementWithRequestedMovement", totalMovementWithRequestedMovement);
 
                     const initial_x = (piece!.pile.game.width / 2) - 0.5;
                     const initial_y = (piece!.pile.game.height - 1);
@@ -183,6 +189,8 @@ export const pieceRouter = createTRPCRouter({
                         y: pieceCube.y - initial_y,
                         z: pieceCube.z - initial_z,
                     }));
+
+                    console.log("pieceCubesAtOffsetOrigin", pieceCubesAtOffsetOrigin);
 
                     const rotation = new Quaternion().setFromAxisAngle(new Vector3(input.movement.pitch, input.movement.yaw, input.movement.roll), Math.PI / 2);
 
