@@ -127,6 +127,7 @@ model Piece {
 
 model PieceCube { 
     id        String   @id @default(cuid())
+    isOrigin  Boolean  @default(false)
     x         Int
     y         Int
     z         Int
