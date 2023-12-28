@@ -6,7 +6,7 @@ interface AxesLabelsProps {
     depth: number;
 }
 
-export function AxesLabels({ width, height, depth }: AxesLabelsProps) {
+export default function AxesLabels({ width, height, depth }: AxesLabelsProps) {
     return (
         <>
             <Billboard position={[width + 1, 0, 0]}>
