@@ -56,7 +56,6 @@ interface Origin {
     z: number;
 }
 
-// this is so ugly here, inferring the type with the IDE and burning it in ..
 async function createPiece(
     ctx: {
         db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
@@ -145,6 +144,37 @@ async function createPiece(
     return piece;
 }
 
+function isPieceWithinBounds(piece: ExtendedPiece) {
+    for (const cube of piece.cubes) {
+        if (
+            cube.x < 0 ||
+            cube.x >= piece.pile.game.width ||
+            cube.y < 0 || // we're cool with the ceiling
+            cube.z < 0 ||
+            cube.z >= piece.pile.game.depth
+        ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function isPieceOverlappingPile(piece: ExtendedPiece) {
+    for (const pieceCube of piece.cubes) {
+        for (const pileCube of piece.pile.cubes) {
+            if (
+                pileCube.active &&
+                pieceCube.x === pileCube.x &&
+                pieceCube.y === pileCube.y &&
+                pieceCube.z === pileCube.z
+            ) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 export const pieceRouter = createTRPCRouter({
     create: protectedProcedure
         .input(z.object({ pile: z.string() }))
@@ -173,6 +203,7 @@ export const pieceRouter = createTRPCRouter({
         .input(
             z.object({
                 id: z.string(),
+                drop: z.boolean(),
                 movement: z.object({
                     x: z.number(),
                     y: z.number(),
@@ -195,6 +226,7 @@ export const pieceRouter = createTRPCRouter({
                     yaw: number;
                     roll: number;
                 };
+                drop: boolean;
                 id: string;
             }) {
                 return prisma.$transaction(async (prisma) => {
@@ -227,6 +259,7 @@ export const pieceRouter = createTRPCRouter({
                         id: "pending", // many of these are not used, just here to fit the typing
                         pieceId: input.id,
                         serial: piece.movements.length,
+                        drop: input.drop,
                         x: input.movement.x,
                         y: input.movement.y,
                         z: input.movement.z,
@@ -290,46 +323,34 @@ export const pieceRouter = createTRPCRouter({
                         cube.z += input.movement.z;
                     }
 
-                    function isPieceWithinBounds(piece: ExtendedPiece) {
-                        for (const cube of piece.cubes) {
-                            if (
-                                cube.x < 0 ||
-                                cube.x >= piece.pile.game.width ||
-                                cube.y < 0 || // we're cool with the ceiling
-                                cube.z < 0 ||
-                                cube.z >= piece.pile.game.depth
-                            ) {
-                                return false;
+                    if (input.drop) {
+                        let canMoveDown = true;
+                        while (canMoveDown) {
+                            // Try to move the piece down
+                            for (const cube of piece.cubes) {
+                                cube.y -= 1;
+                            }
+
+                            // Check if the piece is still within bounds and not overlapping
+                            const isWithinBounds = isPieceWithinBounds(piece);
+                            const isOverlapping = isPieceOverlappingPile(piece);
+
+                            if (!isWithinBounds || isOverlapping) {
+                                canMoveDown = false;
                             }
                         }
-                        return true;
                     }
 
                     const isWithinBounds = isPieceWithinBounds(piece);
                     //console.log(`Is the piece within bounds? ${isWithinBounds}`);
-                    function isPieceOverlappingPile(piece: ExtendedPiece) {
-                        for (const pieceCube of piece.cubes) {
-                            for (const pileCube of piece.pile.cubes) {
-                                if (
-                                    pileCube.active &&
-                                    pieceCube.x === pileCube.x &&
-                                    pieceCube.y === pileCube.y &&
-                                    pieceCube.z === pileCube.z
-                                ) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    }
 
                     const isOverlapping = isPieceOverlappingPile(piece);
                     //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
 
-                    if ( // moving down but bumping into something
+                    if (( // moving down but bumping into something
                         input.movement.y < 0 &&
                         (!isWithinBounds || isOverlapping)
-                    ) {
+                    ) || input.drop) {
                         for (const cube of piece.cubes) {
                             await prisma.pileCube.create({
                                 data: {
@@ -393,6 +414,7 @@ export const pieceRouter = createTRPCRouter({
                         data: {
                             pieceId: input.id,
                             serial: nextSerialNumber,
+                            drop: input.drop,
                             x: input.movement.x,
                             y: input.movement.y,
                             z: input.movement.z,
