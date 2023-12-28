@@ -253,7 +253,7 @@ export const pieceRouter = createTRPCRouter({
                     }
 
                     const isOverlapping = isPieceOverlappingPile(piece);
-                    console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
+                    //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
                     if (isOverlapping) {
                         return;
                     }
