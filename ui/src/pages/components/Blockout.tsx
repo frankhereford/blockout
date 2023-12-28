@@ -44,6 +44,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Page Up key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 1,
@@ -59,6 +60,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Page Down key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: -1,
@@ -73,6 +75,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Up arrow key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 0,
@@ -87,6 +90,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Down arrow key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 0,
@@ -101,6 +105,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Left arrow key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: -1,
                             y: 0,
@@ -115,6 +120,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Right arrow key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 1,
                             y: 0,
@@ -129,6 +135,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("Q key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 0,
@@ -143,6 +150,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("W key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 0,
@@ -157,6 +165,7 @@ export const Blockout = ({ id }: SceneProps) => {
                     console.log("E key pressed");
                     movePiece.mutate({
                         id: piece,
+                        drop: false,
                         movement: {
                             x: 0,
                             y: 0,
@@ -164,6 +173,21 @@ export const Blockout = ({ id }: SceneProps) => {
                             pitch: 0,
                             yaw: 0,
                             roll: 1,
+                        },
+                    });
+                    break;
+                case "a":
+                    console.log("A key pressed");
+                    movePiece.mutate({
+                        id: piece,
+                        drop: true,
+                        movement: {
+                            x: 0,
+                            y: 0,
+                            z: 0,
+                            pitch: 0,
+                            yaw: 0,
+                            roll: 0,
                         },
                     });
                     break;
