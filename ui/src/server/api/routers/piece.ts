@@ -266,77 +266,24 @@ export const pieceRouter = createTRPCRouter({
                     //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
 
 
-
                     if (input.movement.y < 0 && (!isWithinBounds || isOverlapping)) {
                         console.log('\n\ntrying to go down with a problem\n\n')
                         console.log("piece: ", piece);
                         for (const cube of piece.cubes) {
-                            piece.pile.cubes.push({
-                                id: 'pending',
-                                pileId: piece.pile.id,
-                                x: cube.x,
-                                y: cube.y + 1,
-                                z: cube.z,
-                                active: true,
-                                createdAt: new Date(),
-                                updatedAt: new Date(),
-                            });
+
                             await prisma.pileCube.create({
                                 data: {
                                     x: cube.x,
                                     y: cube.y + 1,
                                     z: cube.z,
-                                    pileId: piece.pile.id, // Assuming pileId is required
-                                    active: true, // Assuming active is required
-                                    // Add other required fields here
+                                    pileId: piece.pile.id,
+                                    active: true,
                                 }
                             });
-
-
-
-                            // Create a 3D array to represent the game space
-                            const gameSpace = new Array(piece.pile.game.height).fill(0).map(() =>
-                                new Array(piece.pile.game.width).fill(0).map(() =>
-                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                                    new Array(piece.pile.game.depth).fill(false)
-                                )
-                            );
-
-                            // Fill the game space with the active cubes
-                            for (const cube of piece.pile.cubes) {
-                                if (cube.active) {
-                                    gameSpace[cube.y]![cube.x]![cube.z] = true;
-                                }
-                            }
-
-                            // Find the Y values where there is a full set of active pieces in every X,Z pair
-                            const fullYValues = [];
-                            for (let y = 0; y < piece.pile.game.height; y++) {
-                                let isFull = true;
-                                for (let x = 0; x < piece.pile.game.width; x++) {
-                                    for (let z = 0; z < piece.pile.game.depth; z++) {
-                                        if (!gameSpace[y]![x]![z]) {
-                                            isFull = false;
-                                            break;
-                                        }
-                                    }
-                                    if (!isFull) {
-                                        break;
-                                    }
-                                }
-                                if (isFull) {
-                                    fullYValues.push(y);
-                                }
-                            }
-
-
-
-
-
-
-
-                            await createPiece(ctx, { pile: piece.pile.id });
                         }
+
+                        await createPiece(ctx, { pile: piece.pile.id });
+
                         await client.multi()
                             .publish('events', JSON.stringify({ new_random_cube: true}))
                             .exec();
@@ -392,6 +339,98 @@ export const pieceRouter = createTRPCRouter({
             }
 
             await executeMove(input);
+
+
+            const piece = await prisma.piece.findUnique({
+                where: {
+                    id: input.id,
+                },
+                include: {
+                    pile: {
+                        include: {
+                            game: true,
+                            cubes: true,
+                        },
+                    },
+                },
+            });
+
+            if (!piece) { return; }
+
+            // Create a 3D array to represent the game space
+            const gameSpace = new Array(piece.pile.game.height).fill(0).map(() =>
+                new Array(piece.pile.game.width).fill(0).map(() =>
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    new Array(piece.pile.game.depth).fill(false)
+                )
+            );
+
+            // Fill the game space with the active cubes
+            for (const cube of piece.pile.cubes) {
+                if (cube.active) {
+                    gameSpace[cube.y]![cube.x]![cube.z] = true;
+                }
+            }
+
+            // Find the Y values where there is a full set of active pieces in every X,Z pair
+            const fullYValues = [];
+            for (let y = 0; y < piece.pile.game.height; y++) {
+                let isFull = true;
+                for (let x = 0; x < piece.pile.game.width; x++) {
+                    for (let z = 0; z < piece.pile.game.depth; z++) {
+                        if (!gameSpace[y]![x]![z]) {
+                            isFull = false;
+                            break;
+                        }
+                    }
+                    if (!isFull) {
+                        break;
+                    }
+                }
+                if (isFull) {
+                    fullYValues.push(y);
+                }
+            }
+
+            // Sort the fullYValues array in descending order
+            fullYValues.sort((a, b) => b - a);
+
+            // Iterate over the fullYValues array
+            for (const y of fullYValues) {
+                // Do something with y
+                console.log("Removing Floor: ", y);
+
+                await ctx.db.pileCube.updateMany({
+                    where: {
+                        pileId: piece.pile.id,
+                        y: y,
+                    },
+                    data: {
+                        active: false,
+                    },
+                });
+
+                // Then, decrease the y value of all active cubes above the cleared floor
+                await ctx.db.pileCube.updateMany({
+                    where: {
+                        pileId: piece.pile.id,
+                        y: {
+                            gt: y,
+                        },
+                        active: true,
+                    },
+                    data: {
+                        y: {
+                            decrement: 1,
+                        },
+                    },
+                });
+
+            }
+
+            await client.multi()
+                .publish('events', JSON.stringify({ floor_removed: true }))
+                .exec();
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
