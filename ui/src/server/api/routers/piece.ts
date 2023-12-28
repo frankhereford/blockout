@@ -4,7 +4,6 @@ import { z } from "zod";
 import {
     createTRPCRouter,
     protectedProcedure,
-    publicProcedure,
 } from "~/server/api/trpc";
 
 import { Quaternion, Vector3 } from "three";
