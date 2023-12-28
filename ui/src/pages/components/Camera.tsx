@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { useThree, useFrame } from '@react-three/fiber';
+import { useEffect, useRef, useState } from "react";
+import { useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 //import { ArcballControls } from "@react-three/drei";
-import { Vector3, Euler } from 'three';
+import { Vector3, Euler } from "three";
 
 interface CameraProps {
     width: number;
@@ -20,7 +20,6 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
     const [orbitSpeed, setOrbitSpeed] = useState(targetOrbitSpeed);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-
     const calculateOrbitRadius = () => {
         const dx = width / 2 - camera.position.x;
         const dz = depth / 2 - camera.position.z;
@@ -31,31 +30,34 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
     useEffect(() => {
         camera.position.y = height + 5; // Set initial height of the camera
         camera.position.x = width / 2; // Set initial x position of the camera
-        camera.position.z = depth * .6; // Set initial z position of the camera
+        camera.position.z = depth * 0.6; // Set initial z position of the camera
 
         // New event listener for 'p' key
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'p') {
-                setAutoRotate(prev => !prev);
+            if (event.key === "p") {
+                setAutoRotate((prev) => !prev);
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
 
         // Clean up event listener
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener("keydown", handleKeyDown);
         };
     }, [camera, height, width, depth]);
 
     useFrame(() => {
         camera.lookAt(width / 2, 0, depth / 2);
 
-        if (!isManualOrbiting && autoRotate) { // Check autoRotate state
+        if (!isManualOrbiting && autoRotate) {
+            // Check autoRotate state
             const radian = angle * (Math.PI / 180);
-            camera.position.x = width / 2 + cameraOrbitRadius * Math.cos(radian);
-            camera.position.z = depth / 2 + cameraOrbitRadius * Math.sin(radian);
-            setAngle(prevAngle => (prevAngle + orbitSpeed) % 360);
+            camera.position.x =
+                width / 2 + cameraOrbitRadius * Math.cos(radian);
+            camera.position.z =
+                depth / 2 + cameraOrbitRadius * Math.sin(radian);
+            setAngle((prevAngle) => (prevAngle + orbitSpeed) % 360);
         }
     });
 
@@ -77,14 +79,14 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
         }
     }, [isManualOrbiting]);
 
-
     return (
         <>
             <OrbitControls
                 onStart={() => {
                     setIsManualOrbiting(true);
 
-                    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+                    if (debounceTimeout.current)
+                        clearTimeout(debounceTimeout.current);
                 }}
                 onEnd={() => {
                     debounceTimeout.current = setTimeout(() => {
@@ -99,5 +101,5 @@ export const Camera = ({ width, height, depth }: CameraProps) => {
                 }}
             />
         </>
-    )
+    );
 };
