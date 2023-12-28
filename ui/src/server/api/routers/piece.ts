@@ -12,7 +12,8 @@ import { Quaternion, Euler, Vector3 } from 'three';
 import { createClient } from "redis";
 
 import type { Piece, Pile, Library, Movement, PieceCube, Game, PileCube, Prisma, PrismaClient } from '@prisma/client';
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+
 interface ExtendedPiece extends Piece {
     pile: Pile & {
         game: Game;
@@ -288,21 +289,13 @@ export const pieceRouter = createTRPCRouter({
                         }
                     }
 
-
-
-
                     if (!isWithinBounds) {
                         return;
                     }
 
-
-
                     if (isOverlapping) {
                         return;
                     }
-
-
-
 
                     // ! writing starts here
 
