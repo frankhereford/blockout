@@ -10,6 +10,7 @@ import {
 import { Quaternion, Euler, Vector3 } from 'three';
 
 import { createClient } from "redis";
+import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
 
 const client = createClient({
     url: 'redis://redis'
@@ -26,6 +27,12 @@ const roundVector3 = (vector: Vector3): Vector3 => {
         Math.round(vector.z)
     );
 };
+
+interface Origin {
+    x: number;
+    y: number;
+    z: number;
+}
 
 export const pieceRouter = createTRPCRouter({
 
@@ -49,6 +56,17 @@ export const pieceRouter = createTRPCRouter({
                 take: 1
             });
 
+            const game = await ctx.db.pile.findUnique({
+                where: {
+                    id: input.pile,
+                },
+                select: {
+                    game: true,
+                },
+            }); 
+
+            //console.log("game", game);
+
             const piece = await ctx.db.piece.create({
                 data: {
                     active: true,
@@ -57,15 +75,11 @@ export const pieceRouter = createTRPCRouter({
                 },
                 select: {
                     id: true,
-                    pile: {
-                        select: {
-                            id: true
-                        }
-                    },
                     library: {
                         select: {
                             id: true,
                             shape: true,
+                            origin: true,
                         }
                     }
                 }
@@ -77,28 +91,21 @@ export const pieceRouter = createTRPCRouter({
                 z: number;
             }
 
-            const cubes: string[] = [];
-
             if (Array.isArray(piece.library.shape)) {
                 for (const shape of piece.library.shape as unknown as Shape[]) {
-                    const new_cube = await ctx.db.pieceCube.create({
+                    const origin = piece.library.origin as unknown as Origin;
+                    const isOrigin = JSON.stringify(origin) === JSON.stringify(shape)
+                    await ctx.db.pieceCube.create({
                         data: {
-                            x: shape.x,
-                            y: shape.y,
-                            z: shape.z,
+                            isOrigin: isOrigin,
+                            x: shape.x,  // + (game!.game.width / 2) - 0.5 - origin.x,
+                            y: shape.y,  // + (game!.game.height - 1) - origin.y,
+                            z: shape.z,  // + (game!.game.depth / 2) - 0.5 - origin.z,
                             pieceId: piece.id,
                         },
                     });
-                    cubes.push(new_cube.id);
                 }
             }
-
-            await ctx.db.piece.update({
-                where: { id: piece.id },
-                data: {
-                    cubeIds: cubes,
-                },
-            });
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
@@ -127,122 +134,129 @@ export const pieceRouter = createTRPCRouter({
     move: protectedProcedure
         .input(z.object({ id: z.string(), movement: z.object({ x: z.number(), y: z.number(), z: z.number(), pitch: z.number(), yaw: z.number(), roll: z.number() }) }))
         .mutation(async ({ ctx, input }) => {
-            const piece = await ctx.db.piece.findFirst({
-                where: {
-                    id: input.id,
-                },
-                include: {
-                    pile: {
+            const prisma = ctx.db;
+
+            function executeMove(input: { movement: { x: number; y: number; z: number; pitch: number; yaw: number; roll: number; }; id: string; }) {
+                return prisma.$transaction(async (prisma) => {
+
+                    const piece = await prisma.piece.findUnique({
+                        where: {
+                            id: input.id,
+                        },
                         include: {
-                            cubes: {
-                                where: {
-                                    active: true,
+                            pile: {
+                                include: {
+                                    game: true,
                                 },
                             },
+                            library: true,
+                            movements: {
+                                orderBy: {
+                                    serial: 'asc',
+                                },
+                            },
+                            cubes: true,
                         },
-                    },
-                    library: true,
-                    cubes: true,
-                }
-            });
+                    });
 
-            const movements = await ctx.db.movement.findMany({
-                where: {
-                    pieceId: input.id,
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                },
-            });
+                    if (!piece) { return; }
 
-            const orientation = new Quaternion();
-            orientation.setFromEuler(new Euler(0, 0, 0));
-
-            let totalPitch = input.movement.x, totalYaw = input.movement.y, totalRoll = input.movement.z;
-
-            for (let i = 0; i < movements.length; i++) {
-                const movement = movements[i];
-
-                if (movement!.pitch !== 0 || movement!.yaw !== 0 || movement!.roll !== 0) {
-                    console.log("This is a rotation");
-                    totalPitch += movement!.pitch;
-                    totalYaw += movement!.yaw;
-                    totalRoll += movement!.roll;
-                }
-            }
-
-            // Apply the accumulated rotations
-            if (totalPitch !== 0) {
-                const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), (Math.PI / 2) * totalPitch);
-                orientation.multiply(rotation);
-            }
-            if (totalYaw !== 0) {
-                const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), (Math.PI / 2) * totalYaw);
-                orientation.multiply(rotation);
-            }
-            if (totalRoll !== 0) {
-                const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), (Math.PI / 2) * totalRoll);
-                orientation.multiply(rotation);
-            }
+                    piece.movements.push({
+                        id: 'pending',
+                        pieceId: input.id,
+                        serial: piece.movements.length,
+                        x: input.movement.x,
+                        y: input.movement.y,
+                        z: input.movement.z,
+                        pitch: input.movement.pitch,
+                        yaw: input.movement.yaw,
+                        roll: input.movement.roll,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                    });
 
 
-            // if (input.movement.x !== 0 || input.movement.y !== 0 || input.movement.z !== 0) {
-            //     console.log("This is a translation");
-            // } else if (input.movement.pitch !== 0 || input.movement.yaw !== 0 || input.movement.roll !== 0) {
-            //     console.log("This is a rotation");
-            //     if (input.movement.pitch !== 0) {
-            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
-            //         orientation.premultiply(rotation);
-            //     } else if (input.movement.yaw !== 0) {
-            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2);
-            //         orientation.premultiply(rotation);
-            //     } else if (input.movement.roll !== 0) {
-            //         const rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
-            //         orientation.premultiply(rotation);
-            //     }
-            // }
+                    const originCube = piece.cubes.find(cube => cube.isOrigin === true);
 
-            console.log("orientation: ", orientation);
-            console.log("piece?.library.shape: ", piece?.library.shape);
+                    const origin = piece.library.origin as unknown as Origin;
 
-            const shape = piece?.library.shape as unknown as { x: number, y: number, z: number}[];
-            const transformedShape = shape.map(point => {
-                const vector = new Vector3(point.x, point.y, point.z);
-                vector.applyQuaternion(orientation);
-                const roundedVector = roundVector3(vector);
-                return { x: roundedVector.x, y: roundedVector.y, z: roundedVector.z };
-            });
+                    const relativeX = 0 - originCube!.x;
+                    const relativeY = 0 - originCube!.y;
+                    const relativeZ = 0 - originCube!.z;
 
-            console.log("rotated shape: ", transformedShape);
-            console.log("piece?.cubeIds: ", piece?.cubeIds);
+                    // adjust the cubes in the piece object back to the origin
+                    for (const cube of piece.cubes) {
+                        cube.x += relativeX;
+                        cube.y += relativeY;
+                        cube.z += relativeZ;
+                    }
 
-            for (let i = 0; i < (piece?.cubeIds.length ?? 0); i++) {
-                const cubeId = piece?.cubeIds[i];
-                const shape = transformedShape[i];
+                    // rotate the piece object
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(input.movement.pitch, input.movement.yaw, input.movement.roll), Math.PI / 2);
+                    
+                    for (const cube of piece.cubes) {
+                        const cubePosition = new Vector3(cube.x, cube.y, cube.z);
+                        cubePosition.applyQuaternion(rotation);
+                        const roundedCubePosition = roundVector3(cubePosition);
 
-                await ctx.db.pieceCube.update({
-                    where: { id: cubeId },
-                    data: {
-                        x: shape!.x,
-                        y: shape!.y,
-                        z: shape!.z,
-                    },
+                        cube.x = roundedCubePosition.x;
+                        cube.y = roundedCubePosition.y;
+                        cube.z = roundedCubePosition.z;
+                    }
+
+                    // undo the originification
+                    for (const cube of piece.cubes) {
+                        cube.x -= relativeX;
+                        cube.y -= relativeY;
+                        cube.z -= relativeZ;
+                    }
+
+                    // add the movement we just received to the piece object
+                    for (const cube of piece.cubes) {
+                        cube.x += input.movement.x;
+                        cube.y += input.movement.y;
+                        cube.z += input.movement.z;
+                    }
+
+                    for (const cube of piece.cubes) {
+                        await prisma.pieceCube.update({
+                            where: { id: cube.id },
+                            data: {
+                                x: cube.x,
+                                y: cube.y,
+                                z: cube.z
+                            }
+                        });
+                    }
+
+                    const maxSerialNumber = await prisma.movement.aggregate({
+                        where: {
+                            pieceId: input.id,
+                        },
+                        _max: {
+                            serial: true,
+                        },
+                    });
+
+                    const nextSerialNumber: number = (maxSerialNumber._max.serial !== null ? maxSerialNumber._max.serial + 1 : 0);
+
+                    await prisma.movement.create({
+                        data: {
+                            pieceId: input.id,
+                            serial: nextSerialNumber,
+                            x: input.movement.x,
+                            y: input.movement.y,
+                            z: input.movement.z,
+                            pitch: input.movement.pitch,
+                            yaw: input.movement.yaw,
+                            roll: input.movement.roll,
+                        },
+                    });
+
                 });
             }
 
-            await ctx.db.movement.create({
-                data: {
-                    x: input.movement.x,
-                    y: input.movement.y,
-                    z: input.movement.z,
-                    pitch: input.movement.pitch,
-                    yaw: input.movement.yaw,
-                    roll: input.movement.roll,
-                    pieceId: input.id,
-                },
-            });
-
-            console.log("\n\n");
+            await executeMove(input);
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))

@@ -37,8 +37,8 @@ const Piece = ({ id }: PieceProps) => {
     }, []);
 
     useEffect(() => {
-        //console.log("getPiece.data: ", getPiece.data)
         if (getPiece.data) {
+            console.log("getPiece.data: ", getPiece.data)
             const color = getPiece.data.library.color;
             const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
                 return { ...acc, [cube.id]: { ...cube, color } };

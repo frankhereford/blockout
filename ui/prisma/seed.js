@@ -28,7 +28,7 @@ async function main() {
     await prisma.library.create({
         data: {
             name: "zig",
-            origin: { x: 0, y: 0, z: 0 },
+            origin: { x: 1, y: 0, z: 0 },
             shape: [
                 { x: 0, y: 0, z: 0 },
                 { x: 1, y: 0, z: 0 },

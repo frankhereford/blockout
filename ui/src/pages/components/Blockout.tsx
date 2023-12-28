@@ -3,6 +3,7 @@ import { GroundPlane } from "~/pages/components/GroundPlane"
 import Well from "~/pages/components/well/Well";
 import Pile from "~/pages/components/pile/Pile";
 import Piece from "~/pages/components/piece/Piece";
+import AxisLabels from "~/pages/components/well/AxesLabels";
 
 import { Lighting } from "~/pages/components/lighting/Lighting";
 import { Camera } from "~/pages/components/Camera";
@@ -122,6 +123,7 @@ export const Blockout = ({ id }: SceneProps) => {
             <Lighting width={width} height={height} depth={depth} />
             <Pile id={getGame.data.pile?.id ?? ''} />
             <Piece id={piece} />
+            <AxisLabels width={width} height={height} depth={depth} />
         </>
     )
 }

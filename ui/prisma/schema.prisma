@@ -78,14 +78,14 @@ model Pile {
     id        String   @id @default(cuid())
     gameId    String   @unique
     game      Game     @relation(fields: [gameId], references: [id])
-    cubes     Cube[]
+    cubes     PileCube[]
     pieces    Piece[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@map("pile")
 }
 
-model Cube {
+model PileCube {
     id        String   @id @default(cuid())
     x         Int
     y         Int
@@ -96,7 +96,7 @@ model Cube {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     //@@unique([x, y, z, pileId])
-    @@map("cube")
+    @@map("pile_cube")
 }
 
 model Library {
@@ -119,7 +119,6 @@ model Piece {
     pileId    String
     pile      Pile     @relation(fields: [pileId], references: [id])
     movements Movement[]
-    cubeIds   String[]
     cubes     PieceCube[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -128,6 +127,7 @@ model Piece {
 
 model PieceCube { 
     id        String   @id @default(cuid())
+    isOrigin  Boolean  @default(false)
     x         Int
     y         Int
     z         Int
@@ -142,6 +142,7 @@ model Movement {
     id        String   @id @default(cuid())
     pieceId   String
     piece     Piece    @relation(fields: [pieceId], references: [id])
+    serial    Int      @default(0)
     x         Int
     y         Int
     z         Int
