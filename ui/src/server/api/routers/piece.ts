@@ -10,7 +10,19 @@ import {
 import { Quaternion, Euler, Vector3 } from 'three';
 
 import { createClient } from "redis";
-import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
+
+import type { Piece, Pile, Library, Movement, PieceCube, Game, PileCube, Prisma, PrismaClient } from '@prisma/client';
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+
+interface ExtendedPiece extends Piece {
+    pile: Pile & {
+        game: Game;
+        cubes: PileCube[];
+    };
+    library: Library;
+    movements: Movement[];
+    cubes: PieceCube[];
+}
 
 const client = createClient({
     url: 'redis://redis'
@@ -34,84 +46,88 @@ interface Origin {
     z: number;
 }
 
+async function createPiece(ctx: { db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>; session: { user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } & { id: string; }; expires: string; }; }, input: { pile: string; }) {
+    const pile = await ctx.db.pile.findUnique({
+        where: {
+            id: input.pile,
+        },
+        include: {
+            game: true,
+        },
+    });
+
+    await ctx.db.piece.updateMany({
+        where: {
+            pileId: input.pile,
+            active: true,
+        },
+        data: {
+            active: false,
+        },
+    });
+
+    const totalPieces = await ctx.db.library.count();
+    const randomIndex = Math.floor(Math.random() * totalPieces);
+    const randomLibraryPiece = await ctx.db.library.findMany({
+        skip: randomIndex,
+        take: 1
+    });
+
+    //console.log("game", game);
+
+    const piece = await ctx.db.piece.create({
+        data: {
+            active: true,
+            library: { connect: { id: randomLibraryPiece[0]!.id } },
+            pile: { connect: { id: input.pile } },
+        },
+        select: {
+            id: true,
+            library: {
+                select: {
+                    id: true,
+                    shape: true,
+                    origin: true,
+                }
+            }
+        }
+    });
+
+    interface Shape {
+        x: number;
+        y: number;
+        z: number;
+    }
+
+    if (Array.isArray(piece.library.shape)) {
+        for (const shape of piece.library.shape as unknown as Shape[]) {
+            const origin = piece.library.origin as unknown as Origin;
+            const isOrigin = JSON.stringify(origin) === JSON.stringify(shape)
+            await ctx.db.pieceCube.create({
+                data: {
+                    isOrigin: isOrigin,
+                    x: shape.x + (pile!.game.width / 2) - 0.5 - origin.x,
+                    y: shape.y + (pile!.game.height - 1) - origin.y,
+                    z: shape.z + (pile!.game.depth / 2) - 0.5 - origin.z,
+                    pieceId: piece.id,
+                },
+            });
+        }
+    }
+
+    await client.multi()
+        .publish('events', JSON.stringify({ piece: true }))
+        .exec();
+
+    return piece;
+}
+
 export const pieceRouter = createTRPCRouter({
 
     create: protectedProcedure
         .input(z.object({ pile: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            await ctx.db.piece.updateMany({
-                where: {
-                    pileId: input.pile,
-                    active: true,
-                },
-                data: {
-                    active: false,
-                },
-            });
-
-            const totalPieces = await ctx.db.library.count();
-            const randomIndex = Math.floor(Math.random() * totalPieces);
-            const randomLibraryPiece = await ctx.db.library.findMany({
-                skip: randomIndex,
-                take: 1
-            });
-
-            const game = await ctx.db.pile.findUnique({
-                where: {
-                    id: input.pile,
-                },
-                select: {
-                    game: true,
-                },
-            }); 
-
-            //console.log("game", game);
-
-            const piece = await ctx.db.piece.create({
-                data: {
-                    active: true,
-                    library: { connect: { id: randomLibraryPiece[0]!.id } },
-                    pile: { connect: { id: input.pile } },
-                },
-                select: {
-                    id: true,
-                    library: {
-                        select: {
-                            id: true,
-                            shape: true,
-                            origin: true,
-                        }
-                    }
-                }
-            });
-
-            interface Shape {
-                x: number;
-                y: number;
-                z: number;
-            }
-
-            if (Array.isArray(piece.library.shape)) {
-                for (const shape of piece.library.shape as unknown as Shape[]) {
-                    const origin = piece.library.origin as unknown as Origin;
-                    const isOrigin = JSON.stringify(origin) === JSON.stringify(shape)
-                    await ctx.db.pieceCube.create({
-                        data: {
-                            isOrigin: isOrigin,
-                            x: shape.x,  // + (game!.game.width / 2) - 0.5 - origin.x,
-                            y: shape.y,  // + (game!.game.height - 1) - origin.y,
-                            z: shape.z,  // + (game!.game.depth / 2) - 0.5 - origin.z,
-                            pieceId: piece.id,
-                        },
-                    });
-                }
-            }
-
-            await client.multi()
-                .publish('events', JSON.stringify({ piece: true }))
-                .exec();
-
-            return piece;
+            return createPiece(ctx, input);
         }),
 
     get: protectedProcedure
@@ -147,6 +163,7 @@ export const pieceRouter = createTRPCRouter({
                             pile: {
                                 include: {
                                     game: true,
+                                    cubes: true,
                                 },
                             },
                             library: true,
@@ -178,8 +195,6 @@ export const pieceRouter = createTRPCRouter({
 
                     const originCube = piece.cubes.find(cube => cube.isOrigin === true);
 
-                    const origin = piece.library.origin as unknown as Origin;
-
                     const relativeX = 0 - originCube!.x;
                     const relativeY = 0 - originCube!.y;
                     const relativeZ = 0 - originCube!.z;
@@ -197,14 +212,14 @@ export const pieceRouter = createTRPCRouter({
                     for (const cube of piece.cubes) {
                         const cubePosition = new Vector3(cube.x, cube.y, cube.z);
                         cubePosition.applyQuaternion(rotation);
-                        const roundedCubePosition = roundVector3(cubePosition);
+                        const roundedCubePosition = roundVector3(cubePosition); // handles floating point noise
 
                         cube.x = roundedCubePosition.x;
                         cube.y = roundedCubePosition.y;
                         cube.z = roundedCubePosition.z;
                     }
 
-                    // undo the originification
+                    // undo the origin-ification
                     for (const cube of piece.cubes) {
                         cube.x -= relativeX;
                         cube.y -= relativeY;
@@ -217,6 +232,73 @@ export const pieceRouter = createTRPCRouter({
                         cube.y += input.movement.y;
                         cube.z += input.movement.z;
                     }
+
+                    //console.log("piece: ", piece);
+
+                    function isPieceWithinBounds(piece: ExtendedPiece) {
+                        for (const cube of (piece.cubes)) {
+                            if (cube.x < 0 || cube.x >= piece.pile.game.width ||
+                                cube.y < 0 || // we're cool with the ceiling
+                                cube.z < 0 || cube.z >= piece.pile.game.depth) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    const isWithinBounds = isPieceWithinBounds(piece);
+                    //console.log(`Is the piece within bounds? ${isWithinBounds}`);
+                    function isPieceOverlappingPile(piece: ExtendedPiece) {
+                        for (const pieceCube of piece.cubes) {
+                            for (const pileCube of piece.pile.cubes) {
+                                if (pileCube.active && 
+                                    pieceCube.x === pileCube.x &&
+                                    pieceCube.y === pileCube.y &&
+                                    pieceCube.z === pileCube.z) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+
+                    const isOverlapping = isPieceOverlappingPile(piece);
+                    //console.log(`Is the piece overlapping the pile? ${isOverlapping}`);
+
+
+                    if (input.movement.y < 0 && (!isWithinBounds || isOverlapping)) {
+                        console.log('\n\ntrying to go down with a problem\n\n')
+                        console.log("piece: ", piece);
+                        for (const cube of piece.cubes) {
+
+                            await prisma.pileCube.create({
+                                data: {
+                                    x: cube.x,
+                                    y: cube.y + 1,
+                                    z: cube.z,
+                                    pileId: piece.pile.id,
+                                    active: true,
+                                }
+                            });
+                        }
+
+                        await createPiece(ctx, { pile: piece.pile.id });
+
+                        await client.multi()
+                            .publish('events', JSON.stringify({ new_random_cube: true}))
+                            .exec();
+                        return;
+                    }
+
+                    if (!isWithinBounds) {
+                        return;
+                    }
+
+                    if (isOverlapping) {
+                        return;
+                    }
+
+                    // ! writing starts here
 
                     for (const cube of piece.cubes) {
                         await prisma.pieceCube.update({
@@ -257,6 +339,98 @@ export const pieceRouter = createTRPCRouter({
             }
 
             await executeMove(input);
+
+
+            const piece = await prisma.piece.findUnique({
+                where: {
+                    id: input.id,
+                },
+                include: {
+                    pile: {
+                        include: {
+                            game: true,
+                            cubes: true,
+                        },
+                    },
+                },
+            });
+
+            if (!piece) { return; }
+
+            // Create a 3D array to represent the game space
+            const gameSpace = new Array(piece.pile.game.height).fill(0).map(() =>
+                new Array(piece.pile.game.width).fill(0).map(() =>
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    new Array(piece.pile.game.depth).fill(false)
+                )
+            );
+
+            // Fill the game space with the active cubes
+            for (const cube of piece.pile.cubes) {
+                if (cube.active) {
+                    gameSpace[cube.y]![cube.x]![cube.z] = true;
+                }
+            }
+
+            // Find the Y values where there is a full set of active pieces in every X,Z pair
+            const fullYValues = [];
+            for (let y = 0; y < piece.pile.game.height; y++) {
+                let isFull = true;
+                for (let x = 0; x < piece.pile.game.width; x++) {
+                    for (let z = 0; z < piece.pile.game.depth; z++) {
+                        if (!gameSpace[y]![x]![z]) {
+                            isFull = false;
+                            break;
+                        }
+                    }
+                    if (!isFull) {
+                        break;
+                    }
+                }
+                if (isFull) {
+                    fullYValues.push(y);
+                }
+            }
+
+            // Sort the fullYValues array in descending order
+            fullYValues.sort((a, b) => b - a);
+
+            // Iterate over the fullYValues array
+            for (const y of fullYValues) {
+                // Do something with y
+                console.log("Removing Floor: ", y);
+
+                await ctx.db.pileCube.updateMany({
+                    where: {
+                        pileId: piece.pile.id,
+                        y: y,
+                    },
+                    data: {
+                        active: false,
+                    },
+                });
+
+                // Then, decrease the y value of all active cubes above the cleared floor
+                await ctx.db.pileCube.updateMany({
+                    where: {
+                        pileId: piece.pile.id,
+                        y: {
+                            gt: y,
+                        },
+                        active: true,
+                    },
+                    data: {
+                        y: {
+                            decrement: 1,
+                        },
+                    },
+                });
+
+            }
+
+            await client.multi()
+                .publish('events', JSON.stringify({ floor_removed: true }))
+                .exec();
 
             await client.multi()
                 .publish('events', JSON.stringify({ piece: true }))
