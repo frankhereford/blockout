@@ -67,15 +67,6 @@ export const pieceRouter = createTRPCRouter({
                 take: 1
             });
 
-            const game = await ctx.db.pile.findUnique({
-                where: {
-                    id: input.pile,
-                },
-                select: {
-                    game: true,
-                },
-            }); 
-
             //console.log("game", game);
 
             const piece = await ctx.db.piece.create({
@@ -265,7 +256,6 @@ export const pieceRouter = createTRPCRouter({
                     if (isOverlapping) {
                         return;
                     }
-
 
                     // ! writing starts here
 
