@@ -10,6 +10,7 @@ import {
 import { Quaternion, Euler, Vector3 } from 'three';
 
 import { createClient } from "redis";
+import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
 
 const client = createClient({
     url: 'redis://redis'
@@ -64,7 +65,7 @@ export const pieceRouter = createTRPCRouter({
                 },
             }); 
 
-            console.log("game", game);
+            //console.log("game", game);
 
             const piece = await ctx.db.piece.create({
                 data: {
@@ -84,24 +85,22 @@ export const pieceRouter = createTRPCRouter({
                 }
             });
 
-            console.log("piece", piece);
-
             interface Shape {
                 x: number;
                 y: number;
                 z: number;
             }
 
-
-
             if (Array.isArray(piece.library.shape)) {
                 for (const shape of piece.library.shape as unknown as Shape[]) {
                     const origin = piece.library.origin as unknown as Origin;
+                    const isOrigin = JSON.stringify(origin) === JSON.stringify(shape)
                     await ctx.db.pieceCube.create({
                         data: {
-                            x: shape.x + (game!.game.width / 2) - 0.5 - origin.x,
-                            y: shape.y + (game!.game.height - 1) - origin.y,
-                            z: shape.z + (game!.game.depth / 2) - 0.5 - origin.z,
+                            isOrigin: isOrigin,
+                            x: shape.x,  // + (game!.game.width / 2) - 0.5 - origin.x,
+                            y: shape.y,  // + (game!.game.height - 1) - origin.y,
+                            z: shape.z,  // + (game!.game.depth / 2) - 0.5 - origin.z,
                             pieceId: piece.id,
                         },
                     });
@@ -151,83 +150,84 @@ export const pieceRouter = createTRPCRouter({
                                 },
                             },
                             library: true,
-                            movements: true,
+                            movements: {
+                                orderBy: {
+                                    serial: 'asc',
+                                },
+                            },
+                            cubes: true,
                         },
                     });
 
-                    console.log("piece", piece);
+                    if (!piece) { return; }
 
-                    const totalMovement = piece!.movements.reduce((total, movement) => {
-                        return {
-                            x: total.x + movement.x,
-                            y: total.y + movement.y,
-                            z: total.z + movement.z,
-                        };
-                    }, { x: 0, y: 0, z: 0 });
-
-                    const totalMovementWithRequestedMovement = {
-                        x: totalMovement.x + input.movement.x,
-                        y: totalMovement.y + input.movement.y,
-                        z: totalMovement.z + input.movement.z,
-                    };
-
-                    console.log("totalMovementWithRequestedMovement", totalMovementWithRequestedMovement);
-
-                    const initial_x = (piece!.pile.game.width / 2) - 0.5;
-                    const initial_y = (piece!.pile.game.height - 1);
-                    const initial_z = (piece!.pile.game.depth / 2) - 0.5;
-
-                    const pieceCubes = await prisma.pieceCube.findMany({
-                        where: {
-                            pieceId: input.id,
-                        },
+                    piece.movements.push({
+                        id: 'pending',
+                        pieceId: input.id,
+                        serial: piece.movements.length,
+                        x: input.movement.x,
+                        y: input.movement.y,
+                        z: input.movement.z,
+                        pitch: input.movement.pitch,
+                        yaw: input.movement.yaw,
+                        roll: input.movement.roll,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
                     });
 
-                    const pieceCubesAtOffsetOrigin = pieceCubes.map(pieceCube => ({
-                        ...pieceCube,
-                        x: pieceCube.x - initial_x,
-                        y: pieceCube.y - initial_y,
-                        z: pieceCube.z - initial_z,
-                    }));
 
-                    console.log("pieceCubesAtOffsetOrigin", pieceCubesAtOffsetOrigin);
+                    const originCube = piece.cubes.find(cube => cube.isOrigin === true);
 
-                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(input.movement.pitch, input.movement.yaw, input.movement.roll), Math.PI / 2);
+                    const origin = piece.library.origin as unknown as Origin;
 
-                    const rotatedPieceCubesAtOffsetOrigin = pieceCubesAtOffsetOrigin.map(pieceCube => {
-                        const cubePosition = new Vector3(pieceCube.x, pieceCube.y, pieceCube.z);
-                        cubePosition.applyQuaternion(rotation);
-                        const roundedCubePosition = roundVector3(cubePosition);
-                        return {
-                            ...pieceCube,
-                            x: roundedCubePosition.x,
-                            y: roundedCubePosition.y,
-                            z: roundedCubePosition.z,
-                        };
-                    });
+                    const relativeX = 0 - originCube!.x;
+                    const relativeY = 0 - originCube!.y;
+                    const relativeZ = 0 - originCube!.z;
 
-                    const finalPieceCubes = rotatedPieceCubesAtOffsetOrigin.map(rotatedPieceCube => ({
-                        ...rotatedPieceCube,
-                        x: rotatedPieceCube.x + initial_x,
-                        y: rotatedPieceCube.y + initial_y,
-                        z: rotatedPieceCube.z + initial_z,
-                    }));
-
-                    for (const rotatedPieceCube of finalPieceCubes) {
-                        await prisma.pieceCube.update({
-                            where: {
-                                id: rotatedPieceCube.id,
-                            },
-                            data: {
-                                x: rotatedPieceCube.x,
-                                y: rotatedPieceCube.y,
-                                z: rotatedPieceCube.z,
-                            },
-                        });
+                    // adjust the cubes in the piece object back to the origin
+                    for (const cube of piece.cubes) {
+                        cube.x += relativeX;
+                        cube.y += relativeY;
+                        cube.z += relativeZ;
                     }
 
+                    // rotate the piece object
+                    const rotation = new Quaternion().setFromAxisAngle(new Vector3(input.movement.pitch, input.movement.yaw, input.movement.roll), Math.PI / 2);
+                    
+                    for (const cube of piece.cubes) {
+                        const cubePosition = new Vector3(cube.x, cube.y, cube.z);
+                        cubePosition.applyQuaternion(rotation);
+                        const roundedCubePosition = roundVector3(cubePosition);
 
+                        cube.x = roundedCubePosition.x;
+                        cube.y = roundedCubePosition.y;
+                        cube.z = roundedCubePosition.z;
+                    }
 
+                    // undo the originification
+                    for (const cube of piece.cubes) {
+                        cube.x -= relativeX;
+                        cube.y -= relativeY;
+                        cube.z -= relativeZ;
+                    }
+
+                    // add the movement we just received to the piece object
+                    for (const cube of piece.cubes) {
+                        cube.x += input.movement.x;
+                        cube.y += input.movement.y;
+                        cube.z += input.movement.z;
+                    }
+
+                    for (const cube of piece.cubes) {
+                        await prisma.pieceCube.update({
+                            where: { id: cube.id },
+                            data: {
+                                x: cube.x,
+                                y: cube.y,
+                                z: cube.z
+                            }
+                        });
+                    }
 
                     const maxSerialNumber = await prisma.movement.aggregate({
                         where: {
