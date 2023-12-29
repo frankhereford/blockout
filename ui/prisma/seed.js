@@ -79,7 +79,7 @@ async function main() {
     });
     await prisma.library.create({
         data: {
-            name: "square",
+            name: "angle",
             origin: { x: 1, y: 0, z: 0 },
             shape: [
                 { x: 0, y: 0, z: 0 },
