@@ -130,7 +130,17 @@ const Piece = ({ id }: PieceProps) => {
             if (!canMoveDown) {
                 const color = ghostPiece.library.color;
                 const newGhostState = ghostPiece.cubes.reduce((acc, cube) => {
-                    return { ...acc, [cube.id]: { ...cube, color } };
+                    // Check if the cube shares the same space as a cube in the actual piece
+                    const isSameSpace = getPiece.data!.cubes.some(actualCube =>
+                        actualCube.x === cube.x && actualCube.y === cube.y && actualCube.z === cube.z
+                    );
+
+                    // Only include the cube in the newGhostState if it does not share the same space
+                    if (!isSameSpace) {
+                        return { ...acc, [cube.id]: { ...cube, color } };
+                    }
+
+                    return acc;
                 }, {});
                 setGhostState(newGhostState);
             }
