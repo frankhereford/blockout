@@ -1,27 +1,25 @@
-import Head from "next/head";
-import Link from "next/link";
-import Login from "~/pages/components/Login";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+
+import { api } from "~/utils/api";
 
 export default function Home() {
-    return (
-        <>
-            <Head>
-                <title>Blockout</title>
-                <meta name="description" content="Web Port of Blockout" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89e3fc] to-[#3a3e89]">
-                <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-                    <div className="flex flex-col items-center gap-2">
-                        <Login />
-                    </div>
-                    <Link href="/game">
-                        <button className="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
-                            New Game
-                        </button>
-                    </Link>
-                </div>
-            </main>
-        </>
-    );
+    const router = useRouter();
+    const createGame = api.game.create.useMutation({});
+
+    useEffect(() => {
+        const height = Math.floor(Math.random() * 5) + 4; // Random integer between 4 and 8
+        const width = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+        const depth = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+
+        createGame.mutate({ height, width, depth });
+    }, []);
+
+    useEffect(() => {
+        if (createGame.data?.id) {
+            void router.push(`/game/${createGame.data.id}`);
+        }
+    }, [createGame.data]);
+
+    return <></>;
 }
