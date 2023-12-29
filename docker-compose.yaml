@@ -3,7 +3,6 @@ version: "3.1"
 services:
   postgres:
     image: postgres
-    #restart: unless-stopped
     environment:
       POSTGRES_USER: blockout
       POSTGRES_PASSWORD: blockout
