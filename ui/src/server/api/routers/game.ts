@@ -7,7 +7,7 @@ import {
 } from "~/server/api/trpc";
 
 export const gameRouter = createTRPCRouter({
-    create: protectedProcedure
+    create: publicProcedure
         .input(
             z.object({
                 width: z.number(),
@@ -21,7 +21,7 @@ export const gameRouter = createTRPCRouter({
                     height: input.height,
                     width: input.width,
                     depth: input.depth,
-                    user: { connect: { id: ctx.session.user.id } },
+                    //user: { connect: { id: ctx.session.user.id } },
                     pile: {
                         create: {},
                     },
@@ -38,7 +38,7 @@ export const gameRouter = createTRPCRouter({
             return game;
         }),
 
-    get: protectedProcedure
+    get: publicProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
             //console.log("input: ", input);

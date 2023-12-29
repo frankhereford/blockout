@@ -17,7 +17,7 @@ client.on("error", (err) => console.log("Redis Client Error", err));
 await client.connect();
 
 export const pileRouter = createTRPCRouter({
-    get: protectedProcedure
+    get: publicProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
             const pile = await ctx.db.pile.findUnique({
@@ -31,7 +31,7 @@ export const pileRouter = createTRPCRouter({
             return pile;
         }),
 
-    clearFloor: protectedProcedure
+    clearFloor: publicProcedure
         .input(z.object({ id: z.string(), floor: z.number() }))
         .mutation(async ({ ctx, input }) => {
             const { id, floor } = input;
@@ -70,7 +70,7 @@ export const pileRouter = createTRPCRouter({
             return true;
         }),
 
-    addRandomCube: protectedProcedure
+    addRandomCube: publicProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
             const pile = await ctx.db.pile.findUnique({
