@@ -27,7 +27,6 @@ export const Blockout = ({ id }: SceneProps) => {
 
     useEffect(() => {
         if (movePiece.status === "success") {
-            //console.log(movePiece);
             setPieceSerial(prevPieceSerial => prevPieceSerial + 1);
         }
     }, [movePiece.status]);
