@@ -1,4 +1,5 @@
 import { Cube } from "./Cube";
+import { GhostCube } from "./GhostCube";
 import { Vector3 } from "three";
 import { useEffect, useState } from "react";
 
@@ -152,7 +153,7 @@ const Piece = ({ id }: PieceProps) => {
             {Object.values(ghostState).map((cube: Cube, _index: number) => {
                 const location = new Vector3(cube.x, cube.y, cube.z);
                 return (
-                    <Cube
+                    <GhostCube
                         key={cube.id}
                         location={location}
                         color={cube.color}
