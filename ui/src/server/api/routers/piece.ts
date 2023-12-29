@@ -335,6 +335,21 @@ export const pieceRouter = createTRPCRouter({
                             const isOverlapping = isPieceOverlappingPile(piece);
 
                             if (!isWithinBounds || isOverlapping) {
+                                for (const cube of piece.cubes) {
+                                    await prisma.pieceCube.update({
+                                        where: { id: cube.id },
+                                        data: {
+                                            x: cube.x,
+                                            y: cube.y,
+                                            z: cube.z,
+                                        },
+                                    });
+                                }
+                                await client
+                                    .multi()
+                                    .publish("events", JSON.stringify({ piece: true }))
+                                    .exec();
+
                                 canMoveDown = false;
                             }
                         }
