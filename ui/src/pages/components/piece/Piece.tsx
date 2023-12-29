@@ -43,7 +43,8 @@ function isPieceWithinBounds(piece: ExtendedPiece) {
         if (
             cube.x < 0 ||
             cube.x >= piece.pile.game.width ||
-            cube.y < 0 || // we're cool with the ceiling
+            cube.y < 0 ||
+            // we're cool with the ceiling, so we don't check for it here
             cube.z < 0 ||
             cube.z >= piece.pile.game.depth
         ) {
