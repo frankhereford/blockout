@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
     createTRPCRouter,
     protectedProcedure,
+    publicProcedure,
 } from "~/server/api/trpc";
 
 import { Quaternion, Vector3 } from "three";
@@ -58,14 +59,14 @@ interface Origin {
 async function createPiece(
     ctx: {
         db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-        session: {
-            user: {
-                name?: string | null | undefined;
-                email?: string | null | undefined;
-                image?: string | null | undefined;
-            } & { id: string };
-            expires: string;
-        };
+        // session: {
+        //     user: {
+        //         name?: string | null | undefined;
+        //         email?: string | null | undefined;
+        //         image?: string | null | undefined;
+        //     } & { id: string };
+        //     expires: string;
+        // };
     },
     input: { pile: string },
 ) {
@@ -175,13 +176,13 @@ function isPieceOverlappingPile(piece: ExtendedPiece) {
 }
 
 export const pieceRouter = createTRPCRouter({
-    create: protectedProcedure
+    create: publicProcedure
         .input(z.object({ pile: z.string() }))
         .mutation(async ({ ctx, input }) => {
             return createPiece(ctx, input);
         }),
 
-    get: protectedProcedure
+    get: publicProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
             const piece = await ctx.db.piece.findUnique({
@@ -203,7 +204,7 @@ export const pieceRouter = createTRPCRouter({
             return piece;
         }),
 
-    move: protectedProcedure
+    move: publicProcedure
         .input(
             z.object({
                 id: z.string(),
