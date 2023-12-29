@@ -7,7 +7,7 @@ import AxisLabels from "~/pages/components/well/AxesLabels";
 
 import { Lighting } from "~/pages/components/lighting/Lighting";
 import { Camera } from "~/pages/components/Camera";
-import { Vector2, Vector3 } from "three";
+import { Vector2 } from "three";
 
 import { api } from "~/utils/api";
 
@@ -41,7 +41,6 @@ export const Blockout = ({ id }: SceneProps) => {
             switch (event.key) {
                 case "PageUp":
                 case "[":
-                    console.log("Page Up key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -57,7 +56,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     break;
                 case "PageDown":
                 case "]":
-                    console.log("Page Down key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -72,7 +70,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "ArrowUp":
-                    console.log("Up arrow key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -87,7 +84,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "ArrowDown":
-                    console.log("Down arrow key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -102,7 +98,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "ArrowLeft":
-                    console.log("Left arrow key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -117,7 +112,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "ArrowRight":
-                    console.log("Right arrow key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -132,7 +126,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "q":
-                    console.log("Q key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -147,7 +140,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "w":
-                    console.log("W key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -162,7 +154,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "e":
-                    console.log("E key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: false,
@@ -177,7 +168,6 @@ export const Blockout = ({ id }: SceneProps) => {
                     });
                     break;
                 case "a":
-                    console.log("A key pressed");
                     movePiece.mutate({
                         id: piece,
                         drop: true,
