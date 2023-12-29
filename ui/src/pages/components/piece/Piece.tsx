@@ -93,7 +93,6 @@ const Piece = ({ id }: PieceProps) => {
 
     useEffect(() => {
         if (getPiece.data) {
-            console.log("latest piece data: ", getPiece.data);
             const color = getPiece.data.library.color;
             const newCubeState = getPiece.data.cubes.reduce((acc, cube) => {
                 return { ...acc, [cube.id]: { ...cube, color } };
