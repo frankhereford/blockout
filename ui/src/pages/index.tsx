@@ -8,9 +8,9 @@ export default function Home() {
     const createGame = api.game.create.useMutation({});
 
     useEffect(() => {
-        const height = Math.floor(Math.random() * 5) + 4; // Random integer between 4 and 8
-        const width = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
-        const depth = Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+        const height = 7; // Math.floor(Math.random() * 5) + 4; // Random integer between 4 and 8
+        const width = 5; // Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
+        const depth = 5; // Math.floor(Math.random() * 3) * 2 + 3; // Random odd integer between 3 and 7
 
         createGame.mutate({ height, width, depth });
     }, []);
