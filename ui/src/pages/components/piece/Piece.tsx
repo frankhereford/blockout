@@ -28,6 +28,7 @@ interface ExtendedPiece extends Piece {
 
 interface PieceProps {
     id: string;
+    serial: number;
 }
 
 interface Cube {
@@ -70,9 +71,7 @@ function isPieceOverlappingPile(piece: ExtendedPiece) {
     return false;
 }
 
-
-
-const Piece = ({ id }: PieceProps) => {
+const Piece = ({ id, serial }: PieceProps) => {
     const getPiece = api.piece.get.useQuery(
         { id: id },
         { enabled: id !== undefined },
@@ -81,16 +80,14 @@ const Piece = ({ id }: PieceProps) => {
     const [ghostState, setGhostState] = useState<Record<string, Cube>>({});
 
     useEffect(() => {
-        const websocket = new WebSocket("ws://localhost:3001/ws");
-        websocket.onopen = () => { console.log("WebSocket Connected"); };
-        websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data as string) as object;
-            if ((data as { piece: boolean }).piece) { void getPiece.refetch(); }
+        const fetchData = async () => {
+            await getPiece.refetch();
         };
-        websocket.onerror = (error) => { console.error("WebSocket Error:", error); };
-        websocket.onclose = () => { console.log("WebSocket Disconnected"); };
-        return () => { websocket.close(); };
-    }, []);
+
+        fetchData().catch(error => {
+            console.error('An error occurred while fetching data:', error);
+        });
+    }, [serial]); // Add dependencies here if needed
 
     useEffect(() => {
         if (getPiece.data) {

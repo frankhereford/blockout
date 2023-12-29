@@ -6,15 +6,15 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
-import { createClient } from "redis";
+// import { createClient } from "redis";
 
-const client = createClient({
-    url: "redis://redis",
-});
+// const client = createClient({
+//     url: "redis://redis",
+// });
 
-client.on("error", (err) => console.log("Redis Client Error", err));
+// client.on("error", (err) => console.log("Redis Client Error", err));
 
-await client.connect();
+// await client.connect();
 
 export const pileRouter = createTRPCRouter({
     get: publicProcedure
@@ -62,10 +62,10 @@ export const pileRouter = createTRPCRouter({
                 },
             });
 
-            await client
-                .multi()
-                .publish("events", JSON.stringify({ floor_removed: true }))
-                .exec();
+            // await client
+            //     .multi()
+            //     .publish("events", JSON.stringify({ floor_removed: true }))
+            //     .exec();
 
             return true;
         }),
@@ -131,13 +131,13 @@ export const pileRouter = createTRPCRouter({
                 newCubes.push(newCube);
             }
 
-            await client
-                .multi()
-                .publish(
-                    "events",
-                    JSON.stringify({ new_random_cube: newCubes }),
-                )
-                .exec();
+            // await client
+            //     .multi()
+            //     .publish(
+            //         "events",
+            //         JSON.stringify({ new_random_cube: newCubes }),
+            //     )
+            //     .exec();
 
             return newCubes;
         }),

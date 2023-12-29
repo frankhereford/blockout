@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 
 interface PileProps {
     id: string;
+    serial: number;
 }
 interface Cube {
     id: string;
@@ -25,11 +26,21 @@ const colors = [
     "violet",
 ].reverse();
 
-const Pile = ({ id }: PileProps) => {
+const Pile = ({ id, serial }: PileProps) => {
     const getPile = api.pile.get.useQuery({ id: id });
     const [cubeState, setCubeState] = useState<Record<string, Cube>>({});
 
     const clearFloor = api.pile.clearFloor.useMutation({});
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await getPile.refetch();
+        };
+
+        fetchData().catch(error => {
+            console.error('An error occurred while fetching data:', error);
+        });
+    }, [serial]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -56,31 +67,6 @@ const Pile = ({ id }: PileProps) => {
             setCubeState(newCubeState);
         }
     }, [getPile.data]);
-
-    useEffect(() => {
-        const websocket = new WebSocket("ws://localhost:3001/ws");
-
-        websocket.onopen = () => {
-            console.log("WebSocket Connected");
-        };
-        websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data as string) as object;
-            if ((data as { new_random_cube: boolean }).new_random_cube) {
-                void getPile.refetch();
-            } else if ((data as { floor_removed: boolean }).floor_removed) {
-                void getPile.refetch();
-            }
-        };
-        websocket.onerror = (error) => {
-            console.error("WebSocket Error:", error);
-        };
-        websocket.onclose = () => {
-            console.log("WebSocket Disconnected");
-        };
-        return () => {
-            websocket.close();
-        };
-    }, []);
 
     return (
         <>

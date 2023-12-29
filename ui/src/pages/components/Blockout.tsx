@@ -20,9 +20,21 @@ export const Blockout = ({ id }: SceneProps) => {
     const [height, setHeight] = useState(1);
     const [depth, setDepth] = useState(1);
     const [piece, setPiece] = useState("");
+    const [pieceSerial, setPieceSerial] = useState(0);
+    const [pileSerial, setPileSerial] = useState(0);
 
     const getGame = api.game.get.useQuery({ id: id });
     const movePiece = api.piece.move.useMutation({});
+
+    useEffect(() => {
+        if (movePiece.status === "success") {
+            setPieceSerial(prevPieceSerial => prevPieceSerial + 1);
+            setPileSerial(prevPileSerial => prevPileSerial + 1);
+            getGame.refetch().catch(error => {
+                console.error('An error occurred while fetching data:', error);
+            });
+        }
+    }, [movePiece.status]);
 
     useEffect(() => {
         if (getGame.data?.pile?.pieces) {
@@ -192,20 +204,6 @@ export const Blockout = ({ id }: SceneProps) => {
         };
     }, [piece]);
 
-    useEffect(() => {
-        const websocket = new WebSocket("ws://localhost:3001/ws");
-        websocket.onopen = () => { console.log("WebSocket Connected"); };
-        websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data as string) as object;
-            if ((data as { piece: boolean }).piece) {
-                void getGame.refetch();
-            }
-        };
-        websocket.onerror = (error) => { console.error("WebSocket Error:", error); };
-        websocket.onclose = () => { console.log("WebSocket Disconnected"); };
-        return () => { websocket.close(); };
-    }, []);
-
     if (!getGame.data) { return null; }
 
     return (
@@ -221,8 +219,8 @@ export const Blockout = ({ id }: SceneProps) => {
                 textureRepeat={new Vector2(3, 3)}
             />
             <Lighting width={width} height={height} depth={depth} />
-            <Pile id={getGame.data.pile?.id ?? ""} />
-            <Piece id={piece} />
+            <Pile id={getGame.data.pile?.id ?? ""} serial={pileSerial} />
+            <Piece id={piece} serial={pieceSerial} />
             <AxisLabels width={width} height={height} depth={depth} />
         </>
     );

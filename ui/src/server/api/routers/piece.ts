@@ -9,7 +9,7 @@ import {
 
 import { Quaternion, Vector3 } from "three";
 
-import { createClient } from "redis";
+//import { createClient } from "redis";
 
 import type {
     Piece,
@@ -34,13 +34,13 @@ interface ExtendedPiece extends Piece {
     cubes: PieceCube[];
 }
 
-const client = createClient({
-    url: "redis://redis",
-});
+// const client = createClient({
+//     url: "redis://redis",
+// });
 
-client.on("error", (err) => console.log("Redis Client Error", err));
+// client.on("error", (err) => console.log("Redis Client Error", err));
 
-await client.connect();
+// await client.connect();
 
 const roundVector3 = (vector: Vector3): Vector3 => {
     return new Vector3(
@@ -56,17 +56,9 @@ interface Origin {
     z: number;
 }
 
-async function createPiece(
+export async function createPiece(
     ctx: {
         db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-        // session: {
-        //     user: {
-        //         name?: string | null | undefined;
-        //         email?: string | null | undefined;
-        //         image?: string | null | undefined;
-        //     } & { id: string };
-        //     expires: string;
-        // };
     },
     input: { pile: string },
 ) {
@@ -136,10 +128,10 @@ async function createPiece(
         }
     }
 
-    await client
-        .multi()
-        .publish("events", JSON.stringify({ piece: true }))
-        .exec();
+    // await client
+    //     .multi()
+    //     .publish("events", JSON.stringify({ piece: true }))
+    //     .exec();
 
     return piece;
 }
@@ -352,10 +344,10 @@ export const pieceRouter = createTRPCRouter({
                                         },
                                     });
                                 }
-                                await client
-                                    .multi()
-                                    .publish("events", JSON.stringify({ piece: true }))
-                                    .exec();
+                                // await client
+                                //     .multi()
+                                //     .publish("events", JSON.stringify({ piece: true }))
+                                //     .exec();
 
                                 canMoveDown = false;
                             }
@@ -386,13 +378,13 @@ export const pieceRouter = createTRPCRouter({
 
                         await createPiece(ctx, { pile: piece.pile.id });
 
-                        await client
-                            .multi()
-                            .publish(
-                                "events",
-                                JSON.stringify({ new_random_cube: true }),
-                            )
-                            .exec();
+                        // await client
+                        //     .multi()
+                        //     .publish(
+                        //         "events",
+                        //         JSON.stringify({ new_random_cube: true }),
+                        //     )
+                        //     .exec();
                         return;
                     }
 
@@ -539,13 +531,13 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
-            await client
-                .multi()
-                .publish("events", JSON.stringify({ floor_removed: true }))
-                .exec();
-            await client
-                .multi()
-                .publish("events", JSON.stringify({ piece: true }))
-                .exec();
+            // await client
+            //     .multi()
+            //     .publish("events", JSON.stringify({ floor_removed: true }))
+            //     .exec();
+            // await client
+            //     .multi()
+            //     .publish("events", JSON.stringify({ piece: true }))
+            //     .exec();
         }),
 });

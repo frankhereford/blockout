@@ -1,4 +1,4 @@
-version: '3.1'
+version: "3.1"
 
 services:
   postgres:
@@ -14,32 +14,16 @@ services:
     ports:
       - 5532:5432
 
-  redis:
-    image: redis
-    #restart: unless-stopped
-    ports:
-      - 6379:6379
-
-  websockets:
-    build: websockets
-    volumes:
-      - ./websockets:/app
-    ports:
-      - 3001:3001
-    depends_on:
-      - postgres
-      - redis
-
   nextjs:
     container_name: nextjs
-    build: ui 
+    build: ui
     ports:
       - 3000:3000
       - 5555:5555
     env_file:
       - ./ui/.env
     depends_on:
-      - redis
+      - postgres
     volumes:
       - .:/application
     entrypoint: ["npx", "next", "dev"]
