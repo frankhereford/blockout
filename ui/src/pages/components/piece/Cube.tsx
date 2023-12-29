@@ -22,6 +22,8 @@ export const Cube = ({ location, scale = 0.93, color = "red" }: CubeProps) => {
             <animated.meshStandardMaterial
                 attach="material"
                 color={springProps.color}
+                transparent={true} // Enable transparency
+                opacity={0.8}
             />
         </animated.mesh>
     );
