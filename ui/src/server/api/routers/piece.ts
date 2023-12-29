@@ -335,6 +335,7 @@ export const pieceRouter = createTRPCRouter({
                             const isOverlapping = isPieceOverlappingPile(piece);
 
                             if (!isWithinBounds || isOverlapping) {
+                                // this is to try to get that hint of movement when you stick a piece down
                                 for (const cube of piece.cubes) {
                                     await prisma.pieceCube.update({
                                         where: { id: cube.id },
