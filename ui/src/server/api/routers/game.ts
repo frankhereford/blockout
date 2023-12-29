@@ -23,7 +23,6 @@ export const gameRouter = createTRPCRouter({
                     height: input.height,
                     width: input.width,
                     depth: input.depth,
-                    //user: { connect: { id: ctx.session.user.id } },
                     pile: {
                         create: {},
                     },
@@ -46,8 +45,6 @@ export const gameRouter = createTRPCRouter({
     get: publicProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
-            //console.log("input: ", input);
-
             const game = await ctx.db.game.findUnique({
                 where: {
                     id: input.id,
