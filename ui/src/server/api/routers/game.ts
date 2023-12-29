@@ -6,6 +6,8 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
+import { createPiece } from "~/server/api/routers/piece";
+
 export const gameRouter = createTRPCRouter({
     create: publicProcedure
         .input(
@@ -35,6 +37,9 @@ export const gameRouter = createTRPCRouter({
                     },
                 },
             });
+
+            await createPiece(ctx, { pile: game.pile!.id });
+
             return game;
         }),
 

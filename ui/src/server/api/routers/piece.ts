@@ -56,17 +56,9 @@ interface Origin {
     z: number;
 }
 
-async function createPiece(
+export async function createPiece(
     ctx: {
         db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-        // session: {
-        //     user: {
-        //         name?: string | null | undefined;
-        //         email?: string | null | undefined;
-        //         image?: string | null | undefined;
-        //     } & { id: string };
-        //     expires: string;
-        // };
     },
     input: { pile: string },
 ) {
