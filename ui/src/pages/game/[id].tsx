@@ -15,16 +15,6 @@ export default function Game() {
         { id: getGame.data?.pile?.id ?? "" },
         { enabled: getGame.data?.pile?.id !== undefined },
     );
-    const addRandomCube = api.pile.addRandomCube.useMutation({});
-    const addPiece = api.piece.create.useMutation({});
-
-    const addRandomCubeToPile = () => {
-        addRandomCube.mutate({ id: getPile.data?.id ?? "" });
-    };
-
-    const addRandomPieceToPile = () => {
-        addPiece.mutate({ pile: getPile.data?.id ?? "" });
-    };
 
     return (
         <>
@@ -48,18 +38,6 @@ export default function Game() {
                                 New Game
                             </button>
                         </Link>
-                        <button
-                            onClick={addRandomCubeToPile}
-                            className="mt-4 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
-                        >
-                            Add Random Cube
-                        </button>
-                        <button
-                            onClick={addRandomPieceToPile}
-                            className="mt-4 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
-                        >
-                            Add Piece
-                        </button>
                     </div>
                 </div>
             </main>
