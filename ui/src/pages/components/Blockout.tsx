@@ -25,6 +25,13 @@ export const Blockout = ({ id }: SceneProps) => {
     const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
+        if (movePiece.status === "success") {
+            // here is where we want to ask the component to refresh
+            console.log(movePiece);
+        }
+    }, [movePiece.status]);
+
+    useEffect(() => {
         if (getGame.data?.pile?.pieces) {
             setPiece(getGame.data?.pile?.pieces[0]?.id ?? "");
         }
