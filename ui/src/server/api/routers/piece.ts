@@ -9,8 +9,6 @@ import {
 
 import { Quaternion, Vector3 } from "three";
 
-//import { createClient } from "redis";
-
 import type {
     Piece,
     Pile,
@@ -33,14 +31,6 @@ interface ExtendedPiece extends Piece {
     movements: Movement[];
     cubes: PieceCube[];
 }
-
-// const client = createClient({
-//     url: "redis://redis",
-// });
-
-// client.on("error", (err) => console.log("Redis Client Error", err));
-
-// await client.connect();
 
 const roundVector3 = (vector: Vector3): Vector3 => {
     return new Vector3(
@@ -127,11 +117,6 @@ export async function createPiece(
             });
         }
     }
-
-    // await client
-    //     .multi()
-    //     .publish("events", JSON.stringify({ piece: true }))
-    //     .exec();
 
     return piece;
 }
@@ -344,10 +329,6 @@ export const pieceRouter = createTRPCRouter({
                                         },
                                     });
                                 }
-                                // await client
-                                //     .multi()
-                                //     .publish("events", JSON.stringify({ piece: true }))
-                                //     .exec();
 
                                 canMoveDown = false;
                             }
@@ -531,13 +512,5 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
-            // await client
-            //     .multi()
-            //     .publish("events", JSON.stringify({ floor_removed: true }))
-            //     .exec();
-            // await client
-            //     .multi()
-            //     .publish("events", JSON.stringify({ piece: true }))
-            //     .exec();
         }),
 });
