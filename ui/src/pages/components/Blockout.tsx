@@ -194,30 +194,19 @@ export const Blockout = ({ id }: SceneProps) => {
 
     useEffect(() => {
         const websocket = new WebSocket("ws://localhost:3001/ws");
-
-        websocket.onopen = () => {
-            console.log("WebSocket Connected");
-        };
+        websocket.onopen = () => { console.log("WebSocket Connected"); };
         websocket.onmessage = (event) => {
             const data = JSON.parse(event.data as string) as object;
             if ((data as { piece: boolean }).piece) {
                 void getGame.refetch();
             }
         };
-        websocket.onerror = (error) => {
-            console.error("WebSocket Error:", error);
-        };
-        websocket.onclose = () => {
-            console.log("WebSocket Disconnected");
-        };
-        return () => {
-            websocket.close();
-        };
+        websocket.onerror = (error) => { console.error("WebSocket Error:", error); };
+        websocket.onclose = () => { console.log("WebSocket Disconnected"); };
+        return () => { websocket.close(); };
     }, []);
 
-    if (!getGame.data) {
-        return null;
-    }
+    if (!getGame.data) { return null; }
 
     return (
         <>
