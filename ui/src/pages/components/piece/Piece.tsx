@@ -1,7 +1,7 @@
 import { Cube } from "./Cube";
 import { GhostCube } from "./GhostCube";
 import { Vector3 } from "three";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 
@@ -88,19 +88,6 @@ const Piece = ({ id, serial }: PieceProps) => {
             console.error('An error occurred while fetching data:', error);
         });
     }, [serial]); // Add dependencies here if needed
-
-
-    useEffect(() => {
-        const websocket = new WebSocket("ws://localhost:3001/ws");
-        websocket.onopen = () => { console.log("WebSocket Connected"); };
-        websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data as string) as object;
-            //if ((data as { piece: boolean }).piece) { void getPiece.refetch(); }
-        };
-        websocket.onerror = (error) => { console.error("WebSocket Error:", error); };
-        websocket.onclose = () => { console.log("WebSocket Disconnected"); };
-        return () => { websocket.close(); };
-    }, []);
 
     useEffect(() => {
         if (getPiece.data) {
