@@ -15,8 +15,6 @@ export const GhostCube = ({ location, scale = 0.93, color = "red" }: CubeProps) 
         <animated.mesh
             position={springProps.position as unknown as Vector3}
             scale={[scale, scale, scale]}
-            castShadow
-            receiveShadow
         >
             <boxGeometry attach="geometry" args={[1, 1, 1]} />
             <animated.meshStandardMaterial
