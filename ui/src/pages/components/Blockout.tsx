@@ -20,14 +20,15 @@ export const Blockout = ({ id }: SceneProps) => {
     const [height, setHeight] = useState(1);
     const [depth, setDepth] = useState(1);
     const [piece, setPiece] = useState("");
+    const [pieceSerial, setPieceSerial] = useState(0);
 
     const getGame = api.game.get.useQuery({ id: id });
     const movePiece = api.piece.move.useMutation({});
 
     useEffect(() => {
         if (movePiece.status === "success") {
-            // here is where we want to ask the component to refresh
-            console.log(movePiece);
+            //console.log(movePiece);
+            setPieceSerial(prevPieceSerial => prevPieceSerial + 1);
         }
     }, [movePiece.status]);
 
@@ -229,7 +230,7 @@ export const Blockout = ({ id }: SceneProps) => {
             />
             <Lighting width={width} height={height} depth={depth} />
             <Pile id={getGame.data.pile?.id ?? ""} />
-            <Piece id={piece} />
+            <Piece id={piece} serial={pieceSerial} />
             <AxisLabels width={width} height={height} depth={depth} />
         </>
     );
