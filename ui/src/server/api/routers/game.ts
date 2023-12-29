@@ -43,6 +43,7 @@ export const gameRouter = createTRPCRouter({
         }),
 
     get: publicProcedure
+        .meta({ openapi: { method: 'GET', path: '/api/game-get' } })
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
             const game = await ctx.db.game.findUnique({
