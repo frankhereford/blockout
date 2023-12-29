@@ -189,7 +189,12 @@ export const pieceRouter = createTRPCRouter({
                     id: input.id,
                 },
                 include: {
-                    pile: true,
+                    pile: {
+                        include: {
+                            game: true,
+                            cubes: true,
+                        },
+                    },
                     library: true,
                     cubes: true,
                 },
