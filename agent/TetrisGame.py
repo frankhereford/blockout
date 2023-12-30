@@ -20,10 +20,12 @@ class Tetris:
         data = {"height": 7, "width": 7, "depth": 7}
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
-            print("Game created successfully")
+            # print("Game created successfully")
             # print("Response data:", response.json())
             self.pile = response.json()["pile"]["id"]
             self.game = response.json()["id"]
+            self.piece = None
+            self.score = 0
             return response.json()
         else:
             print(f"Failed to create game, status code: {response.status_code}")
@@ -39,7 +41,7 @@ class Tetris:
         }
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
-            print("Piece moved successfully")
+            # print("Piece moved successfully")
             return response.json()
         else:
             print(f"Failed to move piece, status code: {response.status_code}")
@@ -49,7 +51,7 @@ class Tetris:
         url = f"http://localhost:3000/api/game/{self.game}"
         response = requests.get(url)
         if response.status_code == 200:
-            print("Game state retrieved successfully")
+            # print("Game state retrieved successfully")
             # print("Response data:", response.json())
             self.piece = response.json()["pile"]["pieces"][0]["id"]
             self.score = response.json()["score"]
@@ -69,6 +71,6 @@ if __name__ == "__main__":
             "movement": {"x": 0, "y": 0, "z": 0, "pitch": 0, "yaw": 0, "roll": 0},
         }
     )
-    print("move_results:", move_results)
+    # print("move_results:", move_results)
     game.get_game_state()
     game.print_self()
