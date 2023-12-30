@@ -116,6 +116,15 @@ class Agent:
                 final_move[0] = 1
             else:
                 final_move[move] = random.choice([-1, 1])
+        else:
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model.predict(state0)
+            print("Prediction:", prediction)
+            move = random.randint(0, 6)
+            if move == 0:
+                final_move[0] = 1
+            else:
+                final_move[move] = random.choice([-1, 1])
         return final_move
 
 
