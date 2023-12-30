@@ -529,16 +529,16 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
-            const game_result = piece.cubes.some(cube1 => // true if over
+            const game_result = !piece.cubes.some(cube1 => // true if over
                 piece.pile.cubes.some(cube2 =>
                     cube1.x === cube2.x && cube1.y === cube2.y && cube1.z === cube2.z
                 )
             );
 
-            move_reward += game_result ? -100 : 0;
+            move_reward += game_result ? 0 : -100;
 
             const result = { game_result, move_reward };
-            console.log("\n\nmove result: ", result);
+            console.log("\nmove result: ", result, "\n");
 
             return result;
         }),
