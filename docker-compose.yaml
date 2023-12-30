@@ -26,6 +26,8 @@ services:
     volumes:
       - .:/application
     entrypoint: ["npx", "next", "dev"]
+    logging:
+      driver: none
 
 volumes:
   blockout-database:
