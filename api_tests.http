@@ -1,4 +1,4 @@
-GET http://localhost:3000/api/game/clqrct2kq01m1mm01bkdkiwp2 HTTP/1.1
+GET http://localhost:3000/api/game/clqrfleq001thv1aprjlf9l0y HTTP/1.1
 
 ### 
 
@@ -25,10 +25,10 @@ POST http://localhost:3000/api/piece/move HTTP/1.1
 content-type: application/json
 
 {
-    "id": "clqrcvzuq01n2mm01acb4x9uz",
-    "drop": false,
+    "id": "clqrfniko01ypv1apgrn9bddb",
+    "drop": true,
     "movement": {
-        "x": 1,
+        "x": 0,
         "y": 0,
         "z": 0,
         "pitch": 0,
