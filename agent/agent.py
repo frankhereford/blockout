@@ -6,6 +6,7 @@ import numpy as numpy
 from collections import deque
 from TetrisGame import Tetris
 import time
+import json
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -20,7 +21,9 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
 
     def get_state(self, game):
-        pass
+        state = game.get_game_state()
+        print("State:", json.dumps(state, indent=4))
+        time.sleep(10)
 
     def remember(self, state, action, reward, next_state, done):
         pass
@@ -48,7 +51,7 @@ def train():
     game = Tetris()
     while True:
         # time.sleep(1)
-        state_old = game.get_game_state()
+        state_old = agent.get_state(game)
         # print("Old state:", state_old)
 
         final_move = agent.get_action(state_old)
@@ -61,7 +64,7 @@ def train():
         # print("Reward:", reward)
         # print("Done:", done)
         # print("Score:", score)
-        state_new = game.get_game_state()
+        state_new = agent.get_state(game)
 
         # train short memory
         agent.train_short_memory(state_old, final_move, reward, state_new, done)
