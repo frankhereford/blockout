@@ -1,0 +1,14 @@
+GET http://localhost:3000/api/game/clqrbd1rl00lk2963dhtd8hk3 HTTP/1.1
+
+
+### 
+
+
+POST http://localhost:3000/api/game/create HTTP/1.1
+content-type: application/json
+
+{
+    "height": 7,
+    "width": 7,
+    "depth": 7
+}
