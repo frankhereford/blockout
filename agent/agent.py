@@ -109,17 +109,21 @@ class Agent:
 
         # random moves: tradeoff exploration / exploitation
         self.epsilon = EXPLORE - self.number_games
-        final_move = [0, 0, 0, 0, 0, 0, 0]
+        final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         if random.randint(0, EXPLOIT) < self.epsilon:
-            move = random.randint(0, 6)
+            move = random.randint(0, 12)
             if move == 0:
                 final_move[0] = 1
+            elif move <= 6:
+                final_move[move] = 1
             else:
-                final_move[move] = random.choice([-1, 1])
+                final_move[move - 6] = -1
+
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model.predict(state0)
             print("Prediction:", prediction)
+            # ! here we're just making another random move instead of parsing the prediction
             move = random.randint(0, 6)
             if move == 0:
                 final_move[0] = 1
