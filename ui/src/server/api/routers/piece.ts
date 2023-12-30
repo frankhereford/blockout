@@ -374,16 +374,15 @@ export const pieceRouter = createTRPCRouter({
 
                         reward += pieceFinalPlaceScore;
                         reward += boardFinalPlaceScore;
-                        console.log("\n\n");
+
+                        console.log("\n");
                         console.log("Piece's highest Y: ", pieceFinalPlaceHighestY);
                         console.log("Board's highest Y: ", boardFinalPlaceHighestY._max.y);
                         console.log("Game Height: ", piece.pile.game.height);
-                        console.log("\n");
                         console.log("Piece's final place score: ", pieceFinalPlaceScore);
                         console.log("Board's final place score: ", boardFinalPlaceScore);
-                        console.log("\n");
                         console.log("Reward: ", reward);
-                        console.log("\n\n");
+                        console.log("\n");
 
                         // ! this is so ugly - duped code! see below
                         const maxSerialNumber = await prisma.movement.aggregate({
@@ -489,16 +488,14 @@ export const pieceRouter = createTRPCRouter({
                     reward += boardFinalPlaceScore;
                     reward -= 10;
 
-                    console.log("\n\n");
+                    console.log("\n");
                     console.log("Piece's highest Y: ", pieceFinalPlaceHighestY);
                     console.log("Board's highest Y: ", boardFinalPlaceHighestY._max.y);
                     console.log("Game Height: ", piece.pile.game.height);
-                    console.log("\n");
                     console.log("Piece's final place score: ", pieceFinalPlaceScore);
                     console.log("Board's final place score: ", boardFinalPlaceScore);
-                    console.log("\n");
                     console.log("Reward: ", reward);
-                    console.log("\n\n");
+                    console.log("\n");
 
 
                     return reward; // moved successfully
