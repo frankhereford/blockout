@@ -524,20 +524,12 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
-
-            const newPieceOverlap = piece.cubes.some(cube1 =>
+            const game_result = piece.cubes.some(cube1 =>
                 piece.pile.cubes.some(cube2 =>
                     cube1.x === cube2.x && cube1.y === cube2.y && cube1.z === cube2.z
                 )
-            );
+            ) ? "Game Over" : "Ongoing";
 
-
-
-            if (newPieceOverlap) {
-                return { game_result: "Game Over" };
-            } else {
-                return { game_result: "Ongoing" };
-            }
-
+            return { game_result };
         }),
 });
