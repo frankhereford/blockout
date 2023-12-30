@@ -2,7 +2,7 @@
 
 import torch
 import random
-import numpy as numpy
+import numpy as np
 from collections import deque
 from TetrisGame import Tetris
 import time
@@ -24,7 +24,6 @@ class Agent:
         state = game.get_game_state()
 
         # print("State:", json.dumps(state, indent=4))
-        # quit()
 
         game_array = [
             [
@@ -47,8 +46,6 @@ class Agent:
             for sublist2 in sublist1
             for item in sublist2
         ]
-
-        # print(pile_flattened_array)
 
         # Initialize 3D array
         game_array = [
@@ -73,13 +70,14 @@ class Agent:
         ]
 
         # print(pile_flattened_array)
-
+        # print(pile_flattened_array)
         # Concatenate pile_flattened_array and piece_flattened_array
         concatenated_array = pile_flattened_array + piece_flattened_array
 
         # print(concatenated_array)
 
-        return concatenated_array
+        # return concatenated_array
+        return np.array(concatenated_array, dtype=int)
 
     # time.sleep(1)
 
@@ -115,7 +113,6 @@ def train():
         final_move = agent.get_action(state_old)
 
         move_result = game.move_piece(final_move)
-        # print("Move result:", move_result)
         reward = move_result["move_reward"]
         done = not move_result["game_result"]
         score = move_result["gameScore"]
