@@ -26,6 +26,7 @@ class Tetris:
             self.game = response.json()["id"]
             self.piece = None
             self.score = 0
+            print("game:", self.game)
             return response.json()
         else:
             print(f"Failed to create game, status code: {response.status_code}")
