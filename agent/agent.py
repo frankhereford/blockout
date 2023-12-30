@@ -61,7 +61,7 @@ class Agent:
 
         # Set positions of cubes in the piece to True
         for cube in state["cubes"]:
-            if cube["y"] < 7:
+            if cube["y"] < 7:  # this should be trapped in the JS app
                 game_array[cube["x"]][cube["y"]][cube["z"]] = True
 
         # Flatten the 3D array into a 1D array
