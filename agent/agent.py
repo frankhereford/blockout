@@ -11,6 +11,8 @@ import json
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LR = 0.001
+EXPLORE = 80
+EXPLOIT = 200
 
 
 class Agent:
@@ -19,6 +21,8 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0
         self.memory = deque(maxlen=MAX_MEMORY)
+        self.model = None
+        self.trainer = None
 
     def get_state(self, game):
         state = game.get_game_state()
@@ -85,17 +89,34 @@ class Agent:
         self.memory.append((state, action, reward, next_state, done))
 
     def train_long_memory(self):
-        pass
+        if len(self.memory) > BATCH_SIZE:
+            mini_sample = random.sample(self.memory, BATCH_SIZE)
+        else:
+            mini_sample = self.memory
+
+        states, actions, rewards, next_states, dones = zip(*mini_sample)
+        self.trainer.train_step(states, actions, rewards, next_states, dones)
 
     def train_short_memory(self, state, action, reward, next_state, done):
-        pass
+        self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        move = {
-            "drop": True,
-            "movement": {"x": 0, "y": 0, "z": 0, "pitch": 0, "yaw": 0, "roll": 0},
-        }
-        return move
+        # move = {
+        #     "drop": True,
+        #     "movement": {"x": 0, "y": 0, "z": 0, "pitch": 0, "yaw": 0, "roll": 0},
+        # }
+        # return move
+
+        # random moves: tradeoff exploration / exploitation
+        self.epsilon = EXPLORE - self.number_games
+        final_move = [0, 0, 0, 0, 0, 0, 0]
+        if random.randint(0, EXPLOIT) < self.epsilon:
+            move = random.randint(0, 6)
+            if move == 0:
+                final_move[0] = 1
+            else:
+                final_move[move] = random.choice([-1, 1])
+        return final_move
 
 
 def train():
@@ -111,8 +132,22 @@ def train():
         # print("Old state:", state_old)
 
         final_move = agent.get_action(state_old)
+        tetris_move = {
+            "drop": True if final_move[0] == 1 else False,
+            "movement": {
+                "x": final_move[1],
+                "y": final_move[2],
+                "z": final_move[3],
+                "pitch": final_move[4],
+                "yaw": final_move[5],
+                "roll": final_move[6],
+            },
+        }
 
-        move_result = game.move_piece(final_move)
+        print("Final move:", final_move)
+        print("Tetris move:", tetris_move)
+
+        move_result = game.move_piece(tetris_move)
         reward = move_result["move_reward"]
         done = not move_result["game_result"]
         score = move_result["gameScore"]
