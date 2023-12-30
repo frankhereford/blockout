@@ -109,7 +109,7 @@ class Agent:
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         if random.randint(0, EXPLOIT) < self.epsilon:
             move = random.randint(0, 12)
-            print(f"Performing random move: {move}")
+            # print(f"Performing random move: {move}")
             if move == 0:
                 final_move[0] = 1
             elif move <= 6:
@@ -122,7 +122,7 @@ class Agent:
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
             # print("Prediction:", prediction)
-            print(f"Performing predicted move: {move}")
+            # print(f"Performing predicted move: {move}")
             if move == 0:
                 final_move[0] = 1
             elif move <= 6:
@@ -141,7 +141,7 @@ def train():
     agent = Agent()
     game = Tetris()
     while True:
-        time.sleep(4)
+        # time.sleep(1)
         state_old = agent.get_state(game)
         # print("Old state:", state_old)
 
