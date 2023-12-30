@@ -8,6 +8,7 @@ from TetrisGame import Tetris
 import time
 import json
 from model import Linear_QNet, QTrainer
+from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -185,6 +186,12 @@ def train():
                 # agent.model.save()
 
             print("Game", agent.number_games, "Score", score, "Record:", record)
+
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.number_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
 
 
 if __name__ == "__main__":
