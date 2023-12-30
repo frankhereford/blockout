@@ -33,11 +33,16 @@
         }
     ],
     "cSpell.words": [
+        "argmax",
         "Blockout",
+        "dones",
         "drei",
+        "dtype",
         "ification",
         "NEXTAUTH",
+        "Tetris",
         "TRPC",
+        "unsqueeze",
         "zustand"
     ]
 }

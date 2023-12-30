@@ -10,6 +10,7 @@ import { Camera } from "~/pages/components/Camera";
 import { Vector2 } from "three";
 
 import { api } from "~/utils/api";
+import { useInterval } from 'react-use';
 
 interface SceneProps {
     id: string;
@@ -25,6 +26,18 @@ export const Blockout = ({ id }: SceneProps) => {
 
     const getGame = api.game.get.useQuery({ id: id });
     const movePiece = api.piece.move.useMutation({});
+
+    const incrementSerials = () => {
+        setPieceSerial(prevPieceSerial => prevPieceSerial + 1);
+        setPileSerial(prevPileSerial => prevPileSerial + 1);
+        getGame.refetch().catch(error => {
+            console.error('An error occurred while fetching data:', error);
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    useInterval(incrementSerials, 500);
+
 
     useEffect(() => {
         if (movePiece.status === "success") {
