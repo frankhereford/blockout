@@ -59,7 +59,7 @@ class Tetris:
             url = f"http://localhost:3000/api/piece/{self.piece}"
             response = requests.get(url)
             if response.status_code == 200:
-                print("Piece retrieved successfully")
+                # print("Piece retrieved successfully")
                 return response.json()
             else:
                 print(f"Failed to retrieve piece, status code: {response.status_code}")
