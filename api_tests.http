@@ -1,0 +1,38 @@
+GET http://localhost:3000/api/game/clqrct2kq01m1mm01bkdkiwp2 HTTP/1.1
+
+### 
+
+GET http://localhost:3000/api/pile/clqrct2kq01m2mm01axy7b10j HTTP/1.1
+
+###
+
+GET http://localhost:3000/api/piece/clqrct2kz01m3mm018e569m5k HTTP/1.1
+
+###
+
+POST http://localhost:3000/api/game/create HTTP/1.1
+content-type: application/json
+
+{
+    "height": 7,
+    "width": 7,
+    "depth": 7
+}
+
+###
+
+POST http://localhost:3000/api/piece/move HTTP/1.1
+content-type: application/json
+
+{
+    "id": "clqrcvzuq01n2mm01acb4x9uz",
+    "drop": false,
+    "movement": {
+        "x": 1,
+        "y": 0,
+        "z": 0,
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+    }
+}
