@@ -130,6 +130,8 @@ class Agent:
             else:
                 final_move[move - 6] = -1
 
+        # print("Final move:", final_move)
+
         return final_move
 
 
@@ -165,6 +167,13 @@ def train():
         reward = move_result["move_reward"]
         done = not move_result["game_result"]
         score = move_result["gameScore"]
+
+        print("Test move:", tetris_move, " => ", reward, ", score => ", score)
+        if done:
+            print("Game over!")
+        # input()
+        time.sleep(1.5)
+
         # print("Reward:", reward)
         # print("Done:", done)
         # print("Score:", score)

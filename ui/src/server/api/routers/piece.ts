@@ -390,15 +390,15 @@ export const pieceRouter = createTRPCRouter({
 
                         await createPiece(ctx, { pile: piece.pile.id });
 
-                        return 5; // created a new piece
+                        return 0; // created a new piece
                     }
 
                     if (!isWithinBounds) {
-                        return -1; // bumped into the wall
+                        return -5; // bumped into the wall
                     }
 
                     if (isOverlapping) {
-                        return -2; // bumped into the pile
+                        return -5; // bumped into the pile
                     }
 
                     // ! writing starts here
@@ -441,7 +441,7 @@ export const pieceRouter = createTRPCRouter({
                             roll: input.movement.roll,
                         },
                     });
-                    return 1; // moved successfully
+                    return -1; // moved successfully
                 });
             }
 

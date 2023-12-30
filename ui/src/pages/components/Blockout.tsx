@@ -36,7 +36,7 @@ export const Blockout = ({ id }: SceneProps) => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    useInterval(incrementSerials, 1000);
+    useInterval(incrementSerials, 500);
 
 
     useEffect(() => {
