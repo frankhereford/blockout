@@ -172,7 +172,7 @@ def train():
         if done:
             print("Game over!")
         # input()
-        # time.sleep(0.7)
+        # time.sleep(2)
 
         # print("Reward:", reward)
         # print("Done:", done)

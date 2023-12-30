@@ -357,6 +357,33 @@ export const pieceRouter = createTRPCRouter({
                             });
                         }
 
+                        let reward = 0
+                        const pieceFinalPlaceHighestY = Math.max(...piece.cubes.map(cube => cube.y + 1));
+                        const boardFinalPlaceHighestY = await prisma.pileCube.aggregate({
+                            where: {
+                                pileId: piece.pile.id,
+                                active: true,
+                            },
+                            _max: {
+                                y: true,
+                            },
+                        });
+
+                        const pieceFinalPlaceScore = 1 * ((-1 * pieceFinalPlaceHighestY) + piece.pile.game.height);
+                        const boardFinalPlaceScore = 3 * ((-1 * boardFinalPlaceHighestY._max.y!) + piece.pile.game.height);
+
+                        reward += pieceFinalPlaceScore;
+                        reward += boardFinalPlaceScore;
+                        console.log("\n\n");
+                        console.log("Piece's highest Y: ", pieceFinalPlaceHighestY);
+                        console.log("Board's highest Y: ", boardFinalPlaceHighestY._max.y);
+                        console.log("Game Height: ", piece.pile.game.height);
+                        console.log("\n");
+                        console.log("Piece's final place score: ", pieceFinalPlaceScore);
+                        console.log("Board's final place score: ", boardFinalPlaceScore);
+                        console.log("\n");
+                        console.log("Reward: ", reward);
+                        console.log("\n\n");
 
                         // ! this is so ugly - duped code! see below
                         const maxSerialNumber = await prisma.movement.aggregate({
@@ -390,15 +417,15 @@ export const pieceRouter = createTRPCRouter({
 
                         await createPiece(ctx, { pile: piece.pile.id });
 
-                        return 0; // created a new piece
+                        return reward; // created a new piece after a drop
                     }
 
                     if (!isWithinBounds) {
-                        return -5; // bumped into the wall
+                        return -50; // bumped into the wall
                     }
 
                     if (isOverlapping) {
-                        return -5; // bumped into the pile
+                        return -50; // bumped into the pile
                     }
 
                     // ! writing starts here
@@ -441,7 +468,40 @@ export const pieceRouter = createTRPCRouter({
                             roll: input.movement.roll,
                         },
                     });
-                    return -1; // moved successfully
+
+
+                    let reward = 0
+                    const pieceFinalPlaceHighestY = Math.max(...piece.cubes.map(cube => cube.y + 1));
+                    const boardFinalPlaceHighestY = await prisma.pileCube.aggregate({
+                        where: {
+                            pileId: piece.pile.id,
+                            active: true,
+                        },
+                        _max: {
+                            y: true,
+                        },
+                    });
+
+                    const pieceFinalPlaceScore = 1 * ((-1 * pieceFinalPlaceHighestY) + piece.pile.game.height);
+                    const boardFinalPlaceScore = 3 * ((-1 * boardFinalPlaceHighestY._max.y!) + piece.pile.game.height);
+
+                    reward += pieceFinalPlaceScore;
+                    reward += boardFinalPlaceScore;
+                    reward -= 10;
+
+                    console.log("\n\n");
+                    console.log("Piece's highest Y: ", pieceFinalPlaceHighestY);
+                    console.log("Board's highest Y: ", boardFinalPlaceHighestY._max.y);
+                    console.log("Game Height: ", piece.pile.game.height);
+                    console.log("\n");
+                    console.log("Piece's final place score: ", pieceFinalPlaceScore);
+                    console.log("Board's final place score: ", boardFinalPlaceScore);
+                    console.log("\n");
+                    console.log("Reward: ", reward);
+                    console.log("\n\n");
+
+
+                    return reward; // moved successfully
                 });
             }
 
@@ -523,7 +583,7 @@ export const pieceRouter = createTRPCRouter({
                 }
             }
 
-            move_reward += fullYValues.length * 10;
+            move_reward += fullYValues.length * 50;
 
             // Sort the fullYValues array in descending order
             fullYValues.sort((a, b) => b - a);
