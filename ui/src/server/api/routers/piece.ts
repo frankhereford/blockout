@@ -359,15 +359,15 @@ export const pieceRouter = createTRPCRouter({
 
                         await createPiece(ctx, { pile: piece.pile.id });
 
-                        return;
+                        return 5; // created a new piece
                     }
 
                     if (!isWithinBounds) {
-                        return;
+                        return -1; // bumped into the wall
                     }
 
                     if (isOverlapping) {
-                        return;
+                        return -2; // bumped into the pile
                     }
 
                     // ! writing starts here
@@ -410,10 +410,13 @@ export const pieceRouter = createTRPCRouter({
                             roll: input.movement.roll,
                         },
                     });
+                    return 1; // moved successfully
                 });
             }
 
-            await executeMove(input);
+            let move_reward = await executeMove(input) ?? 0;
+            //console.log("\n\move_reward: ", move_reward);
+
 
             // we're always going to be here, calculate the state and score.
 
@@ -489,6 +492,8 @@ export const pieceRouter = createTRPCRouter({
                 }
             }
 
+            move_reward += fullYValues.length * 10;
+
             // Sort the fullYValues array in descending order
             fullYValues.sort((a, b) => b - a);
 
@@ -524,12 +529,17 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
-            const game_result = piece.cubes.some(cube1 =>
+            const game_result = piece.cubes.some(cube1 => // true if over
                 piece.pile.cubes.some(cube2 =>
                     cube1.x === cube2.x && cube1.y === cube2.y && cube1.z === cube2.z
                 )
-            ) ? "Game Over" : "Ongoing";
+            );
 
-            return { game_result };
+            move_reward += game_result ? -100 : 0;
+
+            const result = { game_result, move_reward };
+            console.log("\n\nmove result: ", result);
+
+            return result;
         }),
 });
