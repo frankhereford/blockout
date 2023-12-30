@@ -55,7 +55,16 @@ class Tetris:
             # print("Response data:", response.json())
             self.piece = response.json()["pile"]["pieces"][0]["id"]
             self.score = response.json()["score"]
-            return response.json()
+
+            url = f"http://localhost:3000/api/piece/{self.piece}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                print("Piece retrieved successfully")
+                return response.json()
+            else:
+                print(f"Failed to retrieve piece, status code: {response.status_code}")
+                return None
+
         else:
             print(f"Failed to retrieve game state, status code: {response.status_code}")
             return None
