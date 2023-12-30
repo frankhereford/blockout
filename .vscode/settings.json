@@ -41,6 +41,7 @@
         "NEXTAUTH",
         "Tetris",
         "TRPC",
+        "unsqueeze",
         "zustand"
     ]
 }
