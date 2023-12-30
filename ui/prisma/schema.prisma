@@ -147,6 +147,7 @@ model PieceCube {
     @@map("piece_cube")
 }
 
+// i could stash the move reward in here maybe
 model Movement {
     id        String   @id @default(cuid())
     pieceId   String
