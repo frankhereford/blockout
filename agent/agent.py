@@ -168,11 +168,11 @@ def train():
         done = not move_result["game_result"]
         score = move_result["gameScore"]
 
-        print("Test move:", tetris_move, " => ", reward, ", score => ", score)
+        print(f"Test move: {tetris_move} => {reward}, score => {score}")
         if done:
             print("Game over!")
         # input()
-        time.sleep(1.5)
+        # time.sleep(0.7)
 
         # print("Reward:", reward)
         # print("Done:", done)
