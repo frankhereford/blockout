@@ -498,9 +498,26 @@ export const pieceRouter = createTRPCRouter({
             fullYValues.sort((a, b) => b - a);
 
             // Iterate over the fullYValues array
+            let gameScore = piece.pile.game.score;
             for (const y of fullYValues) {
                 // Do something with y
-                console.log("Removing Floor: ", y);
+                //console.log("Removing Floor: ", y);
+
+                const updatedGame = await ctx.db.game.update({
+                    where: {
+                        id: piece.pile.game.id,
+                    },
+                    data: {
+                        score: {
+                            increment: 1,
+                        },
+                    },
+                    select: {
+                        score: true,
+                    },
+                });
+
+                gameScore = updatedGame.score;
 
                 await ctx.db.pileCube.updateMany({
                     where: {
@@ -537,7 +554,7 @@ export const pieceRouter = createTRPCRouter({
 
             move_reward += game_result ? 0 : -100;
 
-            const result = { game_result, move_reward };
+            const result = { game_result, move_reward, gameScore };
             console.log("\nmove result: ", result, "\n");
 
             return result;
