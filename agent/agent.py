@@ -22,8 +22,66 @@ class Agent:
 
     def get_state(self, game):
         state = game.get_game_state()
-        print("State:", json.dumps(state, indent=4))
-        time.sleep(10)
+
+        # print("State:", json.dumps(state, indent=4))
+        # quit()
+
+        game_array = [
+            [
+                [False for _ in range(state["pile"]["game"]["depth"])]
+                for _ in range(state["pile"]["game"]["height"])
+            ]
+            for _ in range(state["pile"]["game"]["width"])
+        ]
+
+        # Set positions of cubes in the pile to True
+        for cube in state["pile"]["cubes"]:
+            if cube["y"] < 7:
+                # print("Cube:", cube)
+                game_array[cube["x"]][cube["y"]][cube["z"]] = True
+
+        # Flatten the 3D array into a 1D array
+        pile_flattened_array = [
+            item
+            for sublist1 in game_array
+            for sublist2 in sublist1
+            for item in sublist2
+        ]
+
+        # print(pile_flattened_array)
+
+        # Initialize 3D array
+        game_array = [
+            [
+                [False for _ in range(state["pile"]["game"]["depth"])]
+                for _ in range(state["pile"]["game"]["height"])
+            ]
+            for _ in range(state["pile"]["game"]["width"])
+        ]
+
+        # Set positions of cubes in the piece to True
+        for cube in state["cubes"]:
+            if cube["y"] < 7:
+                game_array[cube["x"]][cube["y"]][cube["z"]] = True
+
+        # Flatten the 3D array into a 1D array
+        piece_flattened_array = [
+            item
+            for sublist1 in game_array
+            for sublist2 in sublist1
+            for item in sublist2
+        ]
+
+        # print(pile_flattened_array)
+
+        # Concatenate pile_flattened_array and piece_flattened_array
+        concatenated_array = pile_flattened_array + piece_flattened_array
+
+        # print(concatenated_array)
+
+        return concatenated_array
+
+    # time.sleep(1)
 
     def remember(self, state, action, reward, next_state, done):
         pass
