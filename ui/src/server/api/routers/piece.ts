@@ -415,6 +415,8 @@ export const pieceRouter = createTRPCRouter({
 
             await executeMove(input);
 
+            // we're always going to be here, calculate the state and score.
+
             const pieceWithPile = await prisma.piece.findUnique({
                 where: {
                     id: input.id,
@@ -423,7 +425,6 @@ export const pieceRouter = createTRPCRouter({
                     pileId: true,
                 },
             });
-            console.log("\n\npieceWithPile: ", pieceWithPile);
 
             const activePieces = await prisma.piece.findMany({
                 where: {
@@ -431,11 +432,6 @@ export const pieceRouter = createTRPCRouter({
                     active: true,
                 },
             });
-
-            console.log("\n\nActive Pieces: ", activePieces);
-
-
-
 
             const piece = await prisma.piece.findUnique({
                 where: {
@@ -452,10 +448,7 @@ export const pieceRouter = createTRPCRouter({
                 },
             });
 
-            if (!piece) {
-                return;
-            }
-
+            if (!piece) { return; } // for typing
 
             // Create a 3D array to represent the game space
             const gameSpace = new Array(piece.pile.game.height)
@@ -467,8 +460,6 @@ export const pieceRouter = createTRPCRouter({
                     ),
                 );
 
-            console.log('\nyo');
-
             // Fill the game space with the active cubes
             for (const cube of piece.pile.cubes) {
                 if (cube.active) {
@@ -477,8 +468,6 @@ export const pieceRouter = createTRPCRouter({
                     }
                 }
             }
-
-            console.log('\nhi');
 
             // Find the Y values where there is a full set of active pieces in every X,Z pair
             const fullYValues = [];
@@ -536,17 +525,13 @@ export const pieceRouter = createTRPCRouter({
             }
 
 
-            //console.log("the piece of interest: ", piece);
-            console.log("piece.pile.cubes", piece.pile.cubes);
-            console.log("piece.cubes", piece.cubes);
-
             const newPieceOverlap = piece.cubes.some(cube1 =>
                 piece.pile.cubes.some(cube2 =>
                     cube1.x === cube2.x && cube1.y === cube2.y && cube1.z === cube2.z
                 )
             );
 
-            console.log("newPieceOverlap", newPieceOverlap);
+
 
             if (newPieceOverlap) {
                 return { game_result: "Game Over" };
