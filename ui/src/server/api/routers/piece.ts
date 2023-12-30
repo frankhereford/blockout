@@ -357,6 +357,37 @@ export const pieceRouter = createTRPCRouter({
                             });
                         }
 
+
+                        // ! this is so ugly - duped code! see below
+                        const maxSerialNumber = await prisma.movement.aggregate({
+                            where: {
+                                pieceId: input.id,
+                            },
+                            _max: {
+                                serial: true,
+                            },
+                        });
+
+                        const nextSerialNumber: number =
+                            maxSerialNumber._max.serial !== null
+                                ? maxSerialNumber._max.serial + 1
+                                : 0;
+
+                        await prisma.movement.create({
+                            data: {
+                                pieceId: input.id,
+                                serial: nextSerialNumber,
+                                drop: input.drop,
+                                x: input.movement.x,
+                                y: input.movement.y,
+                                z: input.movement.z,
+                                pitch: input.movement.pitch,
+                                yaw: input.movement.yaw,
+                                roll: input.movement.roll,
+                            },
+                        });
+                        // ! clean up above here
+
                         await createPiece(ctx, { pile: piece.pile.id });
 
                         return 5; // created a new piece
