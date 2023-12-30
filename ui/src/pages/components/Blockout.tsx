@@ -11,7 +11,6 @@ import { Vector2 } from "three";
 
 import { api } from "~/utils/api";
 import { useInterval } from 'react-use';
-import { get } from "http";
 
 interface SceneProps {
     id: string;
