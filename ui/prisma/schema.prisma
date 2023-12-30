@@ -65,6 +65,7 @@ model VerificationToken {
 
 model Game {
     id        String   @id @default(cuid())
+    score     Int      @default(0)
     width     Int
     height    Int
     depth     Int
