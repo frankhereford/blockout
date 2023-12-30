@@ -1,8 +1,6 @@
-GET http://localhost:3000/api/game/clqrbd1rl00lk2963dhtd8hk3 HTTP/1.1
-
+GET http://localhost:3000/api/game/clqrbrlzo00mh2963ljeu2wok HTTP/1.1
 
 ### 
-
 
 POST http://localhost:3000/api/game/create HTTP/1.1
 content-type: application/json
@@ -12,3 +10,11 @@ content-type: application/json
     "width": 7,
     "depth": 7
 }
+
+###
+
+GET http://localhost:3000/api/pile/clqrbrlzo00mi296365e27yqk HTTP/1.1
+
+###
+
+
