@@ -7,6 +7,7 @@ from collections import deque
 from TetrisGame import Tetris
 import time
 import json
+from model import Linear_QNet, QTrainer
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -19,10 +20,10 @@ class Agent:
     def __init__(self):
         self.number_games = 0
         self.epsilon = 0
-        self.gamma = 0
+        self.gamma = 0.9  # must be < 1
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = None
-        self.trainer = None
+        self.model = Linear_QNet(686, 1024, 13)
+        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def get_state(self, game):
         state = game.get_game_state()
@@ -73,15 +74,11 @@ class Agent:
             for item in sublist2
         ]
 
-        # print(pile_flattened_array)
-        # print(pile_flattened_array)
-        # Concatenate pile_flattened_array and piece_flattened_array
         concatenated_array = pile_flattened_array + piece_flattened_array
+        np_array = np.array(concatenated_array, dtype=int)
+        # print("Numpy array:", np_array.shape)
 
-        # print(concatenated_array)
-
-        # return concatenated_array
-        return np.array(concatenated_array, dtype=int)
+        return np_array
 
     # time.sleep(1)
 
@@ -112,6 +109,7 @@ class Agent:
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         if random.randint(0, EXPLOIT) < self.epsilon:
             move = random.randint(0, 12)
+            print(f"Performing random move: {move}")
             if move == 0:
                 final_move[0] = 1
             elif move <= 6:
@@ -121,14 +119,17 @@ class Agent:
 
         else:
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model.predict(state0)
-            print("Prediction:", prediction)
-            # ! here we're just making another random move instead of parsing the prediction
-            move = random.randint(0, 6)
+            prediction = self.model(state0)
+            move = torch.argmax(prediction).item()
+            # print("Prediction:", prediction)
+            print(f"Performing predicted move: {move}")
             if move == 0:
                 final_move[0] = 1
+            elif move <= 6:
+                final_move[move] = 1
             else:
-                final_move[move] = random.choice([-1, 1])
+                final_move[move - 6] = -1
+
         return final_move
 
 
@@ -157,8 +158,8 @@ def train():
             },
         }
 
-        print("Final move:", final_move)
-        print("Tetris move:", tetris_move)
+        # print("Final move:", final_move)
+        # print("Tetris move:", tetris_move)
 
         move_result = game.move_piece(tetris_move)
         reward = move_result["move_reward"]
