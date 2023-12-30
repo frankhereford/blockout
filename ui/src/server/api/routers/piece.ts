@@ -359,22 +359,15 @@ export const pieceRouter = createTRPCRouter({
 
                         await createPiece(ctx, { pile: piece.pile.id });
 
-                        // await client
-                        //     .multi()
-                        //     .publish(
-                        //         "events",
-                        //         JSON.stringify({ new_random_cube: true }),
-                        //     )
-                        //     .exec();
-                        return;
+                        return 5; // created a new piece
                     }
 
                     if (!isWithinBounds) {
-                        return;
+                        return -1; // bumped into the wall
                     }
 
                     if (isOverlapping) {
-                        return;
+                        return -2; // bumped into the pile
                     }
 
                     // ! writing starts here
@@ -417,14 +410,35 @@ export const pieceRouter = createTRPCRouter({
                             roll: input.movement.roll,
                         },
                     });
+                    return 1; // moved successfully
                 });
             }
 
-            await executeMove(input);
+            let move_reward = await executeMove(input) ?? 0;
+            //console.log("\n\move_reward: ", move_reward);
+
+
+            // we're always going to be here, calculate the state and score.
+
+            const pieceWithPile = await prisma.piece.findUnique({
+                where: {
+                    id: input.id,
+                },
+                select: {
+                    pileId: true,
+                },
+            });
+
+            const activePieces = await prisma.piece.findMany({
+                where: {
+                    pileId: pieceWithPile?.pileId,
+                    active: true,
+                },
+            });
 
             const piece = await prisma.piece.findUnique({
                 where: {
-                    id: input.id,
+                    id: activePieces[0]!.id,
                 },
                 include: {
                     pile: {
@@ -433,12 +447,11 @@ export const pieceRouter = createTRPCRouter({
                             cubes: true,
                         },
                     },
+                    cubes: true,
                 },
             });
 
-            if (!piece) {
-                return;
-            }
+            if (!piece) { return; } // for typing
 
             // Create a 3D array to represent the game space
             const gameSpace = new Array(piece.pile.game.height)
@@ -453,7 +466,9 @@ export const pieceRouter = createTRPCRouter({
             // Fill the game space with the active cubes
             for (const cube of piece.pile.cubes) {
                 if (cube.active) {
-                    gameSpace[cube.y]![cube.x]![cube.z] = true;
+                    if (gameSpace[cube.y]?.[cube.x] !== undefined) {
+                        gameSpace[cube.y]![cube.x]![cube.z] = true;
+                    }
                 }
             }
 
@@ -476,6 +491,8 @@ export const pieceRouter = createTRPCRouter({
                     fullYValues.push(y);
                 }
             }
+
+            move_reward += fullYValues.length * 10;
 
             // Sort the fullYValues array in descending order
             fullYValues.sort((a, b) => b - a);
@@ -512,5 +529,17 @@ export const pieceRouter = createTRPCRouter({
                 });
             }
 
+            const game_result = piece.cubes.some(cube1 => // true if over
+                piece.pile.cubes.some(cube2 =>
+                    cube1.x === cube2.x && cube1.y === cube2.y && cube1.z === cube2.z
+                )
+            );
+
+            move_reward += game_result ? -100 : 0;
+
+            const result = { game_result, move_reward };
+            console.log("\n\nmove result: ", result);
+
+            return result;
         }),
 });
