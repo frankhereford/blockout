@@ -28,8 +28,7 @@ class Agent:
     def train_long_memory(self):
         pass
 
-    # def train_short_memory(self, state, action, reward, next_state, done):
-    def train_short_memory(self):
+    def train_short_memory(self, state, action, reward, next_state, done):
         pass
 
     def get_action(self, state):
@@ -48,14 +47,37 @@ def train():
     agent = Agent()
     game = Tetris()
     while True:
-        time.sleep(1)
+        # time.sleep(1)
         state_old = game.get_game_state()
-        print("Old state:", state_old)
+        # print("Old state:", state_old)
 
         final_move = agent.get_action(state_old)
 
         move_result = game.move_piece(final_move)
-        print("Move result:", move_result)
+        # print("Move result:", move_result)
+        reward = move_result["move_reward"]
+        done = not move_result["game_result"]
+        score = move_result["gameScore"]
+        # print("Reward:", reward)
+        # print("Done:", done)
+        # print("Score:", score)
+        state_new = game.get_game_state()
+
+        # train short memory
+        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+
+        agent.remember(state_old, final_move, reward, state_new, done)
+
+        if done:
+            # train long memory, plot result
+            game.reset()
+            agent.number_games += 1
+            agent.train_long_memory()
+            if score > record:
+                record = score
+                # agent.model.save()
+
+            print("Game", agent.number_games, "Score", score, "Record:", record)
 
 
 if __name__ == "__main__":
