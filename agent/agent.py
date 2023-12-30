@@ -2,11 +2,10 @@
 
 import torch
 import random
+import time
 import numpy as np
 from collections import deque
 from TetrisGame import Tetris
-import time
-import json
 from model import Linear_QNet, QTrainer
 from helper import plot
 
@@ -142,7 +141,7 @@ def train():
     agent = Agent()
     game = Tetris()
     while True:
-        # time.sleep(1)
+        time.sleep(4)
         state_old = agent.get_state(game)
         # print("Old state:", state_old)
 
@@ -177,7 +176,6 @@ def train():
         agent.remember(state_old, final_move, reward, state_new, done)
 
         if done:
-            # train long memory, plot result
             game.reset()
             agent.number_games += 1
             agent.train_long_memory()
