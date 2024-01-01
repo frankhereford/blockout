@@ -32,7 +32,7 @@ class Tetris:
             b = webbrowser.get("chrome")
 
             # Open the URL in a new tab. If new is 0, the URL is opened in the same browser window if possible. If new is 1, a new browser window is opened if possible. If new is 2, a new tab is opened if possible.
-            b.open(url, new=0)
+            # b.open(url, new=0)
             print("game:", url)
             return response.json()
         else:
