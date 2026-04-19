@@ -226,10 +226,6 @@ export const Blockout = ({ id }: SceneProps) => {
             <GroundPlane
                 width={width}
                 depth={depth}
-                texture="/textures/metal_texture.png"
-                //bumpMap="/textures/stones_bump.jpg"
-                //displacementMap="/textures/stones_displacement.jpg"
-                textureRepeat={new Vector2(3, 3)}
             />
             <Lighting width={width} height={height} depth={depth} />
             <Pile id={getGame.data.pile?.id ?? ""} serial={pileSerial} />
