@@ -8,15 +8,20 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - blockout-database:/var/lib/postgresql/data
-    #ports:
-      #- 5532:5432
+
+  certbot:
+    image: certbot/dns-route53
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - haproxy-certs:/haproxy-certs
+      - ./certbot-entrypoint.sh:/entrypoint.sh:ro
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    restart: "no"
 
   nextjs:
-    container_name: nextjs
     build: ui
-    ports:
-      - 3001:3000
-      - 5555:5555
     env_file:
       - ./ui/.env
     depends_on:
@@ -27,5 +32,21 @@ services:
     logging:
       driver: none
 
+  haproxy:
+    image: haproxy:latest
+    ports:
+      - "15443:15443"
+    volumes:
+      - haproxy-certs:/etc/haproxy/certs
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
+      nextjs:
+        condition: service_started
+    restart: unless-stopped
+
 volumes:
   blockout-database:
+  letsencrypt:
+  haproxy-certs:
