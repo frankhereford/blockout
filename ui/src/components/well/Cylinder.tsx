@@ -1,8 +1,7 @@
 import React from "react";
 import { Vector3, Quaternion } from "three";
-import type { MeshProps } from "@react-three/fiber";
 
-interface CylinderProps extends MeshProps {
+interface CylinderProps {
     point1: [number, number, number];
     point2: [number, number, number];
     width: number;

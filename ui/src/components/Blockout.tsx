@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { GroundPlane } from "~/pages/components/GroundPlane";
-import Well from "~/pages/components/well/Well";
-import Pile from "~/pages/components/pile/Pile";
-import Piece from "~/pages/components/piece/Piece";
-import AxisLabels from "~/pages/components/well/AxesLabels";
+import { GroundPlane } from "~/components/GroundPlane";
+import Well from "~/components/well/Well";
+import Pile from "~/components/pile/Pile";
+import Piece from "~/components/piece/Piece";
+import AxisLabels from "~/components/well/AxesLabels";
 
-import { Lighting } from "~/pages/components/lighting/Lighting";
-import { Camera } from "~/pages/components/Camera";
+import { Lighting } from "~/components/lighting/Lighting";
+import { Camera } from "~/components/Camera";
 import { Vector2 } from "three";
 
 import { api } from "~/utils/api";

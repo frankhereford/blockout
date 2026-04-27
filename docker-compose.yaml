@@ -27,9 +27,6 @@ services:
       - ./ui/.env
     depends_on:
       - postgres
-    volumes:
-      - .:/application
-    entrypoint: ["/bin/sh", "/application/ui/entrypoint.sh"]
     restart: unless-stopped
     logging:
       driver: none

@@ -1,11 +1,9 @@
 FROM node:current-bookworm
 
-# Update Ubuntu packages
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get clean
 
-# normal stuff
 RUN apt-get install -y vim aptitude python3-pip magic-wormhole file tmux ts-node postgresql-client
 
 RUN mkdir /application
@@ -14,5 +12,6 @@ WORKDIR /application/ui
 RUN npm install
 
 RUN npx prisma generate
+RUN SKIP_ENV_VALIDATION=1 npm run build
 
-ENTRYPOINT ["npx", "next", "dev"]
+ENTRYPOINT ["/bin/sh", "/application/ui/entrypoint.sh"]

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Blockout } from "~/pages/components/Blockout";
+import { Blockout } from "~/components/Blockout";
 import { Canvas } from "@react-three/fiber";
 import { api } from "~/utils/api";
 

@@ -17,10 +17,8 @@ import type {
     PieceCube,
     Game,
     PileCube,
-    Prisma,
     PrismaClient,
 } from "@prisma/client";
-import type { DefaultArgs } from "@prisma/client/runtime/library";
 
 interface ExtendedPiece extends Piece {
     pile: Pile & {
@@ -47,9 +45,7 @@ interface Origin {
 }
 
 export async function createPiece(
-    ctx: {
-        db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-    },
+    ctx: { db: PrismaClient },
     input: { pile: string },
 ) {
     const pile = await ctx.db.pile.findUnique({

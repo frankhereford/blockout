@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: blockout
+      POSTGRES_PASSWORD: blockout
+      POSTGRES_DB: blockout
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - blockout-database-dev:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  nextjs:
+    build: ui
+    env_file:
+      - ./ui/.env
+    depends_on:
+      - postgres
+    volumes:
+      - .:/application
+    entrypoint: ["/bin/sh", "/application/ui/entrypoint.dev.sh"]
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  blockout-database-dev:

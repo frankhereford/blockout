@@ -9,4 +9,4 @@ done
 npx prisma db push --accept-data-loss
 node prisma/seed.js
 
-exec npx next start
+exec npx next dev
